@@ -1,32 +1,30 @@
 ---
-title: Geospatial Analysis of COVID-19 Vaccination: A Local Electoral Area Analysis in Ireland
+title: 'Geospatial Analysis of COVID-19 Vaccination: A Local Electoral Area Analysis in Ireland'
 author:
-  - name: Sivagami Nedumaran
-  - name: Ramya Sri Jayshankar
+  - name: 'Sivagami Nedumaran'
+  - name: 'Ramya Sri Jayshankar'
     affil: 1
 affiliation:
   - num: 1
-    address: School of Mathematical and Statistical Sciences, University of Galway
+    address: 'School of Mathematical and Statistical Sciences, University of Galway'
 logoleft_name: https&#58;//sport.universityofgalway.ie/assets/img/logo2.png
-
-poster_height: "594mm"
-poster_width: "841mm"
+poster_height: '594mm'
+poster_width: '841mm'
 column_numbers: 4
-column_margins: "0.5in"	
-primary_colour:	"#a80050"	# Secondary colour use for poster design.
-secondary_colour:	"#84003d"	# Main colour used for poster design.
-accent_colour:	"#e6007e"	# A third colour option.
-author_textcol: "white"
-title_textsize: "90pt"
-author_textsize: "60pt"
-body_textsize: "25pt"
+column_margins: '0.5in'
+primary_colour: '#a80050'
+secondary_colour: '#84003d'
+accent_colour: '#e6007e'
+author_textcol: 'white'
+title_textsize: '90pt'
+author_textsize: '60pt'
+body_textsize: '25pt'
 output: 
   posterdown::posterdown_html:
     self_contained: true
     pandoc_args: --mathjax
     number_sections: false
 knit: pagedown::chrome_print
-
 ---
 
 ```{css, echo=FALSE}
@@ -65,21 +63,17 @@ library(sf)
 
 # Background and Problem
 
-The COVID-19 pandemic has demonstrated the important role vaccination plays in managing an infectious disease outbreak globally. There are several factors that might affect vaccination uptake, like vaccine center accessibility, urban-rural differences, and demographic variables. However, the influence of spatial determinants has not been widely done and this has potential to aid public health policy making during healthcare emergencies^[reference details here]. 
+The COVID-19 pandemic has demonstrated the important role vaccination plays in managing an infectious disease outbreak globally. There are several factors that might affect vaccination uptake, like vaccine center accessibility, urban-rural differences, and demographic variables. However, the influence of spatial determinants has not been widely done and this has potential to aid public health policy making during healthcare emergencies^[Chen, H., Cao, Y., Feng, L. et al. Understanding the spatial heterogeneity of COVID-19 vaccination uptake in England. BMC Public Health 23, 895 (2023). https://doi.org/10.1186/s12889-023-15801-w]. 
 
 <!-- You can add references by inserting the following ^[reference details here] -->
 
 
 ## Objectives of Project
+1. We aim to analyze the spatial and demographic determinants of COVID-19 vaccination rates across Local Electoral Areas (LEAs) in Ireland, distinguishing between urban and rural areas and identifying differences over time
 
-1.We aim to analyse the spatial and demographic determinants of COVID-19 vaccination rates in Local Electoral Areas (LEAs) in Ireland
-2.Identify if differences exist in vaccination rates across LEAs over time, distinguishing between urban and rural areas
-3.Identify accessibility to vaccination centres – which include initial vaccination centres (preliminary vaccine dose centres), GPs and Pharmacies
-4.Analyse if/any relationship between demographic factors in the LEAs to vaccination rates
-5.Assess the fit of non-linear logistic growth models to study the rate of vaccination uptake over time
-6.Infer about spatial and demographic inequities in vaccination rates
+2. This includes assessing accessibility to vaccination centers (initial centers, GPs, and pharmacies) and evaluating relationships between demographic factors and vaccination rates
 
-
+3. Additionally, we examine the fit of non-linear logistic growth models to study vaccination uptake trends and infer spatial and demographic inequities.
 # Data Sources and Datasets
 
 Data on centers offering COVID-19 vaccines are of three types:
@@ -98,18 +92,14 @@ LEA Boundary files were linked to the CDC47 dataset by processing the LEA names 
 
 <!-- This #### below causes the columns to break -->
 <!-- You can change where you put these breaks, and the "column_numbers: 4" argument in the YAMLS header to change the layout of the poster, with care! -->
-
-####
-
 # Early Results / Descriptive Statistics of Datasets
 
 Figure \@ref(fig:standard-plot), and Figure \@ref(fig:morefigs)resent an analysis of Primary Vaccination Rates, with the former highlighting rates by Local Electoral Area (LEA) and the latter depicting trends over time on a monthly basis.
 
 Additionally, Figure \@ref(fig:morefigs)provides a more detailed breakdown, distinguishing vaccination rates between urban and rural areas for each month.
 
-```{r standard-plot, out.width='80%', echo-FALSE, fig.align='center', fig.cap='Great figure!', fig.height=4}
+```{r standard-plot, out.width='100%', fig.height=6, echo=FALSE, fig.align='center', fig.cap='LEA vs Primary Vaccination Rates'}
 Mdata <- st_read("C:/Users/Sivagami Nedumaran/Downloads/Merged_Data_Final.shp")
-st_is_valid(Mdata)
 Data_84 <- st_transform(Mdata,4326)
 Data_84_centroids <- st_centroid(Data_84)
 leaflet(Data_84_centroids) %>%
@@ -124,8 +114,9 @@ leaflet(Data_84_centroids) %>%
   )
 ```
 
-```{r morefigs, out.width='80%', echo=FALSE, fig.cap='Amazing, right?!', fig.height=4}
+####
 
+```{r morefigs, out.width='100%', fig.height=6, echo=FALSE, fig.align='center', fig.cap='Primary Vaccination Course Completion Over Time'}
 vaccination_rate = read.csv("CDC47_Stats.csv")
 vaccination_rate <- vaccination_rate %>%
   filter(Age.Group=='12 years and over')
@@ -151,7 +142,7 @@ vaccine_rate %>%
 ```
 
 The centroids of the LEAs were calculated and the distance of these centroids to the [initial vaccination centers](https://web.archive.org/web/20211229085102/https://www2.hse.ie/services/covid-19-vaccination-centres/) were calculated using sf and geodist packages. The below Figure \@ref(fig:plot1) gives the top 10 counties that have the shortest distance to the initial vaccination centers.
-```{r plot1, out.width='80%', echo=FALSE, fig.cap='Amazing, right?!', fig.height=4}
+```{r plot1, out.width='80%', echo=FALSE, fig.cap='Minimum Distance to Vaccination Center', fig.height=4}
 Dist_long <- read.csv("Centroid_distances.csv")
 Dist_long$County <- Mdata$county
 # Calculate average distance by county and find nearest center
