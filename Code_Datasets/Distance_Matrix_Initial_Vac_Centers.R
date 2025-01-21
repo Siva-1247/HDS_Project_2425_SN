@@ -112,9 +112,9 @@ summary_viz <- Dist_long %>%
 # Create single clear visualization
 ggplot(summary_viz, aes(x = reorder(County, min_dist), y = min_dist)) +
   geom_bar(stat = "identity", fill = "#EEB4B4", alpha = 0.8) +
-  geom_text(aes(label = round(min_dist, 1)), 
+  geom_text(aes(label = sprintf("%0.1f km\n%s", min_dist, nearest_center)), 
             hjust = -0.1, size = 3) +
-  coord_flip() +  # Horizontal bars for better label readability
+  coord_flip() +  
   theme_minimal() +
   theme(
     axis.text = element_text(size = 10),
