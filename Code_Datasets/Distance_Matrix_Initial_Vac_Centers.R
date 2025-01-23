@@ -1,5 +1,5 @@
 library(sf)
-Data <- st_read("Boundary_CSO.shp")
+Data <- st_read("C:/Users/Sivagami Nedumaran/Downloads/Merged_Data_Final.shp")
 head(Data)
 #install.packages("geodist")
 library(geodist)
@@ -12,7 +12,8 @@ library(geodist)
 
 Initial_Vacc <- read.csv("geocoded_addresses_vac_final.csv")
 head(Initial_Vacc)
-
+nrow(Initial_Vacc)
+names(Data)
 LEA_Cord <- data.frame(lon_l=boundary_centroids$longitude, lat_l =boundary_centroids$latitude)
 Vac_Cord <- data.frame(lon_v=Initial_Vacc$longitude, lat_v =Initial_Vacc$latitude)
 ## Dist returned N/A as coordinates are not in WGS84 format
@@ -23,39 +24,108 @@ Dist <-  geodist(
 Dist
 ##Conversion to stnd coordinate system
 st_crs(Data)
+library(dplyr)
 Data_84 <- st_transform(Data,4326)
+head(Data_84)
+nrow(Data_84)
+library(plyr)
 centroids <- st_centroid(Data_84$geometry)
 boundary_centroids <- Data_84
 boundary_centroids$longitude <- st_coordinates(centroids)[,1]
 boundary_centroids$latitude <- st_coordinates(centroids)[,2]
 head(boundary_centroids)
+BC_Data <- boundary_centroids %>%  st_drop_geometry() %>% select(cso_lea, longitude, latitude) %>% distinct()
+head(BC_Data)
+nrow(BC_Data)
 ##Retry distances
-LEA_Cord <- data.frame(lon_l=boundary_centroids$longitude, lat_l =boundary_centroids$latitude)
+LEA_Cord <- data.frame(lon_l=BC_Data$longitude, lat_l =BC_Data$latitude)
 Vac_Cord <- data.frame(lon_v=Initial_Vacc$longitude, lat_v =Initial_Vacc$latitude)
 Dist <-  geodist(
   LEA_Cord,
   Vac_Cord,
   measure = "geodesic")
 Dist
-rownames(Dist)<-boundary_centroids$cso_lea
+rownames(Dist)<-BC_Data$cso_lea
 colnames(Dist)<-Initial_Vacc$Centre_Name
 
 library(reshape2)
 Dist_long <- melt(Dist)
 names(Dist_long) <- c("LEA", "Center", "Distance")
+head(Dist_long)
 write.csv(Dist_long, "Centroid_distances.csv", row.names = TRUE)
 Dist_long <- read.csv("Centroid_distances.csv")
 
 library(ggplot2)
 library(viridis)
+###########
+library(scales)
+Dist_l <- Dist_long[Dist_long$LEA %in% unique(Dist_long$LEA)[1:20], ]
+Dist_l<- ddply(Dist_l, .(Center), transform,
+               Scaled_Distance = rescale(Distance))
+(p <- ggplot(Dist_l, aes(Center, LEA)) + geom_tile(aes(fill = Scaled_Distance),colour = "white") + 
+    scale_fill_gradient(low = "white",high = "steelblue")+geom_text(aes(label=round(Scaled_Distance,1))) +
+    theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1),axis.text.y = element_text(size = 6))+
+  labs(title = "Distances 20 LEAs to Initial Vaccination Centers",
+       x="Initial Vaccination Centers", y="LEA in IRL"))
 ##Heatmap
 Dist_viz <- ggplot(Dist_long, aes(x=Center, y=LEA, fill=Distance)) + geom_tile() +
   scale_fill_viridis(name = "Distance (m)") +
-  theme_minimal() +
+  theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1),axis.text.y = element_text(size = 6)) +
   labs(title = "Distances from LEA centroids to Initial Vaccination Centers",
          x="Initial Vaccination Centers", y="LEA in IRL")
 print(Dist_viz)
 ##Not appealing
+
+clean_data <- Dist_long %>%
+  select(-X) %>%  # Remove the X column
+  mutate(
+    Center = gsub(" Vaccination Centre", "", Center)  # Shorten center names for better display
+  )
+
+summary_stats <- Dist_Long %>%
+  group_by(LEA) %>%
+  summarize(
+    Mean_Distance = mean(Distance),
+    Min_Distance = min(Distance),
+    Max_Distance = max(Distance),
+    Nearest_Center = Center[which.min(Distance)],
+    Farthest_Center = Center[which.max(Distance)]
+  ) %>%
+  ungroup()
+
+# Top 5 nearest LEAs
+top_nearest <- summary_stats %>% arrange(Mean_Distance) %>% head(5)
+
+# Top 5 farthest LEAs
+top_farthest <- summary_stats %>% arrange(desc(Mean_Distance)) %>% head(5)
+
+# Add a 'Type' column for grouping
+top_nearest <- top_nearest %>% mutate(Type = "Nearest")
+top_farthest <- top_farthest %>% mutate(Type = "Farthest")
+
+# Combine the data for plotting
+highlight_data <- bind_rows(top_nearest, top_farthest)
+library(ggplot2)
+
+# Bar chart
+ggplot(highlight_data, aes(x = reorder(LEA, Mean_Distance), y = Mean_Distance, fill = Type)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +  # Flip for horizontal bars
+  scale_fill_manual(values = c("Nearest" = "blue", "Farthest" = "red")) +
+  labs(
+    title = "Top 5 Nearest and Farthest LEAs",
+    x = "LEA",
+    y = "Average Distance",
+    fill = "Type"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 12),
+    plot.title = element_text(size = 14, face = "bold")
+  )
+
+################################
 Dist_long$County <- boundary_centroids$county
 head(Dist_long)
 library(dplyr)
