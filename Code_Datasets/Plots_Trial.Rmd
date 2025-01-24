@@ -1,0 +1,116 @@
+---
+title: "Poster_Plots"
+author: "Sivagami_Nedumaran"
+date: "2025-01-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Distance Matrix
+
+```{r pressure, echo=FALSE}
+library(sf)
+Data <- st_read("C:/Users/Sivagami Nedumaran/Downloads/Merged_Data_Final.shp")
+head(Data)
+library(geodist)
+Initial_Vacc <- read.csv("geocoded_addresses_vac_final.csv")
+library(dplyr)
+Data_84 <- st_transform(Data,4326)
+library(plyr)
+centroids <- st_centroid(Data_84$geometry)
+boundary_centroids <- Data_84
+boundary_centroids$longitude <- st_coordinates(centroids)[,1]
+boundary_centroids$latitude <- st_coordinates(centroids)[,2]
+BC_Data <- boundary_centroids %>%  st_drop_geometry() %>% select(cso_lea, longitude, latitude) %>% distinct()
+##Retry distances
+LEA_Cord <- data.frame(lon_l=BC_Data$longitude, lat_l=BC_Data$latitude)
+Vac_Cord <- data.frame(lon_v=Initial_Vacc$longitude, lat_v=Initial_Vacc$latitude)
+Dist <-  geodist(
+  LEA_Cord,
+  Vac_Cord,
+  measure = "geodesic")
+rownames(Dist)<-BC_Data$cso_lea
+colnames(Dist)<-Initial_Vacc$Centre_Name
+library(reshape2)
+Dist_long <- melt(Dist)
+names(Dist_long) <- c("LEA", "Center", "Distance")
+head(Dist_long)
+write.csv(Dist_long, "Centroid_distances.csv", row.names = TRUE)
+Dist_long <- read.csv("Centroid_distances.csv")
+library(ggplot2)
+library(viridis)
+library(scales)
+library(plyr)
+Dist_l <- Dist_long[Dist_long$LEA %in% unique(Dist_long$LEA)[1:20], ]
+Dist_l<- ddply(Dist_l, .(Center), transform,
+               Scaled_Distance = rescale(Distance))
+p <- ggplot(Dist_l, aes(x = Center, y = LEA)) +
+  geom_tile(aes(fill = Scaled_Distance), color = "white", width = 0.9, height = 0.9) +
+  scale_fill_gradient(low = "white", high = "steelblue", name = "Scaled Distance") +
+  geom_text(aes(label = round(Scaled_Distance, 1)), size = 3, color = "black") +
+  theme_minimal() + 
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+    axis.text.y = element_text(size = 8),
+    axis.title = element_text(size = 10, face = "bold"),
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5)
+  ) +
+  labs(
+    title = "Distances of 20 LEAs to Initial Vaccination Centers",
+    x = "Initial Vaccination Centers", 
+    y = "LEA in IRL"
+  ) +
+  guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5))
+p
+```
+
+Vaccination Rate Plot
+```{r, echo=FALSE}
+library(ggplot2)
+library(dplyr)
+vaccination_rate = read.csv("CDC47_Stats.csv")
+vaccination_rate <- vaccination_rate %>%
+  filter(Age.Group=='12 years and over')
+vaccine_rate <- vaccination_rate %>% mutate(area_type = case_when(grepl('city|dublin', Local.Electoral.Area, ignore.case = TRUE) ~ 'City', TRUE ~ 'Rural'))
+library(lubridate)
+library(scales)
+vaccine_rate$Month <- parse_date_time(vaccine_rate$Month, orders = "Y B")
+library(nlme)
+library(mgcv)
+p1 <- vaccine_rate %>%
+  filter(!is.na(Primary.Course.Completed....)) %>%
+  ggplot(aes(x = Month, y = Primary.Course.Completed...., group = Local.Electoral.Area)) +
+  geom_point(size = 2, alpha = 0.6, color = "#96CDCD") +
+  geom_smooth(method = "gam", formula = y ~ s(x), se = FALSE, color = "#CD96CD", size = 0.8, alpha=0.2) +
+  facet_wrap(~ area_type, scales = "free_y") +
+  scale_x_datetime(date_breaks = "2 months", date_labels = "%b %Y") + 
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    strip.text = element_text(size = 16, face = "bold"),
+    axis.title = element_text(size = 14)
+  )+
+  labs(
+    title = "Primary Vaccination Course Completion Over Time",
+    subtitle = "Grouped by Area Type (Urban/Rural)",
+    x = "Month",
+    y = "Primary Vaccination Completion Rate (%)"
+  )
+p1
+##Overall Primary course vaccination distributions
+library(ggExtra)
+plot_1<- ggplot(data = vaccine_rate, aes(x = Month, y = Primary.Course.Completed....)) +
+  geom_point(size = 2, alpha = 0.6, color = "#CD96CD") +
+  geom_smooth(aes(group = Local.Electoral.Area),method = "gam", formula = y ~ s(x), se = FALSE, color = "#CD96CD", size = 0.8, alpha=0.2)+
+  scale_x_datetime(date_breaks = "2 months", date_labels = "%b %Y") +
+  xlab("Month") + 
+  ylab("Primary Vaccination Completion Rate (%)")
+ggExtra::ggMarginal(plot_1, fill = "#EEB4B4",type="densigram",margins = "y")
+
+```
+

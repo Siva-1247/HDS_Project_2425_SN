@@ -32,10 +32,10 @@ vaccine_rate %>%
 ##Overall Primary course vaccination distributions
 library(ggExtra)
 plot_1<- ggplot(data = vaccine_rate, aes(x = Month, y = Primary.Course.Completed....)) +
-  geom_point(size = 2, alpha = 0.6, color = "#96CDCD") +
+  geom_point(size = 2, alpha = 0.6, color = "#CD96CD") +
   geom_smooth(aes(group = Local.Electoral.Area),method = "gam", formula = y ~ s(x), se = FALSE, color = "#CD96CD", size = 0.8, alpha=0.2)+
   scale_x_datetime(date_breaks = "2 months", date_labels = "%b %Y") +
   xlab("Month") + 
   ylab("Primary Vaccination Completion Rate (%)")
-ggExtra::ggMarginal(plot_1, fill = "grey")
+ggExtra::ggMarginal(plot_1, fill = "#EEB4B4",type="densigram",margins = "y")
 
