@@ -82,6 +82,7 @@ library(scales)
 vaccine_rate$Month <- parse_date_time(vaccine_rate$Month, orders = "Y B")
 library(nlme)
 library(mgcv)
+library(dplyr)
 p1 <- vaccine_rate %>%
   filter(!is.na(Primary.Course.Completed....)) %>%
   ggplot(aes(x = Month, y = Primary.Course.Completed...., group = Local.Electoral.Area)) +
@@ -110,7 +111,7 @@ plot_1<- ggplot(data = vaccine_rate, aes(x = Month, y = Primary.Course.Completed
   scale_x_datetime(date_breaks = "2 months", date_labels = "%b %Y") +
   xlab("Month") + 
   ylab("Primary Vaccination Completion Rate (%)")
-ggExtra::ggMarginal(plot_1, fill = "#EEB4B4",type="densigram",margins = "y")
+ggExtra::ggMarginal(plot_1, fill = "#EEB4B4",margins = "y")
 
 ```
 
