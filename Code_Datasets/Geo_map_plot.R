@@ -7,19 +7,24 @@ gfile <- "Merged_Data_Final.shp"
 geo_data <- st_read(gfile)
 head(geo_data)
 # Step 2: Transform to longlat (WGS84)
-geo_data <- st_transform(geo_data, crs = 4326)
+geo_data_jan <- geo_data %>%
+  filter(month == "2022 January")
+head(geo_data_jan)
+geo_data_jan <- st_transform(geo_data_jan, crs = 4326)
 
 # Step 3: (Optional) Simplify the geometry to improve performance
-geo_data_simplified <- st_simplify(geo_data, dTolerance = 100)
+#geo_data_simplified <- st_simplify(geo_data, dTolerance = 100)
 vaccination_centers <- read.csv("Initial_Vacc.csv")
 # Step 4: Define a color palette based on a numeric column (e.g., vaccination percentage)
-color_palette <- colorNumeric(
-  palette = "PuRd",  # Change to pinks and purples
-  domain = geo_data_simplified$prmry_cm
+color_palette <- colorBin(
+  palette = "RdYlGn",
+  domain = geo_data_jan$prmry_cm,
+  bins = 8, 
+  reverse = FALSE
 )
 
 # Step 5: Create a leaflet map
-leaflet(geo_data_simplified) %>%
+leaflet(geo_data_jan) %>%
   addTiles() %>%  # Add default OpenStreetMap tiles
   addPolygons(
     fillColor = ~color_palette(prmry_cm),  # Apply color palette
@@ -41,13 +46,14 @@ leaflet(geo_data_simplified) %>%
       textsize = "15px",
       direction = "auto"
     )
-  ) %>% addMarkers(
+  ) %>% addCircleMarkers(
     data = vaccination_centers,
     lng = ~longitude,
     lat = ~latitude,
     popup = ~paste0(Centre_Name, ", ", County),
-    label = ~Centre_Name
-  )%>%
+    label = ~Centre_Name,
+    color = 'black',
+    radius = 3)%>%
   addLegend(
     pal = color_palette, 
     values = ~prmry_cm, 
