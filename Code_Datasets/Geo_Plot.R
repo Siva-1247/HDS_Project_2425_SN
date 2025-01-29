@@ -43,3 +43,31 @@ leaflet(Data_84_centroids) %>%
     popup = ~paste("<strong>LEA:</strong>", cso_lea, "<br>",
                    "<strong>Vaccination Rate:</strong>", prmry_cm, "%")
   )
+
+##################################################################
+##Scatter Plot
+library(geodist)
+gfile <- "C:/Users/Sivagami Nedumaran/Downloads/Merged_Data_Final.shp"
+geo_data <- suppressWarnings(st_read(gfile, quiet = TRUE))
+# Step 2: Transform to longlat (WGS84)
+geo_data_jan <- geo_data %>%
+  filter(month == "2022 January")
+geo_data_jan <- st_transform(geo_data_jan, crs = 4326)
+centroids <- st_centroid(geo_data_jan$geometry)
+boundary_centroids <- geo_data_jan
+boundary_centroids$longitude <- st_coordinates(centroids)[,1]
+boundary_centroids$latitude <- st_coordinates(centroids)[,2]
+head(boundary_centroids)
+BC_Data <- boundary_centroids %>%  st_drop_geometry() %>% select(cso_lea, longitude, latitude, prmry_cm) %>% distinct()
+Initial_Vacc <- read.csv("geocoded_addresses_vac_final.csv")
+LEA_Cord <- data.frame(lon_l=BC_Data$longitude, lat_l =BC_Data$latitude)
+Vac_Cord <- data.frame(lon_v=Initial_Vacc$longitude, lat_v =Initial_Vacc$latitude)
+Dist <-  geodist(
+  LEA_Cord,
+  Vac_Cord,
+  measure = "geodesic")
+rownames(Dist)<-BC_Data$cso_lea
+colnames(Dist)<-Initial_Vacc$Centre_Name
+min_dist <- apply(Dist, 1, min)
+BC_Data$min_dist <- min_dist
+write.csv(BC_Data, "BC_Data.csv")

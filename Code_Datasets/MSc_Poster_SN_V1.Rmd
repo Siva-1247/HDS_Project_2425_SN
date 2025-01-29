@@ -1,5 +1,5 @@
 ---
-title: 'Geospatial Analysis of COVID-19 Vaccination: A Local Electoral Area Analysis in Ireland'
+title: 'Geospatial Analysis of COVID-19 Vaccination: A Neighbourhood Level Analysis in Ireland'
 author:
   - name: 'Sivagami Nedumaran'
   - name: 'Ramya Sri Jayshankar'
@@ -16,9 +16,9 @@ primary_colour: '#a80050'
 secondary_colour: '#84003d'
 accent_colour: '#e6007e'
 author_textcol: 'white'
-title_textsize: '70pt'
+title_textsize: '50pt'
 author_textsize: '40pt'
-body_textsize: '20pt'
+body_textsize: '40pt'
 output: 
   posterdown::posterdown_html:
     self_contained: true
@@ -41,10 +41,14 @@ column {
   padding: 10px;
 }
 body {
-  font-size: 16pt;
+  font-size: 20pt;
 }
 h1, h2, h3, h4 {
   font-size: 30pt;
+}
+div.footnotes {
+    font-size: 8pt;
+    line-height: 0.8;
 }
 ```
 
@@ -72,13 +76,13 @@ library(sf)
 
 # Background
 
-The COVID-19 pandemic has demonstrated the important role vaccination plays in managing an infectious disease outbreak globally. There are several factors that might affect vaccination uptake, like vaccine center accessibility, urban-rural differences, and demographic variables. However, the influence of spatial determinants has not been widely done and this has potential to aid public health policy making during healthcare emergencies.^[Chen H, Cao Y, Feng L, Zhao Q, Torres JRV. Understanding the spatial heterogeneity of COVID-19 vaccination uptake in England. BMC Public Health [Internet]. 2023 May 16 [cited 2023 Dec 16];23(1). Available from: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10185460/]
+The COVID-19 pandemic has demonstrated the important role vaccination plays in managing an infectious disease outbreak globally. There are several factors that might affect vaccination uptake, such as vaccine center accessibility, urban-rural differences, and demographic variables. However, the influence of spatial determinants has not been widely studied and this has potential to aid public health policy making during healthcare emergencies.^[Chen H, Cao Y, Feng L, Zhao Q, Torres JRV. Understanding the spatial heterogeneity of COVID-19 vaccination uptake in England. BMC Public Health [Internet]. 2023 May 16 [cited 2023 Dec 16];23(1). Available from: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10185460/]
 
 <!-- You can add references by inserting the following ^[reference details here] -->
 
 
 # Objectives of Project
-- We aim to explore the spatial and demographic patterns associated with COVID-19 vaccination rates in Local Electoral Areas (LEAs) in Ireland.
+- Explore spatial and demographic patterns associated with COVID-19 vaccination rates in **166 Local Electoral Areas (LEAs)** in Ireland.
 - Examine differences in vaccination rates across LEAs over time, with a focus on potential variations between urban and rural areas.
 - Evaluate accessibility to vaccination centres, including initial vaccination centres (preliminary vaccine dose centres), GPs, and pharmacies.
 - Investigate potential associations between demographic characteristics in LEAs and vaccination rates.
@@ -89,74 +93,99 @@ The COVID-19 pandemic has demonstrated the important role vaccination plays in m
 
 Data on centers offering COVID-19 vaccines are of three types: 
 
-1.Initial Vaccination Centers for COVID-19^[COVID-19 vaccination centres and walk-ins [Internet]. HSE.ie. 2025. Available from: https://web.archive.org/web/20211229085102/https://www2.hse.ie/services/covid-19-vaccination-centres/]
-2.GPs^[Find a GP [Internet]. www2.hse.ie. Available from: https://www2.hse.ie/services/find-a-gp/]
-3.Pharmacies^[Find a pharmacy giving flu and COVID-19 vaccines [Internet]. HSE.ie. 2025. Available from: https://www2.hse.ie/services/pharmacies-flu-and-covid-vaccines/]
+1. Initial Vaccination Centers for COVID-19^[COVID-19 vaccination centres and walk-ins [Internet]. HSE.ie. 2025. Available from: https://web.archive.org/web/20211229085102/https://www2.hse.ie/services/covid-19-vaccination-centres/]
+2. GPs^[Find a GP [Internet]. www2.hse.ie. Available from: https://www2.hse.ie/services/find-a-gp/]
+3. Pharmacies^[Find a pharmacy giving flu and COVID-19 vaccines [Internet]. HSE.ie. 2025. Available from: https://www2.hse.ie/services/pharmacies-flu-and-covid-vaccines/]
 
-They were **scarped** using **rvest** in **R** and **selenium** on **python (for dynamic webpages)**. They were all **geocoded** to obtain longitudes and latitudes using **Google Maps API**
-
-**LEA vaccination rates** are in table **CDC47 in CSO website**^[Central Statistics Office. Data.cso.ie. 2020. Available from: https://data.cso.ie/]
-
-**LEA Boundary files** were taken from **OSI**^[Open Data [Internet]. data-osi.opendata.arcgis.com. Available from: https://data-osi.opendata.arcgis.com/]
-
-*LEA Boundary files were linked to the CDC47 dataset* by processing the LEA names to be same on both files and then using **merge** function on R to combine them on the LEA names.
+- They were **scraped** using **rvest** in **R** and **selenium** on **Python (for dynamic webpages)**. They were all **geocoded** to obtain longitudes and latitudes using **Google Maps API**
+- **LEA vaccination rates** are in table **CDC47 in Central Statistics Office website (CSO)**^[Central Statistics Office. Data.cso.ie. 2020. Available from: https://data.cso.ie/]
+- **LEA Boundary files** were taken from **Ordnance Survey Ireland(OSI) **^[Open Data [Internet]. data-osi.opendata.arcgis.com. Available from: https://data-osi.opendata.arcgis.com/]
+- *LEA Boundary files were linked to the CDC47 dataset* by processing the LEA names to be same on both files and then using **merge** function on R to combine them on the LEA names.
  
+# GitHub
 
+The code and datasets for this project can be viewed at our GitHub repository here: https://github.com/Siva-1247/HDS_Project_2425_SN.git
 <!-- This #### below causes the columns to break -->
 <!-- You can change where you put these breaks, and the "column_numbers: 4" argument in the YAMLS header to change the layout of the poster, with care! -->
 
 # Early Results
 
-Figure \@ref(fig:standard-plot), and Figure \@ref(fig:morefigs)represent an exploratory analysis of Primary Vaccination Rates, with the former highlighting rates by LEA and the latter depicting trends over time on a monthly basis.
+Figure \@ref(fig:standard-plot), and Figure \@ref(fig:morefigs)represent an exploratory analysis of Primary Course Vaccination Rates, with the former highlighting vaccination rates by LEA in *January 2022* with the initial vaccination centers represented by dots and the latter depicting vaccination trends over time on a monthly basis.
 Additionally, Figure \@ref(fig:morefigs)provides a more detailed breakdown, distinguishing vaccination rates between urban and rural areas for each month.
 
-```{r standard-plot, out.width='100%', fig.height=12, echo=FALSE, fig.align='center', fig.cap='LEA wise Primary Vaccination Rates'}
-   knitr::include_graphics("C:/Users/Sivagami Nedumaran/Downloads/Rplot.png")
-```
-
-The centroids of the LEAs were calculated and the distance of these centroids to the [initial vaccination centers](https://web.archive.org/web/20211229085102/https://www2.hse.ie/services/covid-19-vaccination-centres/) were calculated using sf and geodist packages The Geodesic method which gives highly accurate pairwise distance between two coordinates based on the WGS84 ellipsoid was used. The below Figure \@ref(fig:plot1) depicts the distance of the LEAs to all the initial vaccination centers.
-
-```{r morefigs, out.width='100%', fig.height=6, echo=FALSE, fig.align='center', fig.cap='Primary Vaccination Course Completion Over Time'}
-library(ggplot2)
+```{r standard-plot, out.width='100%', fig.height=8, echo=FALSE, fig.align='center', fig.cap='LEA wise Primary Course Vaccination Rates in January 2022 with Initial Vaccination Centers Marked', message=FALSE,warning=FALSE}
+library(sf)
+library(leaflet)
 library(dplyr)
-vaccination_rate = read.csv("CDC47_Stats.csv")
-vaccination_rate <- vaccination_rate %>%
-  filter(Age.Group=='12 years and over')
-vaccine_rate <- vaccination_rate %>% mutate(area_type = case_when(grepl('city|dublin', Local.Electoral.Area, ignore.case = TRUE) ~ 'City', TRUE ~ 'Rural'))
-library(lubridate)
-library(scales)
-vaccine_rate$Month <- parse_date_time(vaccine_rate$Month, orders = "Y B")
-library(nlme)
-library(mgcv)
-library(dplyr)
-p1 <- vaccine_rate %>%
-  filter(!is.na(Primary.Course.Completed....)) %>%
-  ggplot(aes(x = Month, y = Primary.Course.Completed...., group = Local.Electoral.Area)) +
-  geom_point(size = 2, alpha = 0.6, color = "#96CDCD") +
-  geom_smooth(method = "gam", formula = y ~ s(x), se = FALSE, color = "#CD96CD", size = 0.8, alpha=0.2) +
-  facet_wrap(~ area_type, scales = "free_y") +
-  scale_x_datetime(date_breaks = "2 months", date_labels = "%b %Y") + 
-  theme_minimal(base_size = 14) +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    strip.text = element_text(size = 16, face = "bold"),
-    axis.title = element_text(size = 14)
-  )+
-  labs(
-    x = "Month",
-    y = "Primary Vaccination Completion Rate (%)"
+
+# Step 1: Read the file
+gfile <- "C:/Users/Sivagami Nedumaran/Downloads/Merged_Data_Final.shp"
+geo_data <- suppressWarnings(st_read(gfile, quiet = TRUE))
+# Step 2: Transform to longlat (WGS84)
+geo_data_jan <- geo_data %>%
+  filter(month == "2022 January")
+geo_data_jan <- st_transform(geo_data_jan, crs = 4326)
+
+# Step 3: (Optional) Simplify the geometry to improve performance
+vaccination_centers <- read.csv("geocoded_addresses_vac_final.csv")
+# Step 4: Define a color palette based on a numeric column (e.g., vaccination percentage)
+color_palette <- colorBin(
+  palette = "RdYlGn",
+  domain = geo_data_jan$prmry_cm,
+  bins = 8, 
+  reverse = FALSE
+)
+
+# Step 5: Create a leaflet map
+leaflet(geo_data_jan) %>%
+  addTiles() %>%  # Add default OpenStreetMap tiles
+  addPolygons(
+    fillColor = ~color_palette(prmry_cm),  # Apply color palette
+    weight = 1,
+    opacity = 1,
+    color = "white",
+    dashArray = "3",
+    fillOpacity = 0.7,
+    highlightOptions = highlightOptions(
+      weight = 3,
+      color = "#666",
+      dashArray = "",
+      fillOpacity = 0.7,
+      bringToFront = TRUE
+    ),
+    label = ~paste0(cso_lea, ": ", prmry_cm, "%"),
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px",
+      direction = "auto"
+    )
+  ) %>% addCircleMarkers(
+    data = vaccination_centers,
+    lng = ~longitude,
+    lat = ~latitude,
+    popup = ~paste0(Centre_Name, ", ", County),
+    label = ~Centre_Name,
+    color = 'black',
+    radius = 3)%>%
+  addLegend(
+    pal = color_palette, 
+    values = ~prmry_cm, 
+    opacity = 0.7, 
+    title = "Vaccination Percentage",
+    position = "bottomright"
   )
-p1
 ```
 
+The centroids of the 166 LEAs were calculated and the distance of these centroids to the [initial vaccination centers](https://web.archive.org/web/20211229085102/https://www2.hse.ie/services/covid-19-vaccination-centres/) were calculated using *sf* and *geodist packages*. The *Geodesic* method which gives highly accurate pairwise distance between two coordinates based on the WGS84 ellipsoid was used. The below Figure \@ref(fig:plot1) depicts the distance of top 10 LEAs when ordered alphabetically to all the initial vaccination centers.
 
-```{r plot1, out.width='100%', echo=FALSE, fig.cap='Distance to Vaccination Center', fig.height=6}
+
+```{r plot1, out.width='100%', echo=FALSE, fig.cap='Distance to Initial Vaccination Centers from 10 LEA centroids', fig.height=4}
 Dist_long <- read.csv("Centroid_distances.csv")
 library(ggplot2)
 library(viridis)
 library(scales)
 library(plyr)
-Dist_l <- Dist_long[Dist_long$LEA %in% unique(Dist_long$LEA)[1:20], ]
+Dist_l <- Dist_long[Dist_long$LEA %in% unique(Dist_long$LEA)[1:10], ]
 Dist_l<- ddply(Dist_l, .(Center), transform,
                Scaled_Distance = rescale(Distance))
 p <- ggplot(Dist_l, aes(Center, LEA)) + 
@@ -174,7 +203,7 @@ p <- ggplot(Dist_l, aes(Center, LEA)) +
         legend.title = element_text(size = 6),
         legend.text = element_text(size = 5),
         plot.margin = unit(c(0.5, 0.5, 1, 0.5), "cm")
-    ) +
+    ) + scale_x_discrete(labels = function(x) str_trunc(x, 10)) +
     labs(
         title = "Distances of LEAs to Initial Vaccination Centers",
         x = "Initial Vaccination Centers", 
@@ -183,32 +212,73 @@ p <- ggplot(Dist_l, aes(Center, LEA)) +
 p
 ```
 
+```{r morefigs, out.width='100%', fig.height=6, echo=FALSE, fig.align='center', fig.cap='Primary Vaccination Course Completion Over Time (2021 January - 2023 June)'}
+library(ggplot2)
+library(dplyr)
+vaccination_rate = read.csv("CDC47_Stats.csv")
+vaccination_rate <- vaccination_rate %>%
+  filter(Age.Group=='12 years and over')
+vaccine_rate <- vaccination_rate %>% mutate(area_type = case_when(grepl('city|dublin', Local.Electoral.Area, ignore.case = TRUE) ~ 'City', TRUE ~ 'Rural'))
+library(lubridate)
+library(scales)
+vaccine_rate$Month <- parse_date_time(vaccine_rate$Month, orders = "Y B")
+library(nlme)
+library(mgcv)
+library(dplyr)
+p1 <- vaccine_rate %>%
+  filter(!is.na(Primary.Course.Completed....)) %>%
+  ggplot(aes(x = Month, y = Primary.Course.Completed...., group = Local.Electoral.Area)) +
+  geom_point(size = 2, color = "black") +
+  geom_smooth(method = "gam", formula = y ~ s(x), se = FALSE, color = "#CD96CD", size = 0.7, alpha=0.2) +
+  geom_vline(xintercept = as.POSIXct("2022-01-01"), color = "red", alpha = 0.5) +
+  facet_wrap(~ area_type, scales = "free_y") +
+  scale_x_datetime(date_breaks = "2 months", date_labels = "%b %Y") + 
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    strip.text = element_text(size = 16, face = "bold"),
+    axis.title = element_text(size = 14)
+  )+
+  labs(
+    x = "Month",
+    y = "Primary Vaccination Completion Rate (%)"
+  )
+p1
+```
+
+Figure \@ref(fig:morefigs2) is a scatter plot of primary course vaccination rates to minimum distance to initial vaccination center for each of the 166 LEAs in January 2022.
+
+```{r morefigs2, out.width='100%', fig.height=4, echo=FALSE, fig.align='center', fig.cap='Primary Course Vaccination Rate vs Minimun distance to initial vaccination centers', message=FALSE, warning=FALSE}
+BC_Data <- read.csv("BC_Data.csv")
+ggplot(BC_Data, aes(x = min_dist, y = prmry_cm)) +
+  geom_point(size = 3, alpha = 0.7, color = "steelblue") +
+  labs(
+    title = "Vaccination Rate vs Minimum Distance to Vaccination Centers",
+    x = "Minimum Distance to Vaccination Centers (meters)",
+    y = "Vaccination Rate (%)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+```
+
 # Next Project Steps
 
 *Geospatial Analysis: *
-Inspect and extract variables that can be used to demonstrate accessibility to the vaccination centers. It can be done using routing APIs (e.g., Google Maps API, OpenStreetMap) to estimate travel times by car, public transport, or walking.
-
-Additionally, spatial clustering can be carried out to identify areas with high or low accessibility 
+Identify and analyze variables that influence accessibility to vaccination centers. It can be done using routing APIs (e.g., Google Maps API, OpenStreetMap) to estimate travel times by car, public transport, or walking.
+Spatial clustering can help identify regions with high or low vaccination center accessibility
 
 *Demographic Analysis:* 
 Identify and extract local area level demographic summaries and transform compositional demographic variables by log-ratio transformations for modelling.
 
 *Model Development:*
-Implement mixed-effects models like generalized linear mixed models or Bayesian linear mixed models to analyze which might best describe the vaccination uptake rates^[ Dropkin G. Variation in COVID-19 booster uptake in England: An ecological study. Harapan H, editor. PLOS ONE. 2022 Jun 29;17(6):e0270624.]
-^[ Chen H, Cao Y, Feng L, Zhao Q, Torres JRV. Understanding the spatial heterogeneity of COVID-19 vaccination uptake in England. BMC Public Health [Internet]. 2023 May 16 [cited 2023 Dec 16];23(1). Available from: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10185460/]
+Analyze models such as generalized linear mixed models and non-linear mixed models (potentially within a Bayesian framework) to analyze vaccination uptake rates^[ Dropkin G. Variation in COVID-19 booster uptake in England: An ecological study. Harapan H, editor. PLOS ONE. 2022 Jun 29;17(6):e0270624.]
 
 In the presence of spatial autocorrelation, spatial regression models can also be analysed.
-
-Determine the best fit model to data.
-
-*Feedback and Refinement:*
-Review intermediate results and refine analysis as needed
-
-####
-# GitHub
-
-The code and datasets for this project can be viewed at our GitHub repository here: https://github.com/Siva-1247/HDS_Project_2425_SN.git
-
 
 # References
 
