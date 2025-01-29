@@ -47,7 +47,7 @@ h1, h2, h3, h4 {
   font-size: 30pt;
 }
 div.footnotes {
-    font-size: 8pt;
+    font-size: 7pt;
     line-height: 0.8;
 }
 ```
@@ -84,7 +84,7 @@ The COVID-19 pandemic has demonstrated the important role vaccination plays in m
 # Objectives of Project
 - Explore spatial and demographic patterns associated with COVID-19 vaccination rates in **166 Local Electoral Areas (LEAs)** in Ireland.
 - Examine differences in vaccination rates across LEAs over time, with a focus on potential variations between urban and rural areas.
-- Evaluate accessibility to vaccination centres, including initial vaccination centres (preliminary vaccine dose centres), GPs, and pharmacies.
+- Evaluate accessibility to vaccination centres, including *35* initial vaccination centres (preliminary vaccine dose centres), *1557* GPs, and *1041* pharmacies.
 - Investigate potential associations between demographic characteristics in LEAs and vaccination rates.
 - Assess the applicability of non-linear logistic growth models to describe trends in vaccination uptake over time.
 - Identify and describe spatial and demographic disparities in vaccination rates, if present.
@@ -110,8 +110,8 @@ The code and datasets for this project can be viewed at our GitHub repository he
 
 # Early Results
 
-Figure \@ref(fig:standard-plot), and Figure \@ref(fig:morefigs)represent an exploratory analysis of Primary Course Vaccination Rates, with the former highlighting vaccination rates by LEA in *January 2022* with the initial vaccination centers represented by dots and the latter depicting vaccination trends over time on a monthly basis.
-Additionally, Figure \@ref(fig:morefigs)provides a more detailed breakdown, distinguishing vaccination rates between urban and rural areas for each month.
+Figure \@ref(fig:standard-plot), and Figure \@ref(fig:morefigs) represent an exploratory analysis of Primary Course Vaccination Rates, with the former highlighting vaccination rates by LEA in *January 2022* with the initial vaccination centers represented by dots and the latter depicting vaccination trends over time on a monthly basis.
+Additionally, Figure \@ref(fig:morefigs) provides a more detailed breakdown, distinguishing vaccination rates between urban and rural areas for each month.
 
 ```{r standard-plot, out.width='100%', fig.height=8, echo=FALSE, fig.align='center', fig.cap='LEA wise Primary Course Vaccination Rates in January 2022 with Initial Vaccination Centers Marked', message=FALSE,warning=FALSE}
 library(sf)
@@ -176,8 +176,7 @@ leaflet(geo_data_jan) %>%
   )
 ```
 
-The centroids of the 166 LEAs were calculated and the distance of these centroids to the [initial vaccination centers](https://web.archive.org/web/20211229085102/https://www2.hse.ie/services/covid-19-vaccination-centres/) were calculated using *sf* and *geodist packages*. The *Geodesic* method which gives highly accurate pairwise distance between two coordinates based on the WGS84 ellipsoid was used. The below Figure \@ref(fig:plot1) depicts the distance of top 10 LEAs when ordered alphabetically to all the initial vaccination centers.
-
+The centroids of the 166 LEAs were calculated and the distance of these centroids to the [initial vaccination centers](https://web.archive.org/web/20211229085102/https://www2.hse.ie/services/covid-19-vaccination-centres/) were calculated using *sf* and *geodist packages*.The *Geodesic* method, based on the WGS84 ellipsoid, was used for accurate pairwise distance calculations. Figure \@ref(fig:plot1) shows the distances from the top 10 alphabetically ordered LEAs to the initial vaccination centers.
 
 ```{r plot1, out.width='100%', echo=FALSE, fig.cap='Distance to Initial Vaccination Centers from 10 LEA centroids', fig.height=4}
 Dist_long <- read.csv("Centroid_distances.csv")
@@ -248,7 +247,7 @@ p1
 
 Figure \@ref(fig:morefigs2) is a scatter plot of primary course vaccination rates to minimum distance to initial vaccination center for each of the 166 LEAs in January 2022.
 
-```{r morefigs2, out.width='100%', fig.height=4, echo=FALSE, fig.align='center', fig.cap='Primary Course Vaccination Rate vs Minimun distance to initial vaccination centers', message=FALSE, warning=FALSE}
+```{r morefigs2, out.width='100%', fig.height=4, echo=FALSE, fig.align='center', fig.cap='Primary Course Vaccination Rate & Min distance to initial vaccination centers Jan 2022', message=FALSE, warning=FALSE}
 BC_Data <- read.csv("BC_Data.csv")
 ggplot(BC_Data, aes(x = min_dist, y = prmry_cm)) +
   geom_point(size = 3, alpha = 0.7, color = "steelblue") +
