@@ -33,8 +33,10 @@ centroids <- st_centroid(Data_84$geometry)
 boundary_centroids <- Data_84
 boundary_centroids$longitude <- st_coordinates(centroids)[,1]
 boundary_centroids$latitude <- st_coordinates(centroids)[,2]
-head(boundary_centroids)
+head(boundary_centeroids)
+write.csv(boundary_centroids,"lea_centroids.csv")
 BC_Data <- boundary_centroids %>%  st_drop_geometry() %>% select(cso_lea, longitude, latitude) %>% distinct()
+write.csv(BC_Data, "LEA_Centroids.csv")
 head(BC_Data)
 nrow(BC_Data)
 ##Retry distances
