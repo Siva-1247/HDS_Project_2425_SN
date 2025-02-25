@@ -53,6 +53,7 @@ for(i in 1:nrow(lea_sf)) {
 lea_sf$has_pharmacy_access <- lea_with_pharmacy_access
 summary(lea_sf$has_pharmacy_access)
 #######################################################
+## No.of pharmacies within 5 km radius of a centroid
 pharmacies_buffer <- st_buffer(pharmacies_sf, dist = 5000)
 
 # Check if LEA centroids are within the 5 km buffer zone of any pharmacy
