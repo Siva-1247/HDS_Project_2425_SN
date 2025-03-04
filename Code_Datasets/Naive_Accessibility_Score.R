@@ -1,4 +1,4 @@
-#install.packages("osrm")
+#install.packages("openrouteservice")
 
 library(sf)
 library(osrm)
@@ -10,12 +10,17 @@ pharmacies <- read.csv("geocoded_addresses_p_final.csv", stringsAsFactors = FALS
 pharmacies$COVID.19_Vaccines_Offered
 pharm <- pharmacies %>% filter(grepl("COVID-19", COVID.19_Vaccines_Offered, ignore.case = TRUE))
 head(pharm)
+head(lea_data)
 # Convert to spatial format
 lea_sf <- st_as_sf(lea_data, coords = c("longitude", "latitude"), crs = 4326)
 pharmacies_sf <- st_as_sf(pharm, coords = c("longitude", "latitude"), crs = 4326)
-nrow(lea_sf)
+head(lea_data)
 nrow(pharmacies_sf)
-nrow(pharm)
+lea_sf$centroid <- st_centroid(lea_sf$geometry)
+
+# Extract longitude & latitude of the centroid
+lea_sf$centroid_longitude <- st_coordinates(lea_sf$centroid)[, 1]
+lea_sf$centroid_latitude <- st_coordinates(lea_sf$centroid)[, 2]
 
 ## 15/30 min travle times from LEAs give no access, makes sense, so approach must be diff
 retry_osrmRoute <- function(src, dst, max_retries = 3) {
@@ -101,7 +106,7 @@ leaflet(geo_data_jan) %>%
     fillOpacity = 0.7,  # Polygon fill opacity
     popup = ~paste(
       "LEA: ", geo_data_jan$cso_lea, "<br>",
-      "Pharmacy Count (20km): ", has_pharmacy_access
+      "Pharmacy Count (5km): ", has_pharmacy_access
     )  # Popup showing the pharmacy count
   ) %>%
   addLegend(
@@ -111,3 +116,91 @@ leaflet(geo_data_jan) %>%
     title = "Pharmacy Access (Count within 20km)",
     opacity = 1
   )
+
+################################################################################################
+library(sf)
+library(osrm)
+library(dplyr)
+pop_data <- read.csv("C:/Users/Sivagami Nedumaran/Downloads/LEA_POP22.csv")
+lea_sf <- lea_sf %>%
+  rename(CSO_LEA = cso_lea)
+lea_sf <- lea_sf %>%
+  left_join(pop_data, by = "CSO_LEA")
+lea_sf$TOTPOP22 <- as.numeric(lea_sf$TOTPOP22)
+# Initialize a vector for accessibility scores
+lea_accessibility <- numeric(nrow(lea_sf))
+
+# Step 1: Compute Pharmacy-to-Population Ratio (Rj)
+pharmacy_ratios <- numeric(nrow(pharmacies_sf))
+
+for (j in 1:nrow(pharmacies_sf)) {
+  accessible_leas <- numeric(nrow(lea_sf))  # Ensure it's a numeric vector
+  
+  for (i in 1:nrow(lea_sf)) {
+    # Fetch the route between LEA and pharmacy
+    route <- retry_osrmRoute(lea_sf$centroid[i], pharmacies_sf[j,])
+    
+    # Check if route is valid and the duration is under the threshold (30 minutes)
+    if (!is.null(route) && !is.na(route$duration) && route$duration < 30*60) {
+      # Ensure population is numeric before assignment
+      if (!is.na(lea_sf$TOTPOP22[i])) {
+        accessible_leas[i] <- lea_sf$TOTPOP22[i]  # Assign population for accessible LEAs
+      }
+    }
+  }
+  
+  # Compute supply-to-demand ratio (Rj) - sum of accessible population (handle NA values)
+  pharmacy_ratios[j] <- ifelse(sum(accessible_leas, na.rm = TRUE) == 0, NA, 1 / sum(accessible_leas, na.rm = TRUE))
+}
+
+# Step 2: Compute Accessibility Score (Ai)
+lea_accessibility <- numeric(nrow(lea_sf))  # Initialize the vector to store accessibility scores
+
+for (i in 1:nrow(lea_sf)) {
+  accessibility_score <- 0  # Initialize accessibility score for each LEA
+  
+  for (j in 1:nrow(pharmacies_sf)) {
+    route <- retry_osrmRoute(lea_sf$centroid[i], pharmacies_sf[j,])
+    
+    # If route is valid and duration is within the threshold
+    if (!is.null(route) && !is.na(route$duration) && route$duration < 30*60) {
+      # Add the pharmacy ratio to the accessibility score
+      accessibility_score <- accessibility_score + pharmacy_ratios[j]
+    }
+  }
+  
+  lea_accessibility[i] <- accessibility_score  # Store the accessibility score for each LEA
+}
+
+# Assign the accessibility scores to the LEA data frame
+lea_sf$accessibility_score <- lea_accessibility
+summary(lea_sf$accessibility_score)
+
+
+##############################################################################################
+library(sf)
+library(osrm)
+library(dplyr)
+
+# Define travel time threshold (minutes)
+travel_time_threshold <- 15 * 60  # Convert to seconds
+
+# Create an empty vector to store pharmacy counts
+lea_sf$pharmacy_count <- 0
+
+for (i in 1:nrow(lea_sf)) {
+  count <- 0
+  for (j in 1:nrow(pharmacies_sf)) {
+    # Calculate travel time between LEA centroid and pharmacy
+    route <- retry_osrmRoute(lea_sf[i,], pharmacies_sf[j,])
+    
+    # If travel time is within the threshold, count this pharmacy
+    if (!is.null(route) && route$duration < travel_time_threshold) {
+      count <- count + 1
+    }
+  }
+  lea_sf$pharmacy_count[i] <- count  # Store pharmacy count for each LEA
+}
+
+# FCA Score (Pharmacy count per LEA)
+lea_sf$FCA_score <- lea_sf$pharmacy_count
