@@ -11,6 +11,7 @@ geo_data <- suppressWarnings(st_read(gfile, quiet = TRUE))
 geo_data_jan <- geo_data %>%
   filter(month == "2022 January")
 geo_data_jan <- st_transform(geo_data_jan, crs = 4326)
+write.csv(geo_data_jan, "geo_data_jan.csv", row.names = FALSE)
 
 geo_data_jan <- geo_data_jan %>%
   mutate(neighborhood_area = st_area(.))
@@ -66,41 +67,73 @@ generate_batch_isochrones_ors <- function(pharmacies_sf, travel_time, batch_size
   return(combined_isochrones)
 }
 
-# Example: Generate isochrones for all pharmacies (e.g., 10-minute isochrones)
-isochrones <- generate_batch_isochrones_ors(pharmacies_sf, 600)
-
+library(sf)
+library(dplyr)
 library(ggplot2)
-ggplot() +
-  geom_sf(data = isochrones, aes(fill = factor(value)), alpha = 0.5) +
-  scale_fill_manual(values = c("blue", "green", "red")) +
-  ggtitle("10-Minute Isochrones for Pharmacies")
 
-set.seed(420)  # For reproducibility
-# Compute total area of each neighborhood
-geo_data_jan <- geo_data_jan %>%
-  mutate(neighborhood_area = st_area(.))
-random_neighborhoods <- geo_data_jan %>%
-  sample_n(10)
-head(random_neighborhoods)
-# Perform spatial intersection to find areas covered by isochrones
-# Ensure geometries are valid
-random_neighborhoods <- st_make_valid(random_neighborhoods)
+# Load spatial data (Neighborhood Boundaries)
+gfile <- "C:/Users/Sivagami Nedumaran/Downloads/Merged_Data_Final.shp"
+geo_data <- suppressWarnings(st_read(gfile, quiet = TRUE)) %>%
+  filter(month == "2022 January") %>%  # Keep only January 2022 data
+  st_transform(crs = 4326)  # Ensure correct CRS
+
+# Load population data (assuming a CSV with neighborhood population & CSO_LEA)
+pop_data <- read.csv("C:/Users/Sivagami Nedumaran/Downloads/LEA_POP22.csv", stringsAsFactors = FALSE)
+
+# Standardize column names for merging
+pop_data <- pop_data %>% rename(cso_lea = CSO_LEA)
+
+# Merge population data with geo_data using cso_lea as the key
+geo_data <- geo_data %>%
+  left_join(pop_data, by = "cso_lea")  # Match on 'cso_lea'
+dim(geo_data)
+# Load pharmacy locations (opportunities)
+pharmacies <- read.csv("geocoded_addresses_p_final.csv", stringsAsFactors = FALSE) %>%
+  filter(grepl("COVID-19", COVID.19_Vaccines_Offered, ignore.case = TRUE))
+
+pharmacies_sf <- st_as_sf(pharmacies, coords = c("longitude", "latitude"), crs = 4326)
+
+# Generate 10-minute isochrones for pharmacies
+isochrones <- generate_batch_isochrones_ors(pharmacies_sf, travel_time = 600)
+
+# Ensure valid geometries before spatial operations
+geo_data <- st_make_valid(geo_data)
 isochrones <- st_make_valid(isochrones)
 
-# Perform spatial intersection again
-accessibility <- st_intersection(random_neighborhoods, isochrones)
+# Perform spatial intersection to determine areas covered by isochrones
+set.seed(5000)
+geo_sample<- geo_data %>% sample_n(10)
+head(geo_sample)
+class(pop_data$TOTPOP22)
+head(pop_data$TOTPOP22)
+geo_sample$TOTPOP22 <- gsub(",", "", geo_sample$TOTPOP22)
+geo_sample$TOTPOP22 <- as.numeric(geo_sample$TOTPOP22)
+accessibility <- st_intersection(geo_sample, isochrones)
+intersection_areas <- accessibility %>%
+  group_by(cso_lea) %>%
+  reframe(
+    geometry = st_union(geometry),  # Union geometries 
+    accessible_area = as.numeric(st_area(st_union(geometry)))
+  )
 
-str(accessibility)
-unique(accessibility$lea_id)
+# Calculate total area by LEA
+total_areas <- geo_sample %>%
+  mutate(total_area = as.numeric(st_area(geometry))) %>%
+  st_set_geometry(NULL) %>%
+  select(cso_lea, total_area, TOTPOP22)
 
+# Calculate accessibility metrics
+accessibility_results <- total_areas %>%
+  left_join(intersection_areas, by = "cso_lea") %>%
+  mutate(
+    accessible_area = replace_na(accessible_area, 0),
+    # Proportion of area with access
+    accessibility_ratio = accessible_area / total_area,
+    # Estimated population with access
+    pop_with_access = TOTPOP22 * accessibility_ratio,
+    # Population-weighted accessibility (normalized by total population)
+    pop_weighted_accessibility = pop_with_access / sum(TOTPOP22)
+  )
 
-# Compute the area covered by isochrones in each neighborhood
-geo_data_jan_clean <- geo_data_jan %>%
-  group_by(lea_id) %>%
-  summarize(neighborhood_area = mean(neighborhood_area, na.rm = TRUE))  # Adjust aggregation as needed
-
-accessibility_summary <- accessibility %>%
-  group_by(lea_id) %>%
-  summarize(covered_area = sum(st_area(geometry))) %>%
-  left_join(geo_data_jan_clean, by = "lea_id") %>%
-  mutate(coverage_percentage = (covered_area / neighborhood_area) * 100)
+return(accessibility_results)
+}
