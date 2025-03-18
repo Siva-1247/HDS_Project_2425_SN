@@ -2,7 +2,7 @@ library(sf)
 library(tidyverse)
 library(osrm)
 library(leaflet)
-
+st_drivers()
 # Load the spatial data (neighborhood boundaries)
 gfile <- "C:/Users/Sivagami Nedumaran/Downloads/Merged_Data_Final.shp"
 geo_data <- suppressWarnings(st_read(gfile, quiet = TRUE))
@@ -11,8 +11,8 @@ geo_data <- suppressWarnings(st_read(gfile, quiet = TRUE))
 geo_data_jan <- geo_data %>%
   filter(month == "2022 January")
 geo_data_jan <- st_transform(geo_data_jan, crs = 4326)
-write.csv(geo_data_jan, "geo_data_jan.csv", row.names = FALSE)
-
+write.csv(geo_data_jan, "geo_data_jan.csv")
+head(geo_data_jan)
 geo_data_jan <- geo_data_jan %>%
   mutate(neighborhood_area = st_area(.))
 
@@ -108,32 +108,79 @@ class(pop_data$TOTPOP22)
 head(pop_data$TOTPOP22)
 geo_sample$TOTPOP22 <- gsub(",", "", geo_sample$TOTPOP22)
 geo_sample$TOTPOP22 <- as.numeric(geo_sample$TOTPOP22)
-accessibility <- st_intersection(geo_sample, isochrones)
-intersection_areas <- accessibility %>%
+isochrones$isochrone_id <- 1:nrow(isochrones)
+head(isochrones)
+# Find intersections between each LEA and each individual isochrone
+# This preserves information about which pharmacy isochrones overlap with each LEA
+geo_sample <- st_make_valid(geo_sample)
+isochrones <- st_make_valid(isochrones)
+all_intersections <- st_intersection(geo_sample, isochrones)
+
+# Calculate area of each intersection
+all_intersections$intersection_area <- st_area(all_intersections)
+
+# Count number of pharmacy isochrones overlapping with each LEA
+pharmacy_density <- all_intersections %>%
+  st_drop_geometry() %>%
   group_by(cso_lea) %>%
-  reframe(
-    geometry = st_union(geometry),  # Union geometries 
-    accessible_area = as.numeric(st_area(st_union(geometry)))
+  summarize(
+    num_pharmacies = n_distinct(isochrone_id),
+    total_intersection_area = sum(intersection_area)
   )
 
-# Calculate total area by LEA
-total_areas <- geo_sample %>%
-  mutate(total_area = as.numeric(st_area(geometry))) %>%
-  st_set_geometry(NULL) %>%
-  select(cso_lea, total_area, TOTPOP22)
-
-# Calculate accessibility metrics
-accessibility_results <- total_areas %>%
-  left_join(intersection_areas, by = "cso_lea") %>%
+accessibility_results <- geo_sample %>%
+  mutate(total_area = st_area(.)) %>%
+  left_join(pharmacy_density, by = "cso_lea") %>%
   mutate(
-    accessible_area = replace_na(accessible_area, 0),
-    # Proportion of area with access
-    accessibility_ratio = accessible_area / total_area,
-    # Estimated population with access
-    pop_with_access = TOTPOP22 * accessibility_ratio,
-    # Population-weighted accessibility (normalized by total population)
-    pop_weighted_accessibility = pop_with_access / sum(TOTPOP22)
+    # Replace NA with 0 for LEAs with no intersection
+    num_pharmacies = replace_na(num_pharmacies, 0),
+    total_intersection_area = replace_na(total_intersection_area, 0),
+    # Calculate percent coverage
+    percent_covered = as.numeric(pmin(total_intersection_area, total_area) / total_area * 100),
+    # Calculate pharmacy density per square km
+    area_sq_km = as.numeric(total_area) / 1000000,
+    pharmacy_density_per_sqkm = num_pharmacies / area_sq_km,
+    # Calculate pharmacy density per 10,000 population
+    pharmacy_density_per_10k_pop = num_pharmacies / (TOTPOP22/ 10000)
   )
+names(accessibility_results)
+accessibility_V1 <- accessibility_results %>% 
+  select(cso_lea, TOTPOP22, total_area, num_pharmacies, total_intersection_area, 
+         percent_covered, area_sq_km, pharmacy_density_per_sqkm, pharmacy_density_per_10k_pop)
+head(accessibility_V1)
 
-return(accessibility_results)
-}
+library(leaflet)
+library(viridis) 
+
+
+
+# Define color palette based on pharmacy density
+pal <- colorNumeric(
+  palette = "viridis", 
+  domain = accessibility_results$pharmacy_density_per_sqkm
+)
+
+# Create Leaflet Map
+leaflet(accessibility_results) %>%
+  addTiles() %>%  # Add base map
+  addPolygons(
+    fillColor = ~pal(pharmacy_density_per_sqkm),  # Color by pharmacy density
+    color = "black", weight = 1, opacity = 1, fillOpacity = 0.7,
+    highlight = highlightOptions(weight = 3, color = "blue", bringToFront = TRUE),
+    label = ~paste0(
+      "LEA: ", cso_lea, "<br>",
+      "Population: ", TOTPOP22, "<br>",
+      "Total Pharmacies: ", num_pharmacies, "<br>",
+      "Density per km²: ", round(pharmacy_density_per_sqkm, 2), "<br>",
+      "Coverage: ", round(percent_covered, 2), "%"
+    ),
+    labelOptions = labelOptions(
+      style = list("font-weight" = "bold"),
+      direction = "auto"
+    )
+  ) %>%
+  addLegend(
+    pal = pal, values = ~pharmacy_density_per_sqkm, 
+    title = "Pharmacy Density (per km²)",
+    position = "bottomright"
+  )
