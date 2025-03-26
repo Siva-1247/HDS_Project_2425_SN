@@ -123,6 +123,7 @@ accessibility_results <- C_ij_10min %>%
 C_ij_10min
 accessibility_results
 
+#Multiple Travel Times#
 compute_multi_threshold_accessibility <- function(pharmacies_sf, geo_data, travel_times = c(600, 900, 1800, 3600)) {
   # Ensure valid geometries
   geo_data <- st_make_valid(geo_data)
