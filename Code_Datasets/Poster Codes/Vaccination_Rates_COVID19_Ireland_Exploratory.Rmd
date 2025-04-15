@@ -1,0 +1,111 @@
+---
+title: "How_To_Name_It"
+author: "Sivagami Nedumaran"
+date: "2024-11-20"
+output: html_document
+---
+```{r}
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+```
+
+## Visualizing the county wide
+
+
+```{r}
+vaccination_rate = read.csv("CDC47_Stats.csv")
+head(vaccination_rate)
+```
+```{r}
+vaccination_rate <- vaccination_rate %>%
+  filter(Age.Group=='12 years and over')
+head(vaccination_rate)
+```
+
+## Categorizing urban and rural
+
+You can also embed plots, for example:
+
+```{r}
+vaccine_rate <- vaccination_rate %>% mutate(area_type = case_when(grepl('city|dublin', Local.Electoral.Area, ignore.case = TRUE) ~ 'City', TRUE ~ 'Rural'))
+head(vaccine_rate)
+```
+
+```{r}
+vaccine_rate %>% group_by(area_type) %>% summarise(count= n())
+names(vaccine_rate)
+```
+
+```{r}
+###Converting date from categorical to date type
+library(lubridate)
+library(scales)
+vaccine_rate$Month <- parse_date_time(vaccine_rate$Month, orders = "Y B")
+head(vaccine_rate)
+```
+```{r}
+##Rural vccination rate over time
+vaccine_rate %>% filter(area_type == "Rural") %>% filter(!is.na(Primary.Course.Completed....)) %>% summarise(n = n())
+vaccine_rate %>% filter(area_type == "Rural") %>% filter(!is.na(Primary.Course.Completed....)) %>% ggplot(aes(Month, Primary.Course.Completed....)) + geom_point()
+```
+
+```{r}
+##City vaccination rate over time
+vaccine_rate %>% filter(area_type == "City") %>% filter(!is.na(Primary.Course.Completed....)) %>% summarise(n = n())
+vaccine_rate %>% filter(area_type == "City") %>% filter(!is.na(Primary.Course.Completed....)) %>% ggplot(aes(Month, Primary.Course.Completed....)) +  geom_point()
+```
+
+```{r}
+library(nlme)
+library(mgcv)
+
+vaccine_rate %>%
+  filter(!is.na(Primary.Course.Completed....)) %>%
+  ggplot(aes(x = Month, y = Primary.Course.Completed...., group = Local.Electoral.Area)) +
+  geom_point() +
+  geom_smooth(method = "gam", formula = y ~ s(x), se = FALSE) +
+  facet_wrap(~ area_type)
+```
+```{r}
+names(vaccination_rate)
+#Booster 1
+vaccine_rate %>%
+  filter(!is.na(Booster.1....)) %>%
+  ggplot(aes(x = Month, y = Booster.1...., group = Local.Electoral.Area)) +
+  geom_point() +
+  geom_smooth(method = "gam", formula = y ~ s(x), se = FALSE) +
+  facet_wrap(~ area_type)
+#Booster 2
+vaccine_rate %>%
+  filter(!is.na(Booster.2....)) %>%
+  ggplot(aes(x = Month, y = Booster.2...., group = Local.Electoral.Area)) +
+  geom_point() +
+  geom_smooth(method = "gam", formula = y ~ s(x), se = FALSE) +
+  facet_wrap(~ area_type)
+#Booster 3
+vaccine_rate %>%
+  filter(!is.na(Booster.3....)) %>%
+  ggplot(aes(x = Month, y = Booster.3...., group = Local.Electoral.Area)) +
+  geom_point() +
+  geom_smooth(method = "gam", formula = y ~ s(x), se = FALSE) +
+  facet_wrap(~ area_type)
+#Booster 4
+vaccine_rate %>%
+  filter(!is.na(Booster.4....)) %>%
+  ggplot(aes(x = Month, y = Booster.4...., group = Local.Electoral.Area)) +
+  geom_point() +
+  geom_smooth(method = "gam", formula = y ~ s(x), se = FALSE) +
+  facet_wrap(~ area_type)
+```
+```{r}
+vaccine_rate %>%
+  filter(!is.na(Booster.4....)) %>% group_by(Month) %>% summarize(n=n())
+vaccine_rate %>%
+  filter(!is.na(Booster.3....)) %>% group_by(Month) %>% summarize(n=n())
+```
+
