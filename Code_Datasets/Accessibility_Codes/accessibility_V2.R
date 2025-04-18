@@ -148,6 +148,7 @@ access_data <- access_values %>% left_join(access_geoms, by = "CSO_LEA.x") %>%
 
 ggplot(access_data) + geom_sf(aes(fill=relative_accessibility)) + scale_fill_viridis_c(
   option = "plasma",
+  
   direction = -1,
   name = "Relative Accessibility"
 ) +
