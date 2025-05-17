@@ -6,10 +6,10 @@ library(leaflet)
 ##ORS for batch generation of isochrones
 library(openrouteservice)
 
-ors_api_key("YOUR API KEY")
+ors_api_key("5b3ce3597851110001cf6248576615ff34b24a98adcb71a5c7c24033")
 
 # Function to generate isochrones for multiple pharmacies in batches using OpenRouteService
-generate_batch_isochrones_ors <- function(pharmacies_sf, travel_time, batch_size = 5) {
+generate_batch_isochrones_ors <- function(pharmacies_sf, travel_time, batch_size = 5, max_retries = 3, pause_seconds = 2) {
   # Extract coordinates of all pharmacies
   pharmacy_coords <- st_coordinates(pharmacies_sf) %>%
     as.data.frame() %>%
@@ -67,13 +67,32 @@ head(geo_data)
 
 pharmacies <- read.csv("geocoded_addresses_p_final.csv", stringsAsFactors = FALSE) %>%
   filter(grepl("COVID-19", COVID.19_Vaccines_Offered, ignore.case = TRUE))
-
 pharmacies_sf <- st_as_sf(pharmacies, coords = c("longitude", "latitude"), crs = 4326)
+GPs <- read.csv("geocoded_addresses_final.csv", stringsAsFactors = FALSE)
 
+gp_sf <- st_as_sf(GPs, coords = c("longitude", "latitude"), crs = 4326)
+print(head(st_coordinates(gp_sf)))
 # Generate 10-minute isochrones for pharmacies
 
-isochrones <- generate_batch_isochrones_ors(pharmacies_sf, travel_time = 600)
-isochrones_geometry <- isochrones %>% select(geometry)
+isochrones_60p <- generate_batch_isochrones_ors(pharmacies_sf, travel_time = 600)
+isochrones_geometry_60p <- isochrones_60p %>% select(geometry)
+isochrones_5 <- generate_batch_isochrones_ors(pharmacies_sf, travel_time = 300)
+isochrones_geometry5 <- isochrones_5 %>% select(geometry)
+isochrones_20 <- generate_batch_isochrones_ors(pharmacies_sf, travel_time = 1200)
+isochrones_geometry20 <- isochrones_20 %>% select(geometry)
+isochrones_30 <- generate_batch_isochrones_ors(pharmacies_sf, travel_time = 1800)
+isochrones_geometry30 <- isochrones_30 %>% select(geometry)
+#isochrones_60 <- generate_batch_isochrones_ors(pharmacies_sf, travel_time = 3600)
+isochrones_geometry60 <- isochrones_60 %>% select(geometry)
+
+isochrones_gp <- generate_batch_isochrones_ors(gp_sf, travel_time = 600)
+isochrones_geometry_gp <- isochrones_gp %>% select(geometry)
+isochrones_20gp <- generate_batch_isochrones_ors(gp_sf, travel_time = 1200)
+isochrones_geometry20gp <- isochrones_20gp %>% select(geometry)
+isochrones_30gp <- generate_batch_isochrones_ors(gp_sf, travel_time = 1800)
+isochrones_geometry30gp <- isochrones_30gp %>% select(geometry)
+isochrones_5gp <- generate_batch_isochrones_ors(gp_sf, travel_time = 300)
+isochrones_geometry5gp <- isochrones_5gp  %>% select(geometry)
 
 #st_write(isochrones_geometry, "C:/Users/Sivagami Nedumaran/Downloads/isochrones.geojson", driver = "GeoJSON")
 
