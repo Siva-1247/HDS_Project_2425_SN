@@ -84,6 +84,9 @@ isochrones_30 <- generate_batch_isochrones_ors(pharmacies_sf, travel_time = 1800
 isochrones_geometry30 <- isochrones_30 %>% select(geometry)
 #isochrones_60 <- generate_batch_isochrones_ors(pharmacies_sf, travel_time = 3600)
 isochrones_geometry60 <- isochrones_60 %>% select(geometry)
+st_write(isochrones_geometry_60p, "C:/Users/Sivagami Nedumaran/Downloads/isochronesp10.geojson", driver = "GeoJSON")
+st_write(isochrones_geometry5, "C:/Users/Sivagami Nedumaran/Downloads/isochronesp05.geojson", driver = "GeoJSON")
+st_write(isochrones_geometry20, "C:/Users/Sivagami Nedumaran/Downloads/isochronesp20.geojson", driver = "GeoJSON")
 
 isochrones_gp <- generate_batch_isochrones_ors(gp_sf, travel_time = 600)
 isochrones_geometry_gp <- isochrones_gp %>% select(geometry)

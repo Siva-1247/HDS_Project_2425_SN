@@ -327,14 +327,65 @@ ggplot(combined_access_values) + geom_sf(aes(fill=accessibility_60)) + scale_fil
     title = "Accessibility to Services within 60 Minutes") +
   theme_minimal()
 
-GPs <- read.csv("geocoded_addresses_final.csv", stringsAsFactors = FALSE)
-gp_sf <- st_as_sf(GPs, coords = c("longitude", "latitude"), crs = 4326)
-print(head(st_coordinates(gp_sf)))
-isochrones_10gp <- generate_batch_isochrones_ors(gp_sf, travel_time = 600)
-isochrones_10gpgeometry <- isochrones_10gp %>% select(geometry)
-isochrones_5gp <- generate_batch_isochrones_ors(gp_sf, travel_time = 300)
-isochrones_5gpgeometry <- isochrones_5gp%>% select(geometry)
-isochrones_20gp <- generate_batch_isochrones_ors(gp_sf, travel_time = 1200)
-isochrones_20gpgeometry <- isochrones_20gp %>% select(geometry)
-isochrones_30gp <- generate_batch_isochrones_ors(gp_sf, travel_time = 1800)
-isochrones_30gpgeometry <- isochrones_30gp %>% select(geometry)
+#Function to carry out above code
+calculate_accessibility <- function(geo_sample, isochrones_list) {
+  # Add unique IDs
+  for (minutes in names(isochrones_list)) {
+    isochrones_list[[minutes]]$isochrone_id <- 1:nrow(isochrones_list[[minutes]])
+  }
+  
+  # Transform CRS
+  isochrones_transformed <- lapply(isochrones_list, function(iso) {
+    st_transform(iso, st_crs(geo_sample))
+  })
+  
+  # Compute intersections and accessibility metrics
+  access_results <- list()
+  for (time in names(isochrones_transformed)) {
+    iso <- isochrones_transformed[[time]]
+    intersections <- st_intersection(geo_sample, iso)
+    intersections$intersection_area <- st_area(intersections)
+    iso_areas <- iso %>%
+      mutate(total_area = st_area(geometry)) %>%
+      st_drop_geometry() %>%
+      select(isochrone_id, total_area)
+    
+    C_ij <- intersections %>%
+      left_join(iso_areas, by = "isochrone_id") %>%
+      mutate(access_share = as.numeric(intersection_area / total_area)) %>%
+      group_by(CSO_LEA) %>%
+      reframe(!!paste0("accessibility_", time) := sum(access_share, na.rm = TRUE))
+    
+    access_results[[time]] <- C_ij
+  }
+  
+  # Combine all accessibility metrics
+  combined <- geo_sample %>%
+    select(CSO_LEA, TOTPOP22, geometry)
+  
+  for (time in names(access_results)) {
+    combined <- left_join(combined, access_results[[time]], by = "CSO_LEA")
+    combined[[paste0("accessibility_", time)]] <- ifelse(
+      is.na(combined[[paste0("accessibility_", time)]]), 0,
+      combined[[paste0("accessibility_", time)]]
+    )
+    combined[[paste0("relative_accessibility_", time, "min")]] <-
+      combined[[paste0("accessibility_", time)]] / combined$TOTPOP22
+  }
+  
+  # Calculate weighted accessibility
+  time_weights <- c("10" = 1/10, "20" = 1/20, "30" = 1/30, "60" = 1/60)
+  numerator <- 0
+  denominator <- 0
+  
+  for (time in names(time_weights)) {
+    var <- paste0("relative_accessibility_", time, "min")
+    if (var %in% colnames(combined)) {
+      numerator <- numerator + time_weights[[time]] * combined[[var]]
+      denominator <- denominator + time_weights[[time]]
+    }
+  }
+  
+  combined$weighted_accessibility <- numerator / denominator
+  return(combined)
+}
