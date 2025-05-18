@@ -60,17 +60,18 @@ geo_data %>%
   summarize(count = n())%>%
   filter(count > 1)
 geo_data %>% filter(CSO_LEA == "ATHLONE")
-#Athlone dropped
-geo_data <- geo_data %>%
-  filter(!grepl("Athlone", CSO_LEA, ignore.case = TRUE))
-#Must check Athlone duplication
-#geo_data <- geo_data %>% mutate(CSO_LEA=case_when(CSO_LEA == "ATHLONE" & COUNTY == "WESTMEATH" ~ "ATHLONE_WESTMEATH",TRUE ~ CSO_LEA))
+geo_data <- geo_data %>% mutate(CSO_LEA=case_when(CSO_LEA == "ATHLONE" & COUNTY == "WESTMEATH" ~ "ATHLONE_WESTMEATH",TRUE ~ CSO_LEA))
 #Check drop
 geo_data %>% filter(CSO_LEA == "ATHLONE")
 # Population data 
 pop_data <- read.csv("Accessibility_Data\\LEA_POP22.csv", stringsAsFactors = FALSE)
 names(pop_data)
-#Athlone lea - 5 and athlone lea - 6?
+# Standardize LEA names
+pop_data$CSO_LEA <- ifelse(pop_data$CSO_LEA == "ATHLONE-LEA 5", "ATHLONE_WESTMEATH",
+                       ifelse(pop_data$CSO_LEA == "ATHLONE-LEA 6", "ATHLONE",
+                              toupper(pop_data$CSO_LEA)))  
+
+pop_data %>% filter(CSO_LEA == "ATHLONE")
 # Merging population data with geo_data using cso_lea as the key
 geo_data <- geo_data %>%
   left_join(pop_data, by = "CSO_LEA")  
@@ -178,16 +179,17 @@ ggplot(access_values) +
 #st_write(isochrones_60geometry, "C:/Users/Sivagami Nedumaran/Downloads/isochrones_6iv.geojson", driver = "GeoJSON")
 
 #Read isochrones from Accessibility_Data
-
+isochrones_10 <- st_read("Accessibility_Data\\isochrones_iv.geojson")
 isochrones_20 <- st_read("Accessibility_Data\\isochrones_2iv.geojson")
 isochrones_30 <- st_read("Accessibility_Data\\isochrones_3iv.geojson")
 isochrones_60 <- st_read("Accessibility_Data\\isochrones_6iv.geojson")
 
 # Ensuring valid geometries before spatial operations
 geo_data <- st_make_valid(geo_data)
-isochrones_20 <- st_make_valid(isochrones_20geometry)
-isochrones_30 <- st_make_valid(isochrones_30geometry)
-isochrones_60 <- st_make_valid(isochrones_60geometry)
+isochrones_10 <- st_make_valid(isochrones_10)
+isochrones_20 <- st_make_valid(isochrones_20)
+isochrones_30 <- st_make_valid(isochrones_30)
+isochrones_60 <- st_make_valid(isochrones_60)
 
 #Sampling 10 LEAs
 set.seed(452)
@@ -197,16 +199,26 @@ class(pop_data$TOTPOP22)
 head(pop_data$TOTPOP22)
 geo_sample$TOTPOP22 <- gsub(",", "", geo_sample$TOTPOP22)
 geo_sample$TOTPOP22 <- as.numeric(geo_sample$TOTPOP22)
+isochrones_10$isochrone_id <- 1:nrow(isochrones_10)
 isochrones_20$isochrone_id <- 1:nrow(isochrones_20)
 isochrones_30$isochrone_id <- 1:nrow(isochrones_30)
 isochrones_60$isochrone_id <- 1:nrow(isochrones_60)
 
 # Ensuring CRS is consistent
+isochrones_10min <- st_transform(isochrones_10, st_crs(geo_sample))
 isochrones_20min <- st_transform(isochrones_20, st_crs(geo_sample))
 isochrones_30min <- st_transform(isochrones_30, st_crs(geo_sample))
 isochrones_60min <- st_transform(isochrones_60, st_crs(geo_sample))
+isochrones_20min <- isochrones_20min %>%
+  group_by(isochrone_id) %>%
+  summarise(geometry = st_union(geometry), .groups = "drop")
+isochrones_30min <- isochrones_30min %>%
+  group_by(isochrone_id) %>%
+  summarise(geometry = st_union(geometry), .groups = "drop")
 
-# Calculating intersection areas between LEAs and 23, 30, 60-minute isochrones
+# Calculating intersection areas between LEAs and 10, 20, 30, 60-minute isochrones
+intersections_10min <- st_intersection(geo_sample, isochrones_10min)
+intersections_10min$intersection_area <- st_area(intersections_10min)
 intersections_20min <- st_intersection(geo_sample, isochrones_20min)
 intersections_20min$intersection_area <- st_area(intersections_20min)
 dim(intersections_20min)
@@ -215,50 +227,42 @@ intersections_30min$intersection_area <- st_area(intersections_30min)
 intersections_60min <- st_intersection(geo_sample, isochrones_60min)
 intersections_60min$intersection_area <- st_area(intersections_60min)
 # Normalizing intersection areas to get C_ij
+isochrones_area_10 <- isochrones_10min  %>% mutate(total_area= st_area(geometry)) %>% st_drop_geometry() %>% select(isochrone_id, total_area)
 isochrones_area_20 <- isochrones_20min  %>% mutate(total_area= st_area(geometry)) %>% st_drop_geometry() %>% select(isochrone_id, total_area)
 isochrones_area_30 <- isochrones_30min  %>% mutate(total_area= st_area(geometry)) %>% st_drop_geometry() %>% select(isochrone_id, total_area)
 isochrones_area_60 <- isochrones_60min  %>% mutate(total_area= st_area(geometry)) %>% st_drop_geometry() %>% select(isochrone_id, total_area)
 
-C_ij_20min <- intersections_20min %>%
-  left_join(isochrones_area, by = "isochrone_id") %>%
-  mutate(
-    access_share_20 = as.numeric(intersection_area / total_area)
-  ) %>%
+
+C_ij_10min <- intersections_10min %>%
+  left_join(isochrones_area_10, by = "isochrone_id") %>%
+  mutate(access_share_10 = as.numeric(intersection_area / total_area)) %>%
   group_by(CSO_LEA) %>%
-  summarize(
-    accessibility_20 = sum(access_share_20, na.rm = TRUE),
-    geometry = st_union(geometry),
-    .groups = "drop"
-  )%>%
-  st_drop_geometry()
+  reframe(
+    accessibility_10 = sum(access_share_10, na.rm = TRUE)
+  )
+
+C_ij_20min <- intersections_20min %>%
+  left_join(isochrones_area_20, by = "isochrone_id") %>%
+  mutate(access_share_20 = as.numeric(intersection_area / total_area)) %>%
+  group_by(CSO_LEA) %>%
+  reframe(accessibility_20 = sum(access_share_20, na.rm = TRUE))
 
 C_ij_30min <- intersections_30min %>%
-  left_join(isochrones_area, by = "isochrone_id") %>%
-  mutate(
-    access_share_30 = as.numeric(intersection_area / total_area)
-  ) %>%
+  left_join(isochrones_area_30, by = "isochrone_id") %>%
+  mutate(access_share_30 = as.numeric(intersection_area / total_area)) %>%
   group_by(CSO_LEA) %>%
-  summarize(
-    accessibility_30 = sum(access_share_30, na.rm = TRUE),
-    geometry = st_union(geometry),
-    .groups = "drop"
-  )%>%
-  st_drop_geometry()
+  reframe(accessibility_30 = sum(access_share_30, na.rm = TRUE))
 
 C_ij_60min <- intersections_60min %>%
-  left_join(isochrones_area, by = "isochrone_id") %>%
-  mutate(
-    access_share_60 = as.numeric(intersection_area / total_area)
-  ) %>%
+  left_join(isochrones_area_60, by = "isochrone_id") %>%
+  mutate(access_share_60 = as.numeric(intersection_area / total_area)) %>%
   group_by(CSO_LEA) %>%
-  summarize(
-    accessibility_60 = sum(access_share_60, na.rm = TRUE),
-    geometry = st_union(st_make_valid(geometry)),
-    .groups = "drop"
-  )%>%
-  st_drop_geometry()
+  reframe(accessibility_60 = sum(access_share_60, na.rm = TRUE))
+
 
 #LEAs not in c_ij_20_30_mins
+LEA_no_10intersection <- setdiff(geo_sample$CSO_LEA, C_ij_20min$CSO_LEA)
+LEA_no_10intersection
 LEA_no_20intersection <- setdiff(geo_sample$CSO_LEA, C_ij_20min$CSO_LEA)
 LEA_no_20intersection
 LEA_no_30intersection <- setdiff(geo_sample$CSO_LEA, C_ij_30min$CSO_LEA)
@@ -269,30 +273,41 @@ LEA_no_60intersection
 
 combined_access_values <- geo_sample %>%
   select(CSO_LEA, TOTPOP22, geometry) %>%
-  left_join(
-    C_ij_10min %>% select(CSO_LEA, accessibility),
-    by = "CSO_LEA"
-  ) %>%
-  left_join(
-    C_ij_20min %>% select(CSO_LEA, accessibility_20),
-    by = "CSO_LEA"
-  ) %>%
-  left_join(
-    C_ij_30min %>% select(CSO_LEA, accessibility_30),
-    by = "CSO_LEA"
-  ) %>% 
-  left_join(
-    C_ij_60min %>% select(CSO_LEA, accessibility_60),
-    by = "CSO_LEA"
-  ) %>% 
+  left_join(C_ij_10min, by = "CSO_LEA") %>%
+  left_join(C_ij_20min, by = "CSO_LEA") %>%
+  left_join(C_ij_30min, by = "CSO_LEA") %>%
+  left_join(C_ij_60min, by = "CSO_LEA") %>%
   mutate(
-    relative_accessibility_10min = accessibility / TOTPOP22,
+    accessibility_10 = ifelse(is.na(accessibility_10), 0, accessibility_10),
+    accessibility_20 = ifelse(is.na(accessibility_20), 0, accessibility_20),
+    accessibility_30 = ifelse(is.na(accessibility_30), 0, accessibility_30),
+    accessibility_60 = ifelse(is.na(accessibility_60), 0, accessibility_60),
+    relative_accessibility_10min = accessibility_10 / TOTPOP22,
     relative_accessibility_20min = accessibility_20 / TOTPOP22,
     relative_accessibility_30min = accessibility_30 / TOTPOP22,
-    relative_accessibility_60min = accessibility_60 / TOTPOP22
+    relative_accessibility_60min = accessibility_60 / TOTPOP22,
+    weighted_accessibility = (
+      (relative_accessibility_10min / 10) +
+        (relative_accessibility_20min / 20) +
+        (relative_accessibility_30min / 30) +
+        (relative_accessibility_60min / 60)
+    ) / (
+      (1 / 10) + (1 / 20) + (1 / 30) + (1 / 60)
+    )
   )
 
+combined_access_values
+
+
+
 #Plotting 60 min isochrone accessibility
+
+C_ij_20min %>%
+  filter(duplicated(CSO_LEA) | duplicated(CSO_LEA, fromLast = TRUE)) %>%
+  arrange(CSO_LEA) %>%
+  head(20)
+
+
 
 ggplot(combined_access_values) + geom_sf(aes(fill=relative_accessibility_60min)) + scale_fill_viridis_c(
   option = "plasma",
