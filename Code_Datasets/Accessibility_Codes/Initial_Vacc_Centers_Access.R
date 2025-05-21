@@ -6,7 +6,7 @@ library(leaflet)
 ##ORS for batch generation of isochrones
 library(openrouteservice)
 
-ors_api_key("5b3ce3597851110001cf62489dfc4d5fac624b6e8a71af1fe67888f7")
+ors_api_key("your api")
 
 # Function to generate isochrones for multiple pharmacies in batches using OpenRouteService
 generate_batch_isochrones_ors <- function(loc_sf, travel_time, batch_size = 2, pause = 2) {
@@ -300,92 +300,107 @@ combined_access_values
 
 
 
-#Plotting 60 min isochrone accessibility
+#Plotting weighted isochrone accessibility
 
-C_ij_20min %>%
-  filter(duplicated(CSO_LEA) | duplicated(CSO_LEA, fromLast = TRUE)) %>%
-  arrange(CSO_LEA) %>%
-  head(20)
-
-
-
-ggplot(combined_access_values) + geom_sf(aes(fill=relative_accessibility_60min)) + scale_fill_viridis_c(
-  option = "plasma",
-  direction = -1,
-  name = "Relative Accessibility"
-) +  geom_sf(data = loc_sf, color = "white", size = 2, shape = 21, fill = "white", stroke = 1) +
-  labs(
-    title = "Relative Accessibility to Services within 60 Minutes") +
-  theme_minimal()
-
-ggplot(combined_access_values) + geom_sf(aes(fill=accessibility_60)) + scale_fill_viridis_c(
+ggplot(combined_access_values) + geom_sf(aes(fill=weighted_accessibility)) + scale_fill_viridis_c(
   option = "plasma",
   direction = -1,
   name = "Accessibility"
 ) + geom_sf(data = loc_sf, color = "white", size = 2, shape = 21, fill = "white", stroke = 1) +
   labs(
-    title = "Accessibility to Services within 60 Minutes") +
+    title = "Accessibility to Services within 10, 20, 30 and 60 mins") +
   theme_minimal()
 
+selected_lea <- geo_sample %>% filter(CSO_LEA == "GALWAY CITY EAST")
+
+# Filter 10 min intersections inside Galway City East
+int_10 <- intersections_10min %>% filter(CSO_LEA == "GALWAY CITY EAST")
+ggplot() +
+  geom_sf(data = selected_lea, fill = NA, color = "black", size = 1) +
+  geom_sf(data = int_10, aes(fill = "10 min"), alpha = 0.4) +
+  theme_minimal() +
+  labs(title = "Isochrone Intersections in Galway City East")
+
+center <- loc_sf[1, ]
+
+# Extract lon/lat coordinates
+coords <- st_coordinates(center)
+
+# Generate the 10-min isochrone (600 seconds)
+iso_10min_Carlow_Vacc <- ors_isochrones(
+  locations = matrix(coords, nrow = 1),
+  profile = "driving-car",
+  range = 600,
+  output = "sf"
+)
+carlow_leas <- geo_data %>%
+  filter(str_detect(tolower(CSO_LEA), "carlow"))
+
+
+ggplot() +
+  geom_sf(data = selected_leas, fill = "white", color = "black", alpha = 0.5) +
+  geom_sf(data = iso_10min_Carlow_Vacc , fill = "blue", alpha = 0.4) +
+  geom_sf(data = center, color = "red", size = 3) +
+  geom_sf_text(data = selected_leas, aes(label = CSO_LEA), size = 2, color = "black") +
+  labs(title = "10-Minute Driving Isochrone Around Carlow Vaccination Center") +
+  theme_minimal()
+
+#LEAs that touch Carlow
+selected_leas <- geo_data %>%
+  filter(
+    str_detect(tolower(CSO_LEA), "athy") |
+      str_detect(tolower(CSO_LEA), "carlow") |
+      str_detect(tolower(CSO_LEA), "tullow") |
+      str_detect(tolower(CSO_LEA), "graiguecullen-portarlington")|
+      str_detect(tolower(CSO_LEA), "baltinglass")|
+      str_detect(tolower(CSO_LEA), "muinebeag") |
+      str_detect(tolower(CSO_LEA), "castlecomer")|
+      str_detect(tolower(CSO_LEA), "kilkenny")
+  )
+
+
 #Function to carry out above code
-calculate_accessibility <- function(geo_sample, isochrones_list) {
-  # Add unique IDs
-  for (minutes in names(isochrones_list)) {
-    isochrones_list[[minutes]]$isochrone_id <- 1:nrow(isochrones_list[[minutes]])
-  }
+calculate_accessibility_per_isochrone <- function(geo_sample, isochrone_sf, time_label) {
+  isochrone_sf$isochrone_id <- 1:nrow(isochrone_sf)
   
-  # Transform CRS
-  isochrones_transformed <- lapply(isochrones_list, function(iso) {
-    st_transform(iso, st_crs(geo_sample))
-  })
+  # Ensure geometries are valid
+  geo_sample <- st_make_valid(geo_sample)
+  isochrone_sf <- st_make_valid(isochrone_sf)
   
-  # Compute intersections and accessibility metrics
-  access_results <- list()
-  for (time in names(isochrones_transformed)) {
-    iso <- isochrones_transformed[[time]]
-    intersections <- st_intersection(geo_sample, iso)
-    intersections$intersection_area <- st_area(intersections)
-    iso_areas <- iso %>%
-      mutate(total_area = st_area(geometry)) %>%
-      st_drop_geometry() %>%
-      select(isochrone_id, total_area)
-    
-    C_ij <- intersections %>%
-      left_join(iso_areas, by = "isochrone_id") %>%
-      mutate(access_share = as.numeric(intersection_area / total_area)) %>%
-      group_by(CSO_LEA) %>%
-      reframe(!!paste0("accessibility_", time) := sum(access_share, na.rm = TRUE))
-    
-    access_results[[time]] <- C_ij
-  }
+  # Transform to common CRS
+  isochrone_sf <- st_transform(isochrone_sf, st_crs(geo_sample))
   
-  # Combine all accessibility metrics
-  combined <- geo_sample %>%
-    select(CSO_LEA, TOTPOP22, geometry)
+  # Compute intersection
+  intersections <- st_intersection(geo_sample, isochrone_sf)
+  intersections$intersection_area <- st_area(intersections)
   
-  for (time in names(access_results)) {
-    combined <- left_join(combined, access_results[[time]], by = "CSO_LEA")
-    combined[[paste0("accessibility_", time)]] <- ifelse(
-      is.na(combined[[paste0("accessibility_", time)]]), 0,
-      combined[[paste0("accessibility_", time)]]
-    )
-    combined[[paste0("relative_accessibility_", time, "min")]] <-
-      combined[[paste0("accessibility_", time)]] / combined$TOTPOP22
-  }
+  # Total area per isochrone
+  iso_areas <- isochrone_sf %>%
+    mutate(total_area = st_area(geometry)) %>%
+    st_drop_geometry() %>%
+    select(isochrone_id, total_area)
   
-  # Calculate weighted accessibility
-  time_weights <- c("10" = 1/10, "20" = 1/20, "30" = 1/30, "60" = 1/60)
-  numerator <- 0
-  denominator <- 0
+  # Join and compute share
+  C_ij <- intersections %>%
+    left_join(iso_areas, by = "isochrone_id") %>%
+    mutate(access_share = as.numeric(intersection_area / total_area)) %>%
+    group_by(CSO_LEA) %>%
+    reframe(!!paste0("accessibility_", time_label) := sum(access_share, na.rm = TRUE))
   
-  for (time in names(time_weights)) {
-    var <- paste0("relative_accessibility_", time, "min")
-    if (var %in% colnames(combined)) {
-      numerator <- numerator + time_weights[[time]] * combined[[var]]
-      denominator <- denominator + time_weights[[time]]
-    }
-  }
-  
-  combined$weighted_accessibility <- numerator / denominator
-  return(combined)
+  return(C_ij)
 }
+
+
+#Pharmacy accessibility - 5, 10 and 20 minute isochrones
+isochrones_p5 <- st_read("C:/Users/Sivagami Nedumaran/Downloads/isochronesp05.geojson")
+isochrones_p10 <- st_read("C:/Users/Sivagami Nedumaran/Downloads/isochronesp10.geojson")
+isochrones_p20 <- st_read("C:/Users/Sivagami Nedumaran/Downloads/isochronesp20.geojson")
+isochrones_list_p = list("5" = isochrones_p5,"10" = isochrones_p10,"20" = isochrones_p20)
+geo_sample <- st_make_valid(geo_sample)
+isochrones_p5 <- st_make_valid(isochrones_p5)
+access_5 <- calculate_accessibility_per_isochrone(geo_sample, isochrones_p5, "5")
+st_write(access_5, "C:/Users/Sivagami Nedumaran/Downloads/access_5p.gpkg", delete_dsn = TRUE)
+access_10 <- calculate_accessibility_per_isochrone(geo_sample, isochrones_p10, "10")
+access_5 <- st_read("C:/Users/Sivagami Nedumaran/Downloads/access_5p.gpkg")
+st_write(access_10, "C:/Users/Sivagami Nedumaran/Downloads/access_10p.gpkg", delete_dsn = TRUE)
+
