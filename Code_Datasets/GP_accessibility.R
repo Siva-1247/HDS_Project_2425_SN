@@ -101,7 +101,7 @@ simple_isochrones <- function(loc_sf, travel_time = 600, batch_size = 3,
 }
 
 GPs <- read.csv("geocoded_addresses_final.csv", stringsAsFactors = FALSE)
-ors_api_key("5b3ce3597851110001cf6248593ddf72ba834df08541f1fc2275615d")
+ors_api_key("5b3ce3597851110001cf62486cbc3afb79d04cf492c9e160d17ae49c")
 gp_sf <- st_as_sf(GPs, coords = c("longitude", "latitude"), crs = 4326)
 library(dplyr)
 gp_sf_batch1 <- gp_sf %>% slice(1:400)
@@ -114,19 +114,32 @@ isochrones_5gp_2 <- simple_isochrones (gp_sf_batch2)
 isochrones_5gp_3 <- simple_isochrones (gp_sf_batch3)
 isochrones_5gp_4 <- simple_isochrones (gp_sf_batch4)
 
-isochrones_5gp_failed <- isochrones_5gp_2$failed_points
-isochrones_5gp_5 <- simple_isochrones(isochrones_5gp_failed)
-isochrones_5gp_failed_2 <- isochrones_5gp_4$failed_points
-isochrones_5gp_6 <- simple_isochrones(isochrones_5gp_failed)
+#Retry
 
-# Combine all successful isochrones
-all_isochrones <- rbind(
+isochrones_5gp_failed <- isochrones_5gp_1$failed_points
+isochrones_5gp_5 <- simple_isochrones(isochrones_5gp_failed)
+isochrones_5gp_failed_2 <- isochrones_5gp_2$failed_points
+isochrones_5gp_6 <- simple_isochrones(isochrones_5gp_failed_2)
+isochrones_5gp_failed_3 <- isochrones_5gp_3$failed_points
+isochrones_5gp_7 <- simple_isochrones(isochrones_5gp_failed_3)
+isochrones_5gp_failed_4 <- isochrones_5gp_4$failed_points
+isochrones_5gp_8 <- simple_isochrones(isochrones_5gp_failed_4)
+
+
+# Combine all successful isochrones (primary + retry)
+all_isochrones <- bind_rows(
   isochrones_5gp_1$isochrones,
   isochrones_5gp_2$isochrones,
   isochrones_5gp_3$isochrones,
   isochrones_5gp_4$isochrones,
-  isochrones_5gp_5$isochrones
+  isochrones_5gp_5$isochrones,
+  isochrones_5gp_6$isochrones,
+  isochrones_5gp_7$isochrones,
+  isochrones_5gp_8$isochrones
 )
+
+access_gps <- calculate_accessibility_per_isochrone(geo_sample, all_isochrones, "10")
+st_write(access_gps, "C:/Users/Sivagami Nedumaran/Downloads/access_gp.gpkg", delete_dsn = TRUE)
 
 # Extract center coordinates
 coords_matrix <- do.call(rbind, all_isochrones$center)

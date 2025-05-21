@@ -282,15 +282,11 @@ combined_access_values <- geo_sample %>%
     accessibility_20 = ifelse(is.na(accessibility_20), 0, accessibility_20),
     accessibility_30 = ifelse(is.na(accessibility_30), 0, accessibility_30),
     accessibility_60 = ifelse(is.na(accessibility_60), 0, accessibility_60),
-    relative_accessibility_10min = accessibility_10 / TOTPOP22,
-    relative_accessibility_20min = accessibility_20 / TOTPOP22,
-    relative_accessibility_30min = accessibility_30 / TOTPOP22,
-    relative_accessibility_60min = accessibility_60 / TOTPOP22,
     weighted_accessibility = (
-      (relative_accessibility_10min / 10) +
-        (relative_accessibility_20min / 20) +
-        (relative_accessibility_30min / 30) +
-        (relative_accessibility_60min / 60)
+      ( accessibility_10 / 10) +
+        ( accessibility_20 / 20) +
+        ( accessibility_30 / 30) +
+        ( accessibility_60 / 60)
     ) / (
       (1 / 10) + (1 / 20) + (1 / 30) + (1 / 60)
     )
@@ -403,4 +399,11 @@ st_write(access_5, "C:/Users/Sivagami Nedumaran/Downloads/access_5p.gpkg", delet
 access_10 <- calculate_accessibility_per_isochrone(geo_sample, isochrones_p10, "10")
 access_5 <- st_read("C:/Users/Sivagami Nedumaran/Downloads/access_5p.gpkg")
 st_write(access_10, "C:/Users/Sivagami Nedumaran/Downloads/access_10p.gpkg", delete_dsn = TRUE)
-
+access_p10 <- st_read("C:/Users/Sivagami Nedumaran/Downloads/access_10p.gpkg")
+access_p10 <- access_p10 %>% rename(accessibility_Pharmacy10 = accessibility_10)
+combined_access_values_LEA <- combined_access_values %>%
+  left_join(access_p10, by = "CSO_LEA")
+combined_access_values_LEA <- combined_access_values_LEA %>% select(-accessibility_10, -accessibility_20, -accessibility_30, -accessibility_60, -TOTPOP22)
+combined_access_values_LEA <- combined_access_values_LEA %>% rename(Wt_accessibility_Initial_Vacc = weighted_accessibility )
+st_write(combined_access_values, "C:/Users/Sivagami Nedumaran/Downloads/combined_access_values.gpkg", delete_dsn = TRUE)
+st_write(combined_access_values_LEA, "combined_access_values_LEA.gpkg", delete_dsn = TRUE)
