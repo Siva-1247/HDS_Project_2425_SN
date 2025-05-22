@@ -40,26 +40,90 @@ write.csv(Final_Data, "Vacc_Rates&Geocoded_Data/Final_Data.csv", row.names = FAL
 Final_Data <- read.csv("Vacc_Rates&Geocoded_Data/Final_Data.csv")
 data <- Final_Data
 data$Primary_Vax_Rate <- data$Primary_Vax_Rate / 100
-epsilon <- 1e-4
-data$Primary_Vax_Rate <- pmin(pmax(data$Primary_Vax_Rate, epsilon), 1 - epsilon)
-# Apply log-ratio transformation proportion column
-p_vars <- names(data)[grepl("^p_", names(data))]
-sapply(data[p_vars], function(x) sum(x == 0 | x == 1))
-data[p_vars] <- lapply(data[p_vars], function(x) {log(x / (1 - x))})
+d <- Final_Data
+# Calculate row sums for age proportions
+d$age_edu <- rowSums(d %>% select(starts_with("p_edu_")))
+
+d %>% filter(abs(age_edu - 1) > 0.01)
+
+
+# Apply Additive log-ratio transformation proportion column
+data <- data %>%
+  mutate(
+    # Age groups (reference: p_age_71plus)
+    age_12to17_logratio = log(p_age_12to17 / p_age_71plus),
+    age_18to54_logratio = log(p_age_18to54 / p_age_71plus),
+    age_55to64_logratio = log(p_age_55to64 / p_age_71plus),
+    age_65to70_logratio = log(p_age_65to70 / p_age_71plus),
+    
+    # Education (reference: p_edu_Postgraduate)
+    edu_NoFormal_logratio = log(p_edu_NoFormal / p_edu_Postgraduate),
+    edu_Primary_logratio = log(p_edu_Primary / p_edu_Postgraduate),
+    edu_UpperSecondary_logratio = log(p_edu_UpperSecondary / p_edu_Postgraduate),
+    edu_Apprenticeship_logratio = log(p_edu_Apprenticeship / p_edu_Postgraduate),
+    edu_HonoursBachelor_logratio = log(p_edu_HonoursBachelor / p_edu_Postgraduate),
+    
+    # Health (reference: p_health_VeryGood)
+    health_VeryBad_logratio = log(p_health_VeryBad / p_health_VeryGood),
+    health_Bad_logratio = log(p_health_Bad / p_health_VeryGood),
+    health_Fair_logratio = log(p_health_Fair / p_health_VeryGood),
+    health_Good_logratio = log(p_health_Good / p_health_VeryGood)
+  )
 library(brms)
-# Build formula dynamically
-predictors <- setdiff(names(data), c("CSO_LEA", "Primary_Vax_Rate"))
-formula <- as.formula(
-  paste("Primary_Vax_Rate ~", paste(predictors, collapse = " + "))
-)
 
 # Fit beta regression
 trial1 <- brm(
-  formula = formula,
+  formula = Primary_Vax_Rate ~ 
+    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio +
+    edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + 
+    edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio +
+    health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio +
+    Wt_accessibility_Initial_Vacc + accessibility_Pharmacy10 + accessibility_GP10,
   data = data,
-  family = Beta(),
-  chains = 4,
-  cores = 4,
-  iter = 2000,
+  family = Beta())
+
+summary(trial1)
+
+
+plot(marginal_effects(trial1, effects = "Wt_accessibility_Initial_Vacc"))
+# formula_car <- update(formula, ~ . + car(lea_mat))
+data$lea_id <- factor(1:nrow(data))
+trial1_CAR <- brm(
+  formula = Primary_Vax_Rate ~  
+    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio +
+    edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + 
+    edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio +
+    health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio +
+    Wt_accessibility_Initial_Vacc + accessibility_Pharmacy10 + accessibility_GP10 + car(lea_mat, gr = lea_id),
+  data = data,
+  data2 = list(lea_mat = lea_mat),
+  family = Beta())
+
+summary(trial1_CAR)
+pairs(trial1_CAR)
+
+
+long_data <- vax_data %>%
+  filter(Age.Group == "12 years and over") %>%
+  select(LEA_Short, `Primary.Course.Completed....`, Month)
+
+long_data$Month <- as.Date(paste0(long_data$Month, "-01"), format = "%Y %B-%d")
+min_date <- min(long_data$Month, na.rm = TRUE)
+
+# Create numeric month index starting at 1 for earliest month
+long_data$Month_num <- as.numeric(format(long_data$Month, "%m")) + 
+  12 * (as.numeric(format(long_data$Month, "%Y")) - as.numeric(format(min_date, "%Y")))
+long_data$Month_num <- long_data$Month_num - min(long_data$Month_num) + 1
+long_data <- long_data %>%
+  rename(Primary_Vax_Rate = `Primary.Course.Completed....`)
+long_formula <- bf(Primary_Vax_Rate ~ Month_num + (Month_num | LEA_Short))
+
+fit_long <- brm(
+  formula = long_formula,
+  data = long_data,
+  family = inflat,
+  iter = 4000,
+  warmup = 2000,
   control = list(adapt_delta = 0.95)
 )
+
