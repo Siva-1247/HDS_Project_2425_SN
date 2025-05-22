@@ -85,7 +85,8 @@ trial1 <- brm(
 summary(trial1)
 
 
-plot(marginal_effects(trial1, effects = "Wt_accessibility_Initial_Vacc"))
+plot(marginal_effects(trial1, effects = "age_12to17_logratio"))
+plot(marginal_effects(trial1, effects = "age_65to70_logratio"))
 # formula_car <- update(formula, ~ . + car(lea_mat))
 data$lea_id <- factor(1:nrow(data))
 trial1_CAR <- brm(
