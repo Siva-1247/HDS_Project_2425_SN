@@ -407,3 +407,14 @@ combined_access_values_LEA <- combined_access_values_LEA %>% select(-accessibili
 combined_access_values_LEA <- combined_access_values_LEA %>% rename(Wt_accessibility_Initial_Vacc = weighted_accessibility )
 st_write(combined_access_values, "C:/Users/Sivagami Nedumaran/Downloads/combined_access_values.gpkg", delete_dsn = TRUE)
 st_write(combined_access_values_LEA, "combined_access_values_LEA.gpkg", delete_dsn = TRUE)
+
+
+ggplot(combined_access_values_LEA) + geom_sf(aes(fill=accessibility_Pharmacy10)) + scale_fill_viridis_c(
+  option = "plasma",
+  direction = -1,
+  name = "Accessibility"
+) + geom_sf(data = loc_sf, color = "white", size = 2, shape = 21, fill = "white", stroke = 1) +
+  labs(
+    title = "Accessibility to Services within 10, 20, 30 and 60 mins") +
+  theme_minimal()
+git pull
