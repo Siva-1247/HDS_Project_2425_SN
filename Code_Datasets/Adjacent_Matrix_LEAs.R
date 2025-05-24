@@ -87,6 +87,11 @@ summary(trial1)
 
 plot(marginal_effects(trial1, effects = "age_12to17_logratio"))
 plot(marginal_effects(trial1, effects = "age_65to70_logratio"))
+
+age_vars <- c("age_12to17_logratio", "age_18to54_logratio", "age_55to64_logratio", "age_65to70_logratio")
+
+
+
 # formula_car <- update(formula, ~ . + car(lea_mat))
 data$lea_id <- factor(1:nrow(data))
 trial1_CAR <- brm(

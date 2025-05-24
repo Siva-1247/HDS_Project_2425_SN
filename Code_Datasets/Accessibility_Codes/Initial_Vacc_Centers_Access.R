@@ -413,8 +413,62 @@ ggplot(combined_access_values_LEA) + geom_sf(aes(fill=accessibility_Pharmacy10))
   option = "plasma",
   direction = -1,
   name = "Accessibility"
-) + geom_sf(data = loc_sf, color = "white", size = 2, shape = 21, fill = "white", stroke = 1) +
+)+
   labs(
     title = "Accessibility to Services within 10, 20, 30 and 60 mins") +
   theme_minimal()
-git pull
+install.packages("htmlwidgets")
+library(htmlwidgets)
+library(leaflet)
+library(RColorBrewer)
+library(viridis)
+combined_access_values_LEA <- st_transform(combined_access_values_LEA, 4326)
+
+basic_test <- leaflet(combined_access_values_LEA) %>%
+  addTiles() %>%
+  addPolygons()
+
+print("Testing basic polygons...")
+basic_test
+
+if(exists("basic_test")) {
+  
+  # Create color palette (matching your ggplot exactly)
+  pal <- colorNumeric(
+    palette = rev(plasma(100)),  # Reversed plasma like your ggplot
+    domain = combined_access_values_LEA$accessibility_Pharmacy10,
+    na.color = "#808080"
+  )
+  
+  # Full styled map
+  accessibility_map <- leaflet(combined_access_values_LEA) %>%
+    addTiles() %>%
+    addPolygons(
+      fillColor = ~pal(accessibility_Pharmacy10),
+      weight = 1,
+      opacity = 1,
+      color = "white",
+      fillOpacity = 0.7,
+      popup = ~paste0(
+        "<strong>", CSO_LEA, "</strong><br/>",
+        "Accessibility: ", round(accessibility_Pharmacy10, 2)
+      ),
+      highlight = highlightOptions(
+        weight = 2,
+        color = "#666",
+        fillOpacity = 0.9,
+        bringToFront = TRUE
+      )
+    ) %>%
+    addLegend(
+      pal = pal,
+      values = ~accessibility_Pharmacy10,
+      title = "Accessibility",
+      position = "bottomright",
+      opacity = 0.7
+    )
+  
+  # Display the styled map
+  accessibility_map
+}
+saveWidget(accessibility_map, file = "accessibility_map.html", selfcontained = TRUE)
