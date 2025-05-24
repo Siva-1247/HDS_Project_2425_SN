@@ -5,6 +5,7 @@ library(dplyr)
 
 gfile <- "Accessibility_Data\\CSO_Local_Electoral_Areas_National_Statistical_Boundaries_2022_Generalised_100m_-6420530397479472898.geojson"
 geo_data <- suppressWarnings(st_read(gfile, quiet = TRUE))
+geo_data <- geo_data %>% mutate(CSO_LEA=case_when(CSO_LEA == "ATHLONE" & COUNTY == "WESTMEATH" ~ "ATHLONE_WESTMEATH",TRUE ~ CSO_LEA))
 lea_mat <- nb2mat(poly2nb(geo_data), style = "B")
 lea_mat[1:10, 1:10]
 any(lea_mat != 0)
@@ -17,6 +18,7 @@ vax_data$LEA_Short <- gsub("GRAIGUECULLEN -PORTARLINGTON",
                            "GRAIGUECULLEN-PORTARLINGTON", 
                            vax_data$LEA_Short)
 tail(vax_data)
+vax_data$LEA_Short[grepl("Athlone, Westmeath", vax_data$Local.Electoral.Area, ignore.case = TRUE)] <- "ATHLONE_WESTMEATH"
 # Filter rows with final vaccination rate
 filtered_data <- vax_data %>%
   filter(Month == "2023 June", Age.Group == "12 years and over") %>%
@@ -89,21 +91,51 @@ plot(marginal_effects(trial1, effects = "age_12to17_logratio"))
 plot(marginal_effects(trial1, effects = "age_65to70_logratio"))
 
 age_vars <- c("age_12to17_logratio", "age_18to54_logratio", "age_55to64_logratio", "age_65to70_logratio")
+# Get posterior fitted values
+fitted_vals <- fitted(trial1, summary = TRUE)[, "Estimate"]
+
+# Compute residuals: observed - fitted
+mean_resid <- trial1$data$Primary_Vax_Rate - fitted_vals
+
+resid_df <- data.frame(CSO_LEA = data$CSO_LEA, resid = mean_resid)
+
+# Merge with geo_data using CSO_LEA
+sac_data <- geo_data %>%
+  left_join(resid_df, by = "CSO_LEA")
+neighbors <- poly2nb(sac_data)
+weights <- nb2listw(neighbors, style = "W")
+moran.test(sac_data$resid, weights)
+
+#Spatial AutoCorrelation Plot
+ggplot(sac_data) +
+  geom_sf(aes(fill = resid), color = "grey30", size = 0.2) +
+  scale_fill_gradient2(
+    low = "blue", mid = "white", high = "red",
+    midpoint = 0, 
+    name = "Residuals"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Spatial Distribution of Residuals",
+    subtitle = "Residuals from Beta Regression of Vaccination Rate",
+    caption = "Blue = underprediction, Red = overprediction"
+  )
 
 
 
 # formula_car <- update(formula, ~ . + car(lea_mat))
 data$lea_id <- factor(1:nrow(data))
 trial1_CAR <- brm(
-  formula = Primary_Vax_Rate ~  
-    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio +
-    edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + 
-    edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio +
-    health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio +
-    Wt_accessibility_Initial_Vacc + accessibility_Pharmacy10 + accessibility_GP10 + car(lea_mat, gr = lea_id),
+  formula = Primary_Vax_Rate ~  car(lea_mat, gr = lea_id),
   data = data,
   data2 = list(lea_mat = lea_mat),
-  family = Beta())
+  family = Beta(),
+  iter = 15000,    # Increased from 6000
+  warmup = 5000,   # Increased from 3000
+  chains = 6,      # Add more chains
+  cores = 6,       # Parallel processing
+  control = list(adapt_delta = 0.99,  # Increased from 0.95
+                 max_treedepth = 15))  
 
 summary(trial1_CAR)
 pairs(trial1_CAR)
