@@ -125,7 +125,7 @@ isochrones_5gp_7 <- simple_isochrones(isochrones_5gp_failed_3)
 isochrones_5gp_failed_4 <- isochrones_5gp_4$failed_points
 isochrones_5gp_8 <- simple_isochrones(isochrones_5gp_failed_4)
 
-
+isochrones_5gp_7$failed_points
 # Combine all successful isochrones (primary + retry)
 all_isochrones <- bind_rows(
   isochrones_5gp_1$isochrones,
@@ -137,6 +137,23 @@ all_isochrones <- bind_rows(
   isochrones_5gp_7$isochrones,
   isochrones_5gp_8$isochrones
 )
+sapply(all_isochrones, class)
+all_isochrones_fixed <- all_isochrones %>%
+  mutate(
+    lon = sapply(center, function(x) as.numeric(x[1])),
+    lat = sapply(center, function(x) as.numeric(x[2]))
+  ) %>%
+  select(-center)  
+
+st_write(
+  all_isochrones_fixed,
+  "C:/Users/Sivagami Nedumaran/Downloads/all_isochrones.geojson",
+  driver = "GeoJSON",
+  delete_dsn = TRUE
+)
+all_isochrones_fixed <- st_read("C:/Users/Sivagami Nedumaran/Downloads/all_isochrones.geojson")
+st_write(all_isochrones, "C:/Users/Sivagami Nedumaran/Downloads/all_isochrones.geojson", driver = "GeoJSON", delete_dsn = TRUE)
+
 
 access_gps <- calculate_accessibility_per_isochrone(geo_sample, all_isochrones, "10")
 st_write(access_gps, "C:/Users/Sivagami Nedumaran/Downloads/access_gp.gpkg", delete_dsn = TRUE)

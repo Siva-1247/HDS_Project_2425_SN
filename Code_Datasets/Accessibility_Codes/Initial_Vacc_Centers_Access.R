@@ -329,17 +329,27 @@ iso_10min_Carlow_Vacc <- ors_isochrones(
   range = 600,
   output = "sf"
 )
+iso_20min_Carlow_Vacc <- ors_isochrones(
+  locations = matrix(coords, nrow = 1),
+  profile = "driving-car",
+  range = 1200,
+  output = "sf"
+)
+iso_30min_Carlow_Vacc <- ors_isochrones(
+  locations = matrix(coords, nrow = 1),
+  profile = "driving-car",
+  range = 1800,
+  output = "sf"
+)
+iso_60min_Carlow_Vacc <- ors_isochrones(
+  locations = matrix(coords, nrow = 1),
+  profile = "driving-car",
+  range = 3600,
+  output = "sf"
+)
+
 carlow_leas <- geo_data %>%
   filter(str_detect(tolower(CSO_LEA), "carlow"))
-
-
-ggplot() +
-  geom_sf(data = selected_leas, fill = "white", color = "black", alpha = 0.5) +
-  geom_sf(data = iso_10min_Carlow_Vacc , fill = "blue", alpha = 0.4) +
-  geom_sf(data = center, color = "red", size = 3) +
-  geom_sf_text(data = selected_leas, aes(label = CSO_LEA), size = 2, color = "black") +
-  labs(title = "10-Minute Driving Isochrone Around Carlow Vaccination Center") +
-  theme_minimal()
 
 #LEAs that touch Carlow
 selected_leas <- geo_data %>%
@@ -353,6 +363,30 @@ selected_leas <- geo_data %>%
       str_detect(tolower(CSO_LEA), "castlecomer")|
       str_detect(tolower(CSO_LEA), "kilkenny")
   )
+
+ggplot() +
+  geom_sf(data = selected_leas, fill = "white", color = "black", alpha = 0.5) +
+  geom_sf(data = iso_60min_Carlow_Vacc, aes(fill = "60 min"), alpha = 0.3, color = NA) +
+  geom_sf(data = iso_30min_Carlow_Vacc, aes(fill = "30 min"), alpha = 0.4, color = NA) +
+  geom_sf(data = iso_20min_Carlow_Vacc, aes(fill = "20 min"), alpha = 0.5, color = NA) +
+  geom_sf(data = iso_10min_Carlow_Vacc, aes(fill = "10 min"), alpha = 0.6, color = NA) +
+  
+  geom_sf(data = center, color = "red", size = 3) +
+  geom_sf_text(data = selected_leas, aes(label = CSO_LEA), size = 2, color = "black") +
+  
+  scale_fill_manual(
+    name = "Isochrone Time",
+    values = c(
+      "10 min" = "#08519c",
+      "20 min" = "#3182bd",
+      "30 min" = "#6baed6",
+      "60 min" = "#9ecae1"
+    )
+  ) +
+  labs(title = "Driving Time Isochrones Around Carlow Vaccination Center") +
+  theme_minimal() +
+  theme(legend.position = "right")
+
 
 
 #Function to carry out above code
@@ -415,7 +449,7 @@ ggplot(combined_access_values_LEA) + geom_sf(aes(fill=accessibility_Pharmacy10))
   name = "Accessibility"
 )+
   labs(
-    title = "Accessibility to Services within 10, 20, 30 and 60 mins") +
+    title = "Accessibility to Pharmacy within a 10 min drive") +
   theme_minimal()
 install.packages("htmlwidgets")
 library(htmlwidgets)
@@ -463,7 +497,7 @@ if(exists("basic_test")) {
     addLegend(
       pal = pal,
       values = ~accessibility_Pharmacy10,
-      title = "Accessibility",
+      title = "Pharmacy Accessibility 10 min drive",
       position = "bottomright",
       opacity = 0.7
     )
@@ -472,3 +506,141 @@ if(exists("basic_test")) {
   accessibility_map
 }
 saveWidget(accessibility_map, file = "accessibility_map.html", selfcontained = TRUE)
+
+pal1 <- colorNumeric(
+  palette = rev(plasma(100)),  # Reversed plasma like your ggplot
+  domain = combined_access_values_LEA$Wt_accessibility_Initial_Vacc,
+  na.color = "#808080"
+)
+accessibility_IVmap <- leaflet(combined_access_values_LEA) %>%
+  addTiles() %>%
+  addPolygons(
+    fillColor = ~pal1(Wt_accessibility_Initial_Vacc),
+    weight = 1,
+    opacity = 1,
+    color = "white",
+    fillOpacity = 0.7,
+    popup = ~paste0(
+      "<strong>", CSO_LEA, "</strong><br/>",
+      "Accessibility: ", round(Wt_accessibility_Initial_Vacc, 2)
+    ),
+    highlight = highlightOptions(
+      weight = 2,
+      color = "#666",
+      fillOpacity = 0.9,
+      bringToFront = TRUE
+    )
+  ) %>% addCircleMarkers(
+    data = loc_sf,
+    radius = 4,
+    color = "black",
+    fillOpacity = 0.8,
+    stroke = FALSE,
+    popup = ~paste("Vaccination Center:", Centre_Name)  
+  ) %>% addCircleMarkers(
+    data = top20_access,
+    lng = ~st_coordinates(st_centroid(geometry))[,1],
+    lat = ~st_coordinates(st_centroid(geometry))[,2],
+    radius = 6,
+    color = "#FFA500",       # soft orange border
+    fillColor = "red", # subtle fill
+    fillOpacity = 0.6,
+    stroke = TRUE,
+    weight = 1,
+    popup = ~paste0("<strong>Top LEA: ", CSO_LEA, "</strong><br>",
+                    "Accessibility: ", round(Wt_accessibility_Initial_Vacc, 2)),
+    group = "Top 20 LEAs"
+  ) %>% 
+  addLegend(
+    pal = pal,
+    values = ~Wt_accessibility_Initial_Vacc,
+    title = "Accessibility to Vaccination Center within 10, 20, 30 and 60 mins",
+    position = "bottomright",
+    opacity = 0.7
+  )
+
+
+accessibility_IVmap
+
+top20_access <- combined_access_values_LEA %>%
+  arrange(desc(Wt_accessibility_Initial_Vacc)) %>%
+  slice(1:20)
+
+ggplot(top10_access, aes(x = reorder(CSO_LEA, Wt_accessibility_Initial_Vacc), 
+                         y = Wt_accessibility_Initial_Vacc)) +
+  geom_col(fill = "#2b8cbe") +
+  coord_flip() +
+  scale_y_continuous(
+    breaks = seq(0, ceiling(max(top10_access$Wt_accessibility_Initial_Vacc)), by = 0.5)
+  )+
+  labs(
+    title = "Top 10 LEAs by Accessibility to Vaccination Centers",
+    x = "LEA",
+    y = "Weighted Accessibility Score"
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),  
+    panel.grid.minor.y = element_blank()
+  )
+
+
+leaflet() %>%
+  addTiles() %>%
+  
+  # Add 10-minute GP isochrones
+  addPolygons(
+    data = all_isochrones_fixed,
+    fillColor = "#9ecae1",
+    fillOpacity = 0.6,
+    color = "#3182bd",
+    weight = 1,
+    popup = ~paste0("Center: ", center, "<br>Group: ", group_index)
+  ) %>%
+  
+  # Add GP location points
+  addCircleMarkers(
+    data = gp_sf,
+    radius = 4,
+    fillColor = "darkred",
+    fillOpacity = 0.5,
+    stroke = FALSE,
+    popup = ~paste0("GP: ", GP_Name)  # Replace 'Name' with actual column
+  ) %>%
+  
+  # Optional legend
+  addLegend(
+    position = "bottomright",
+    colors = "#9ecae1",
+    labels = "10-Min GP Isochrone",
+    opacity = 0.4,
+    title = "GP Accessibility"
+  )
+
+
+# Extract the failed points sf object
+failed_gps <- isochrones_5gp_7$failed_points
+
+leaflet() %>%
+  addTiles() %>%
+  
+  # Add failed GP points with distinct color and larger radius
+  addCircleMarkers(
+    data = failed_gps,
+    radius = 8,
+    fillColor = "orange",
+    color = "red",
+    weight = 2,
+    fillOpacity = 0.9,
+    popup = ~paste0("<strong>", GP_Name, "</strong><br>",
+                    GP_Address, "<br>",
+                    "<a href='", GP_LocationLink, "' target='_blank'>Google Maps</a>")
+  ) %>%
+  
+  # Add a label on the map for each point
+  addLabelOnlyMarkers(
+    data = failed_gps,
+    label = ~GP_Name,
+    labelOptions = labelOptions(noHide = TRUE, direction = "top", 
+                                textsize = "12px", textOnly = TRUE)
+  )
