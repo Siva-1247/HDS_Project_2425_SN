@@ -148,6 +148,7 @@ ggplot(me_df, aes(x = logratio, y = estimate__, color = variable, fill = variabl
   ) +
   theme_minimal(base_size = 14)
 
+age_vars <- c("age_12to17_logratio" "age_18to54_logratio" "age_55to64_logratio" "age_65to70_logratio")
 
 edu_vars <- c("edu_NoFormal_logratio", "edu_Primary_logratio", 
               "edu_UpperSecondary_logratio", "edu_Apprenticeship_logratio", 
@@ -168,11 +169,28 @@ extract_marginal_effects <- function(var_list, model, label) {
 }
 
 # Extract marginal effects for each group
+
+age_df <- extract_marginal_effects(age_vars, trial1, "Age")
 edu_df <- extract_marginal_effects(edu_vars, trial1, "Education Level")
 health_df <- extract_marginal_effects(health_vars, trial1, "Health Status")
 
+# Plot Age
+p_age <- ggplot(age_df, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
+  geom_line(linewidth = 1) +
+  geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
+  labs(
+    title = "Marginal Effects: Age",
+    x = "Log Ratio of Age Level",
+    y = "Predicted Vaccination Rate",
+    color = "Age",
+    fill = "Age"
+  ) +
+  theme_minimal(base_size = 14)
+
+
+
 # Plot education
-ggplot(edu_df, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
+p_edu <- ggplot(edu_df, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
   geom_line(linewidth = 1) +
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
   labs(
@@ -185,7 +203,7 @@ ggplot(edu_df, aes(x = x_val, y = estimate__, color = variable, fill = variable)
   theme_minimal(base_size = 14)
 
 # Plot health
-ggplot(health_df, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
+p_health  <- ggplot(health_df, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
   geom_line(linewidth = 1) +
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
   labs(
@@ -197,6 +215,9 @@ ggplot(health_df, aes(x = x_val, y = estimate__, color = variable, fill = variab
   ) +
   theme_minimal(base_size = 14)
 
+ggsave("marginal_effects_health.png", plot = p_health, width = 8, height = 6, dpi = 300)
+ggsave("marginal_effects_education.png", plot = p_edu, width = 8, height = 6, dpi = 300)
+ggsave("marginal_effects_age.png", plot = p_age, width = 8, height = 6, dpi = 300)
 
 
 

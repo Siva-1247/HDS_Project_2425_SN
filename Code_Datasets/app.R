@@ -12,9 +12,29 @@ library(shinythemes)
 gfile <- "combined_access_values_LEA.gpkg"
 combined_access_values_LEA <- suppressWarnings(st_read(gfile, quiet = TRUE))
 all_isochrones_fixed <- st_read("C:/Users/Sivagami Nedumaran/Downloads/all_isochrones.geojson")
+
+# Check the geometry column name and fix the top20_access calculation
+geom_col <- attr(combined_access_values_LEA, "sf_column")
+print(paste("Geometry column name:", geom_col))
+
 top20_access <- combined_access_values_LEA %>%
   arrange(desc(Wt_accessibility_Initial_Vacc)) %>%
-  slice(1:20)
+  slice(1:20) %>%
+  mutate(centroid = st_centroid(st_geometry(.))) %>%
+  mutate(lon = st_coordinates(centroid)[, 1],
+         lat = st_coordinates(centroid)[, 2])
+
+# Also create top10_access for the plot
+top10_access <- combined_access_values_LEA %>%
+  arrange(desc(Wt_accessibility_Initial_Vacc)) %>%
+  slice(1:10)
+
+names(top20_access)
+
+GPs <- read.csv("geocoded_addresses_final.csv", stringsAsFactors = FALSE)
+gp_sf <- st_as_sf(GPs, coords = c("longitude", "latitude"), crs = 4326)
+failed_gps <- st_read("failed_gps.gpkg")
+
 vacc_center <- read.csv("Vacc_rates&Geocoded_Data\\geocoded_addresses_vac_final.csv", stringsAsFactors = FALSE)
 
 loc_sf <- st_as_sf(vacc_center, coords = c("longitude", "latitude"), crs = 4326)
@@ -23,7 +43,12 @@ center <- loc_sf[1, ]
 # Extract lon/lat coordinates
 coords <- st_coordinates(center)
 
-# Generate the 10-min isochrone (600 seconds)
+# Check if openrouteservice package is loaded
+if (!require(openrouteservice, quietly = TRUE)) {
+  stop("Please install and load the openrouteservice package")
+}
+
+# Generate the isochrones (assuming ors_isochrones function is available)
 iso_10min_Carlow_Vacc <- ors_isochrones(
   locations = matrix(coords, nrow = 1),
   profile = "driving-car",
@@ -49,11 +74,12 @@ iso_60min_Carlow_Vacc <- ors_isochrones(
   output = "sf"
 )
 
-carlow_leas <- geo_data %>%
+# Fix: Use combined_access_values_LEA instead of undefined geo_data
+carlow_leas <- combined_access_values_LEA %>%
   filter(str_detect(tolower(CSO_LEA), "carlow"))
 
 #LEAs that touch Carlow
-selected_leas <- geo_data %>%
+selected_leas <- combined_access_values_LEA %>%
   filter(
     str_detect(tolower(CSO_LEA), "athy") |
       str_detect(tolower(CSO_LEA), "carlow") |
@@ -128,9 +154,14 @@ server <- function(input, output, session) {
   })
   
   output$vaccinationMap <- renderLeaflet({
-    pal1 <- colorNumeric(rev(plasma(100)), domain = combined_access_values_LEA$Wt_accessibility_Initial_Vacc, na.color = "#808080")
+    pal1 <- colorNumeric(rev(plasma(100)),
+                         domain = combined_access_values_LEA$Wt_accessibility_Initial_Vacc,
+                         na.color = "#808080")
+    
     leaflet(combined_access_values_LEA) %>%
       addTiles() %>%
+      
+      # LEA polygons shaded by accessibility
       addPolygons(
         fillColor = ~pal1(Wt_accessibility_Initial_Vacc),
         weight = 1,
@@ -139,11 +170,29 @@ server <- function(input, output, session) {
         fillOpacity = 0.7,
         popup = ~paste0("<strong>", CSO_LEA, "</strong><br/>Accessibility: ", round(Wt_accessibility_Initial_Vacc, 2))
       ) %>%
-      addCircleMarkers(data = loc_sf, radius = 4, color = "black", fillOpacity = 0.8, stroke = FALSE, popup = ~paste("Vaccination Center:", Centre_Name)) %>%
+      
+      # Vaccination centers
+      addCircleMarkers(
+        data = loc_sf,
+        radius = 4,
+        color = "black",
+        fillOpacity = 0.8,
+        stroke = FALSE,
+        popup = ~paste("Vaccination Center:", Centre_Name)
+      ) %>%
+      
+      # Top 20 LEAs - highlight with orange borders + red centroids
+      addPolygons(
+        data = top20_access,
+        color = "#FFA500",
+        weight = 2,
+        fillOpacity = 0,
+        popup = ~paste0("<strong>Top LEA: ", CSO_LEA, "</strong><br>Accessibility: ", round(Wt_accessibility_Initial_Vacc, 2))
+      ) %>%
       addCircleMarkers(
         data = top20_access,
-        lng = ~st_coordinates(st_centroid(geometry))[,1],
-        lat = ~st_coordinates(st_centroid(geometry))[,2],
+        lng = ~lon,
+        lat = ~lat,
         radius = 6,
         color = "#FFA500",
         fillColor = "red",
@@ -152,7 +201,12 @@ server <- function(input, output, session) {
         weight = 1,
         popup = ~paste0("<strong>Top LEA: ", CSO_LEA, "</strong><br>Accessibility: ", round(Wt_accessibility_Initial_Vacc, 2))
       ) %>%
-      addLegend(pal = pal1, values = ~Wt_accessibility_Initial_Vacc, title = "Vaccination Accessibility", position = "bottomright")
+      
+      # Legend
+      addLegend(pal = pal1,
+                values = ~Wt_accessibility_Initial_Vacc,
+                title = "Vaccination Accessibility",
+                position = "bottomright")
   })
   
   output$top10Plot <- renderPlot({
@@ -166,31 +220,46 @@ server <- function(input, output, session) {
   })
   
   output$gpIsoMap <- renderLeaflet({
-    leaflet() %>%
-      addTiles() %>%
-      addPolygons(data = all_isochrones_fixed, fillColor = "#9ecae1", fillOpacity = 0.6, color = "#3182bd", weight = 1,
-                  popup = ~paste0("Center: ", center, "<br>Group: ", group_index)) %>%
-      addCircleMarkers(data = gp_sf, radius = 4, fillColor = "darkred", fillOpacity = 0.5, stroke = FALSE,
-                       popup = ~paste0("GP: ", GP_Name))
+    # Check if gp_sf exists, if not create a placeholder or handle gracefully
+    if (exists("gp_sf")) {
+      leaflet() %>%
+        addTiles() %>%
+        addPolygons(data = all_isochrones_fixed, fillColor = "#9ecae1", fillOpacity = 0.6, color = "#3182bd", weight = 1,
+                    popup = ~paste0("Center: ", center, "<br>Group: ", group_index)) %>%
+        addCircleMarkers(data = gp_sf, radius = 4, fillColor = "darkred", fillOpacity = 0.5, stroke = FALSE,
+                         popup = ~paste0("GP: ", GP_Name))
+    } else {
+      leaflet() %>%
+        addTiles() %>%
+        addPolygons(data = all_isochrones_fixed, fillColor = "#9ecae1", fillOpacity = 0.6, color = "#3182bd", weight = 1,
+                    popup = ~paste0("Center: ", center, "<br>Group: ", group_index))
+    }
   })
   
   output$failedGPMap <- renderLeaflet({
-    leaflet() %>%
-      addTiles() %>%
-      addCircleMarkers(
-        data = isochrones_5gp_7$failed_points,
-        radius = 8,
-        fillColor = "orange",
-        color = "red",
-        weight = 2,
-        fillOpacity = 0.9,
-        popup = ~paste0("<strong>", GP_Name, "</strong><br>", GP_Address, "<br><a href='", GP_LocationLink, "' target='_blank'>Google Maps</a>")
-      ) %>%
-      addLabelOnlyMarkers(
-        data = isochrones_5gp_7$failed_points,
-        label = ~GP_Name,
-        labelOptions = labelOptions(noHide = TRUE, direction = "top", textsize = "12px", textOnly = TRUE)
-      )
+    # Check if the required data exists
+    if (exists("isochrones_5gp_7") && !is.null(isochrones_5gp_7$failed_points)) {
+      leaflet() %>%
+        addTiles() %>%
+        addCircleMarkers(
+          data = isochrones_5gp_7$failed_points,
+          radius = 8,
+          fillColor = "orange",
+          color = "red",
+          weight = 2,
+          fillOpacity = 0.9,
+          popup = ~paste0("<strong>", GP_Name, "</strong><br>", GP_Address, "<br><a href='", GP_LocationLink, "' target='_blank'>Google Maps</a>")
+        ) %>%
+        addLabelOnlyMarkers(
+          data = isochrones_5gp_7$failed_points,
+          label = ~GP_Name,
+          labelOptions = labelOptions(noHide = TRUE, direction = "top", textsize = "12px", textOnly = TRUE)
+        )
+    } else {
+      leaflet() %>%
+        addTiles() %>%
+        addMarkers(lng = -6.9, lat = 52.8, popup = "No failed GP data available")
+    }
   })
 }
 

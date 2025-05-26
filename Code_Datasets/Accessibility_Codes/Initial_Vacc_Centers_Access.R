@@ -620,7 +620,7 @@ leaflet() %>%
 
 # Extract the failed points sf object
 failed_gps <- isochrones_5gp_7$failed_points
-
+st_write(failed_gps, "failed_gps.gpkg", delete_dsn = TRUE)
 leaflet() %>%
   addTiles() %>%
   
