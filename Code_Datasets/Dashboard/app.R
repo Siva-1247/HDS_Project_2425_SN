@@ -7,11 +7,13 @@ library(viridis)
 library(stringr)
 library(htmlwidgets)
 library(shinythemes)
+library(scales)
+library(openrouteservice)
 
 #Data
-gfile <- "combined_access_values_LEA.gpkg"
+gfile <- "data/combined_access_values_LEA.gpkg"
 combined_access_values_LEA <- suppressWarnings(st_read(gfile, quiet = TRUE))
-all_isochrones_fixed <- st_read("C:/Users/Sivagami Nedumaran/Downloads/all_isochrones.geojson")
+all_isochrones_fixed <- st_read("data/all_isochrones.geojson")
 
 # Check the geometry column name and fix the top20_access calculation
 geom_col <- attr(combined_access_values_LEA, "sf_column")
@@ -31,11 +33,11 @@ top10_access <- combined_access_values_LEA %>%
 
 names(top20_access)
 
-GPs <- read.csv("geocoded_addresses_final.csv", stringsAsFactors = FALSE)
+GPs <- read.csv("data/geocoded_addresses_final.csv", stringsAsFactors = FALSE)
 gp_sf <- st_as_sf(GPs, coords = c("longitude", "latitude"), crs = 4326)
-failed_gps <- st_read("failed_gps.gpkg")
+failed_gps <- st_read("data/failed_gps.gpkg")
 
-vacc_center <- read.csv("Vacc_rates&Geocoded_Data\\geocoded_addresses_vac_final.csv", stringsAsFactors = FALSE)
+vacc_center <- read.csv("data/geocoded_addresses_vac_final.csv", stringsAsFactors = FALSE)
 
 loc_sf <- st_as_sf(vacc_center, coords = c("longitude", "latitude"), crs = 4326)
 center <- loc_sf[1, ]
@@ -43,10 +45,7 @@ center <- loc_sf[1, ]
 # Extract lon/lat coordinates
 coords <- st_coordinates(center)
 
-# Check if openrouteservice package is loaded
-if (!require(openrouteservice, quietly = TRUE)) {
-  stop("Please install and load the openrouteservice package")
-}
+Sys.setenv(ORS_API_KEY = "5b3ce3597851110001cf62483cbc75348054423dbe9c47d6a80f9ddb")
 
 # Generate the isochrones (assuming ors_isochrones function is available)
 iso_10min_Carlow_Vacc <- ors_isochrones(
@@ -97,7 +96,7 @@ ui <- fluidPage(
   
   sidebarLayout(
     sidebarPanel(
-      helpText("Explore isochrones and accessibility across Carlow and neighbouring LEAs."),
+      helpText("Exploring isochrones and accessibility across LEAs in Ireland."),
       width = 3
     ),
     
@@ -128,20 +127,103 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   output$isoMap <- renderLeaflet({
-    leaflet() %>%
+    # Define colors and labels for the legend
+    colors <- c("#9ecae1", "#6baed6", "#3182bd", "#08519c")
+    labels <- c("60 min", "30 min", "20 min", "10 min")
+    
+    # Create the map
+    map <- leaflet() %>%
       addProviderTiles("CartoDB.Positron") %>%
-      addPolygons(data = selected_leas, color = "black", fillOpacity = 0.2) %>%
-      addPolygons(data = iso_60min_Carlow_Vacc, fillColor = "#9ecae1", fillOpacity = 0.3) %>%
-      addPolygons(data = iso_30min_Carlow_Vacc, fillColor = "#6baed6", fillOpacity = 0.4) %>%
-      addPolygons(data = iso_20min_Carlow_Vacc, fillColor = "#3182bd", fillOpacity = 0.5) %>%
-      addPolygons(data = iso_10min_Carlow_Vacc, fillColor = "#08519c", fillOpacity = 0.6) %>%
-      addCircleMarkers(data = center, color = "red", radius = 6, label = "Carlow Vaccination Center")
+      
+      # Add LEA boundaries with labels
+      addPolygons(
+        data = selected_leas, 
+        color = "black", 
+        fillColor = "white",
+        weight = 1,
+        fillOpacity = 0.5,
+        popup = ~paste0("<strong>", CSO_LEA, "</strong>"),
+        label = ~CSO_LEA,
+        labelOptions = labelOptions(
+          style = list("font-weight" = "normal", "padding" = "3px 8px"),
+          textsize = "12px",
+          direction = "auto"
+        )
+      ) %>%
+      
+      # Add isochrones in order (largest to smallest)
+      addPolygons(
+        data = iso_60min_Carlow_Vacc, 
+        fillColor = "#9ecae1", 
+        fillOpacity = 0.3,
+        color = "#9ecae1",
+        weight = 1,
+        popup = "60 minute drive time",
+        group = "60 min"
+      ) %>%
+      addPolygons(
+        data = iso_30min_Carlow_Vacc, 
+        fillColor = "#6baed6", 
+        fillOpacity = 0.4,
+        color = "#6baed6",
+        weight = 1,
+        popup = "30 minute drive time",
+        group = "30 min"
+      ) %>%
+      addPolygons(
+        data = iso_20min_Carlow_Vacc, 
+        fillColor = "#3182bd", 
+        fillOpacity = 0.5,
+        color = "#3182bd",
+        weight = 1,
+        popup = "20 minute drive time",
+        group = "20 min"
+      ) %>%
+      addPolygons(
+        data = iso_10min_Carlow_Vacc, 
+        fillColor = "#08519c", 
+        fillOpacity = 0.6,
+        color = "#08519c",
+        weight = 1,
+        popup = "10 minute drive time",
+        group = "10 min"
+      ) %>%
+      
+      # Add vaccination center
+      addCircleMarkers(
+        data = center, 
+        color = "red", 
+        fillColor = "red",
+        radius = 6, 
+        fillOpacity = 0.8,
+        stroke = TRUE,
+        weight = 2,
+        popup = "Carlow Vaccination Center",
+        label = "Carlow Vaccination Center"
+      ) %>%
+      
+      # Add custom legend
+      addLegend(
+        position = "bottomright",
+        colors = colors,
+        labels = labels,
+        title = "Isochrone Time",
+        opacity = 0.7
+      ) %>%
+      
+      # Add layer control
+      addLayersControl(
+        overlayGroups = c("60 min", "30 min", "20 min", "10 min"),
+        options = layersControlOptions(collapsed = FALSE)
+      )
+    
+    return(map)
   })
   
   output$pharmacyMap <- renderLeaflet({
     pal <- colorNumeric(rev(plasma(100)), domain = combined_access_values_LEA$accessibility_Pharmacy10, na.color = "#808080")
     leaflet(combined_access_values_LEA) %>%
-      addTiles() %>%
+      addTiles("Stamen.Watercolor") %>%
       addPolygons(
         fillColor = ~pal(accessibility_Pharmacy10),
         weight = 1,
@@ -159,7 +241,7 @@ server <- function(input, output, session) {
                          na.color = "#808080")
     
     leaflet(combined_access_values_LEA) %>%
-      addTiles() %>%
+      addTiles("Stamen.Watercolor") %>%
       
       # LEA polygons shaded by accessibility
       addPolygons(
@@ -175,13 +257,13 @@ server <- function(input, output, session) {
       addCircleMarkers(
         data = loc_sf,
         radius = 4,
-        color = "black",
+        color = "darkred",
         fillOpacity = 0.8,
         stroke = FALSE,
         popup = ~paste("Vaccination Center:", Centre_Name)
       ) %>%
       
-      # Top 20 LEAs - highlight with orange borders + red centroids
+      # Top 20 LEAs - orange borders, no fill
       addPolygons(
         data = top20_access,
         color = "#FFA500",
@@ -189,19 +271,16 @@ server <- function(input, output, session) {
         fillOpacity = 0,
         popup = ~paste0("<strong>Top LEA: ", CSO_LEA, "</strong><br>Accessibility: ", round(Wt_accessibility_Initial_Vacc, 2))
       ) %>%
-      addCircleMarkers(
+      
+      # Top 20 LEAs - black thicker borders on top for highlight
+      addPolygons(
         data = top20_access,
-        lng = ~lon,
-        lat = ~lat,
-        radius = 6,
-        color = "#FFA500",
-        fillColor = "red",
-        fillOpacity = 0.6,
-        stroke = TRUE,
+        color = "black",
         weight = 1,
+        fillOpacity = 0,
+        opacity = 0.8,
         popup = ~paste0("<strong>Top LEA: ", CSO_LEA, "</strong><br>Accessibility: ", round(Wt_accessibility_Initial_Vacc, 2))
       ) %>%
-      
       # Legend
       addLegend(pal = pal1,
                 values = ~Wt_accessibility_Initial_Vacc,
@@ -214,25 +293,58 @@ server <- function(input, output, session) {
       geom_col(fill = "#2b8cbe") +
       coord_flip() +
       scale_y_continuous(breaks = seq(0, ceiling(max(top10_access$Wt_accessibility_Initial_Vacc)), by = 0.5)) +
-      labs(title = "Top 10 LEAs by Accessibility to Vaccination Centers", x = "LEA", y = "Weighted Accessibility Score") +
+      labs(title = "Top 20 LEAs by Accessibility to Vaccination Centers", x = "LEA", y = "Weighted Accessibility Score") +
       theme_minimal() +
       theme(panel.grid.major.y = element_blank(), panel.grid.minor.y = element_blank())
   })
   
   output$gpIsoMap <- renderLeaflet({
-    # Check if gp_sf exists, if not create a placeholder or handle gracefully
     if (exists("gp_sf")) {
       leaflet() %>%
-        addTiles() %>%
-        addPolygons(data = all_isochrones_fixed, fillColor = "#9ecae1", fillOpacity = 0.6, color = "#3182bd", weight = 1,
-                    popup = ~paste0("Center: ", center, "<br>Group: ", group_index)) %>%
-        addCircleMarkers(data = gp_sf, radius = 4, fillColor = "darkred", fillOpacity = 0.5, stroke = FALSE,
-                         popup = ~paste0("GP: ", GP_Name))
+        addTiles("Stamen.Watercolor") %>%
+        addPolygons(
+          data = combined_access_values_LEA,
+          fill = FALSE,
+          color = "black",
+          weight = 0.5,
+          opacity = 1,
+          label = ~CSO_LEA
+        ) %>%
+        addPolygons(
+          data = all_isochrones_fixed, 
+          fillColor = "#9ecae1", 
+          fillOpacity = seq(0.1, 1, length.out = nrow(all_isochrones_fixed)),
+          color = "#3182bd", 
+          weight = 1,
+          popup = ~paste0("Center: ", center, "<br>Group: ", group_index)
+        ) %>%
+        addCircleMarkers(
+          data = gp_sf, 
+          radius = 4, 
+          fillColor = "darkred", 
+          fillOpacity = 0.2, 
+          stroke = FALSE,
+          popup = ~paste0("GP: ", GP_Name)
+        )
     } else {
       leaflet() %>%
-        addTiles() %>%
-        addPolygons(data = all_isochrones_fixed, fillColor = "#9ecae1", fillOpacity = 0.6, color = "#3182bd", weight = 1,
-                    popup = ~paste0("Center: ", center, "<br>Group: ", group_index))
+        addTiles("Stamen.Watercolor") %>%
+        addPolygons(
+          data = combined_access_values_LEA,
+          fill = FALSE,
+          color = "black",
+          weight = 0.5,
+          opacity = 1,
+          label = ~CSO_LEA
+        ) %>%
+        addPolygons(
+          data = all_isochrones_fixed, 
+          fillColor = "#9ecae1", 
+          fillOpacity = seq(0.1, 1, length.out = nrow(all_isochrones_fixed)),
+          color = "#3182bd", 
+          weight = 1,
+          popup = ~paste0("Center: ", center, "<br>Group: ", group_index)
+        )
     }
   })
   
@@ -264,3 +376,4 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
+

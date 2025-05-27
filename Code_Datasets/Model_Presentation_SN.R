@@ -12,7 +12,7 @@ any(lea_mat != 0)
 
 
 vax_data <- read.csv("Vacc_Rates&Geocoded_Data/CDC47_Stats.csv")
-Final_Merged_Data <- read.csv("Final_Merged_dataset.csv")
+Final_Merged_Data <- read.csv("C:/Users/Sivagami Nedumaran/Downloads/Final_Merged_dataset.csv")
 vax_data$LEA_Short <- toupper(sapply(strsplit(as.character(vax_data$Local.Electoral.Area), ","), `[`, 1))
 vax_data$LEA_Short <- gsub("GRAIGUECULLEN -PORTARLINGTON", 
                            "GRAIGUECULLEN-PORTARLINGTON", 
@@ -69,18 +69,20 @@ data <- data %>%
     health_VeryBad_logratio = log(p_health_VeryBad / p_health_VeryGood),
     health_Bad_logratio = log(p_health_Bad / p_health_VeryGood),
     health_Fair_logratio = log(p_health_Fair / p_health_VeryGood),
-    health_Good_logratio = log(p_health_Good / p_health_VeryGood)
+    health_Good_logratio = log(p_health_Good / p_health_VeryGood),
+    
+    #gender (reference: p_female)
+    male_logratio = log(p_male / p_female)
+    
   )
+
+
 library(brms)
 
-# Fit beta regression
+# Fit beta regression - Age & Sex
 trial1 <- brm(
   formula = Primary_Vax_Rate ~ 
-    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio +
-    edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + 
-    edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio +
-    health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio +
-    Wt_accessibility_Initial_Vacc + accessibility_Pharmacy10 + accessibility_GP10,
+    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + male_logratio,
   data = data,
   family = Beta())
 
@@ -91,11 +93,12 @@ plot(marginal_effects(trial1, effects = "age_12to17_logratio"))
 plot(marginal_effects(trial1, effects = "age_65to70_logratio"))
 
 age_vars <- c("age_12to17_logratio", "age_18to54_logratio", "age_55to64_logratio", "age_65to70_logratio")
+sex_vars <- c("male_logratio")
 # Get posterior fitted values
-fitted_vals <- fitted(trial1, summary = TRUE)[, "Estimate"]
+fitted_vals <- fitted(trial2, summary = TRUE)[, "Estimate"]
 
 # Compute residuals: observed - fitted
-mean_resid <- trial1$data$Primary_Vax_Rate - fitted_vals
+mean_resid <- trial2$data$Primary_Vax_Rate - fitted_vals
 
 resid_df <- data.frame(CSO_LEA = data$CSO_LEA, resid = mean_resid)
 
@@ -148,7 +151,13 @@ ggplot(me_df, aes(x = logratio, y = estimate__, color = variable, fill = variabl
   ) +
   theme_minimal(base_size = 14)
 
-age_vars <- c("age_12to17_logratio" "age_18to54_logratio" "age_55to64_logratio" "age_65to70_logratio")
+
+trial2 <- brm(
+  formula = Primary_Vax_Rate ~ 
+    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +Wt_accessibility_Initial_Vacc + accessibility_Pharmacy10 + accessibility_GP10 ,
+  data = data,
+  family = Beta())
+
 
 edu_vars <- c("edu_NoFormal_logratio", "edu_Primary_logratio", 
               "edu_UpperSecondary_logratio", "edu_Apprenticeship_logratio", 
@@ -156,6 +165,8 @@ edu_vars <- c("edu_NoFormal_logratio", "edu_Primary_logratio",
 
 health_vars <- c("health_VeryBad_logratio", "health_Bad_logratio", 
                  "health_Fair_logratio", "health_Good_logratio")
+
+access_vars <- c("Wt_accessibility_Initial_Vacc", "accessibility_Pharmacy10", "accessibility_GP10")
 
 # Helper function to extract and label marginal effects
 extract_marginal_effects <- function(var_list, model, label) {
@@ -169,12 +180,27 @@ extract_marginal_effects <- function(var_list, model, label) {
 }
 
 # Extract marginal effects for each group
-
-age_df <- extract_marginal_effects(age_vars, trial1, "Age")
-edu_df <- extract_marginal_effects(edu_vars, trial1, "Education Level")
-health_df <- extract_marginal_effects(health_vars, trial1, "Health Status")
+age_df_0 <- extract_marginal_effects(age_vars, trial1, "Age")
+sex_df_0 <- extract_marginal_effects(sex_vars, trial1, "Sex")
+age_df <- extract_marginal_effects(age_vars, trial2, "Age")
+edu_df <- extract_marginal_effects(edu_vars, trial2, "Education Level")
+health_df <- extract_marginal_effects(health_vars, trial2, "Health Status")
+sex_df <- extract_marginal_effects(sex_vars, trial2, "Sex")
+access_df <- extract_marginal_effects(access_vars, trial2, "Accessibility")
 
 # Plot Age
+p_0age <- ggplot(age_df_0, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
+  geom_line(linewidth = 1) +
+  geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
+  labs(
+    title = "Marginal Effects: Age",
+    x = "Log Ratio of Age Level",
+    y = "Predicted Vaccination Rate",
+    color = "Age",
+    fill = "Age"
+  ) +
+  theme_minimal(base_size = 14)
+
 p_age <- ggplot(age_df, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
   geom_line(linewidth = 1) +
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
@@ -215,13 +241,52 @@ p_health  <- ggplot(health_df, aes(x = x_val, y = estimate__, color = variable, 
   ) +
   theme_minimal(base_size = 14)
 
+p_access <- ggplot(access_df, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
+  geom_line(linewidth = 1) +
+  geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
+  labs(
+    title = "Marginal Effects: Age",
+    x = "Accessibility Score",
+    y = "Predicted Vaccination Rate",
+    color = "Accessibility",
+    fill = "Accessibility"
+  ) +
+  theme_minimal(base_size = 14)
+
+p_sex <- ggplot(sex_df, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
+  geom_line(linewidth = 1) +
+  geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
+  labs(
+    title = "Marginal Effects: Age",
+    x = "Log Ratio of Male",
+    y = "Predicted Vaccination Rate",
+    color = "Sex",
+    fill = "Sex"
+  ) +
+  theme_minimal(base_size = 14)
+
+p_0sex <- ggplot(sex_df_0, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
+  geom_line(linewidth = 1) +
+  geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
+  labs(
+    title = "Marginal Effects: Age",
+    x = "Log Ratio of Male",
+    y = "Predicted Vaccination Rate",
+    color = "Sex",
+    fill = "Sex"
+  ) +
+  theme_minimal(base_size = 14)
+
 ggsave("marginal_effects_health.png", plot = p_health, width = 8, height = 6, dpi = 300)
 ggsave("marginal_effects_education.png", plot = p_edu, width = 8, height = 6, dpi = 300)
 ggsave("marginal_effects_age.png", plot = p_age, width = 8, height = 6, dpi = 300)
+ggsave("marginal_effects_age0.png", plot = p_0age, width = 8, height = 6, dpi = 300)
+ggsave("marginal_effects_access.png", plot = p_access, width = 8, height = 6, dpi = 300)
+ggsave("marginal_effects_sex.png", plot = p_sex, width = 8, height = 6, dpi = 300)
+ggsave("marginal_effects_sex0.png", plot = p_0sex, width = 8, height = 6, dpi = 300)
 
 
 
-# formula_car <- update(formula, ~ . + car(lea_mat))
 data$lea_id <- factor(1:nrow(data))
 trial1_CAR_fixed <- brm(
   formula = Primary_Vax_Rate ~ 
@@ -246,6 +311,7 @@ trial1_CAR_fixed <- brm(
   )
 ) 
 
+#Must be updated with temporal aspect
 model_random_effects <- brm( formula = Primary_Vax_Rate ~ 
     age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio +
     edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + 
@@ -262,7 +328,7 @@ model_random_effects <- brm( formula = Primary_Vax_Rate ~
 summary(trial1_CAR)
 pairs(trial1_CAR)
 
-
+#Temporal Model
 long_data <- vax_data %>%
   filter(Age.Group == "12 years and over") %>%
   select(LEA_Short, `Primary.Course.Completed....`, Month)
