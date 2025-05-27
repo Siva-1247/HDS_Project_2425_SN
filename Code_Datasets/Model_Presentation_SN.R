@@ -194,7 +194,7 @@ p_0age <- ggplot(age_df_0, aes(x = x_val, y = estimate__, color = variable, fill
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
   labs(
     title = "Marginal Effects: Age",
-    x = "Log Ratio of Age Level",
+    x = "Additive Log-Ratio of Age (baseline: age 71+)",
     y = "Predicted Vaccination Rate",
     color = "Age",
     fill = "Age"
@@ -206,7 +206,7 @@ p_age <- ggplot(age_df, aes(x = x_val, y = estimate__, color = variable, fill = 
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
   labs(
     title = "Marginal Effects: Age",
-    x = "Log Ratio of Age Level",
+    x = "Additive Log-Ratio of Age (baseline: age 71+)",
     y = "Predicted Vaccination Rate",
     color = "Age",
     fill = "Age"
@@ -221,7 +221,7 @@ p_edu <- ggplot(edu_df, aes(x = x_val, y = estimate__, color = variable, fill = 
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
   labs(
     title = "Marginal Effects: Education Levels",
-    x = "Log Ratio of Education Level",
+    x = "Additive Log-Ratio of Education Level (baseline: Postgraduate)",
     y = "Predicted Vaccination Rate",
     color = "Education",
     fill = "Education"
@@ -234,7 +234,7 @@ p_health  <- ggplot(health_df, aes(x = x_val, y = estimate__, color = variable, 
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
   labs(
     title = "Marginal Effects: Self-Reported Health Status",
-    x = "Log Ratio of Health Status",
+    x = "Additive Log-Ratio of Education Level (baseline: Very_Good)",
     y = "Predicted Vaccination Rate",
     color = "Health",
     fill = "Health"
@@ -245,7 +245,7 @@ p_access <- ggplot(access_df, aes(x = x_val, y = estimate__, color = variable, f
   geom_line(linewidth = 1) +
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
   labs(
-    title = "Marginal Effects: Age",
+    title = "Marginal Effects: Access",
     x = "Accessibility Score",
     y = "Predicted Vaccination Rate",
     color = "Accessibility",
@@ -257,8 +257,8 @@ p_sex <- ggplot(sex_df, aes(x = x_val, y = estimate__, color = variable, fill = 
   geom_line(linewidth = 1) +
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
   labs(
-    title = "Marginal Effects: Age",
-    x = "Log Ratio of Male",
+    title = "Marginal Effects: Sex",
+    x = "Additive Log-Ratio of Male (baseline: Female)",
     y = "Predicted Vaccination Rate",
     color = "Sex",
     fill = "Sex"
@@ -269,8 +269,8 @@ p_0sex <- ggplot(sex_df_0, aes(x = x_val, y = estimate__, color = variable, fill
   geom_line(linewidth = 1) +
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
   labs(
-    title = "Marginal Effects: Age",
-    x = "Log Ratio of Male",
+    title = "Marginal Effects: Sex",
+    x = "Additive Log-Ratio of Male (baseline: Female)",
     y = "Predicted Vaccination Rate",
     color = "Sex",
     fill = "Sex"
@@ -356,3 +356,53 @@ install.packages("bayesplot")
 library(bayesplot)
 mcmc_areas(trial1_CAR_fixed, pars = "car", prob = 0.95) +  
   labs(title = "Uncertainty in Spatial Autocorrelation (CAR)")
+######Vaccination Rate Map
+geo_data
+filtered_data <- vax_data %>%
+  filter(Month == "2023 June", Age.Group == "12 years and over") %>%
+  select(LEA_Short, `Primary.Course.Completed....`)
+vaccination_centers <- read.csv("geocoded_addresses_vac_final.csv")
+plot_data <-  merge(geo_data, filtered_data, 
+                                  by.x = "CSO_LEA",        
+                                  by.y = "LEA_Short",
+                                  all.x = FALSE,          
+                                  all.y = FALSE)
+plot_data$Primary_Vax_Rate <- plot_data$Primary_Vax_Rate / 100
+color_palette <- colorBin(
+  palette = "RdYlGn",
+  domain = plot_data$Primary_Vax_Rate,
+  bins = 5, 
+  reverse = FALSE
+)
+
+# Step 5: Create a leaflet map
+leaflet(plot_data) %>%
+  addTiles("Stamen.Watercolor") %>%  
+  addPolygons(
+    fillColor = ~color_palette(Primary_Vax_Rate),  # Apply color palette
+    weight = 1,
+    opacity = 1,
+    color = "white",
+    dashArray = "3",
+    fillOpacity = 0.7,
+    highlightOptions = highlightOptions(
+      weight = 3,
+      color = "#666",
+      dashArray = "",
+      fillOpacity = 0.7,
+      bringToFront = TRUE
+    ),
+    label = ~paste0(CSO_LEA, ": ", Primary_Vax_Rate, "%"),
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px",
+      direction = "auto"
+    )
+  ) %>%
+  addLegend(
+    pal = color_palette, 
+    values = ~Primary_Vax_Rate, 
+    opacity = 0.7, 
+    title = "Final Primary Dose Vaccination Proportion",
+    position = "bottomright"
+  )

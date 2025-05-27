@@ -306,21 +306,21 @@ server <- function(input, output, session) {
           data = combined_access_values_LEA,
           fill = FALSE,
           color = "black",
-          weight = 0.5,
+          weight = 0.1,
           opacity = 1,
           label = ~CSO_LEA
         ) %>%
         addPolygons(
           data = all_isochrones_fixed, 
-          fillColor = "#9ecae1", 
+          fillColor = "#4d4d4d", 
           fillOpacity = seq(0.1, 1, length.out = nrow(all_isochrones_fixed)),
-          color = "#3182bd", 
+          color = "#2b2b2b", 
           weight = 1,
           popup = ~paste0("Center: ", center, "<br>Group: ", group_index)
         ) %>%
         addCircleMarkers(
           data = gp_sf, 
-          radius = 4, 
+          radius = 1, 
           fillColor = "darkred", 
           fillOpacity = 0.2, 
           stroke = FALSE,
