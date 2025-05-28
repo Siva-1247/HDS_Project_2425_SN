@@ -301,7 +301,7 @@ server <- function(input, output, session) {
   output$gpIsoMap <- renderLeaflet({
     if (exists("gp_sf")) {
       leaflet() %>%
-        addTiles("Stamen.Watercolor") %>%
+        addTiles("Stamen.TonerLite") %>%
         addPolygons(
           data = combined_access_values_LEA,
           fill = FALSE,
@@ -320,15 +320,15 @@ server <- function(input, output, session) {
         ) %>%
         addCircleMarkers(
           data = gp_sf, 
-          radius = 1, 
-          fillColor = "darkred", 
+          radius = 2, 
+          fillColor = "#FF6F61", 
           fillOpacity = 0.2, 
           stroke = FALSE,
           popup = ~paste0("GP: ", GP_Name)
         )
     } else {
       leaflet() %>%
-        addTiles("Stamen.Watercolor") %>%
+        addTiles("CartoDB.Positron") %>%
         addPolygons(
           data = combined_access_values_LEA,
           fill = FALSE,

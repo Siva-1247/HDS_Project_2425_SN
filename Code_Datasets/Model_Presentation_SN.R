@@ -392,7 +392,7 @@ leaflet(plot_data) %>%
       fillOpacity = 0.7,
       bringToFront = TRUE
     ),
-    label = ~paste0(CSO_LEA, ": ", Primary_Vax_Rate, "%"),
+    label = ~paste0(CSO_LEA, ": ", Primary_Vax_Rate),
     labelOptions = labelOptions(
       style = list("font-weight" = "normal", padding = "3px 8px"),
       textsize = "15px",
@@ -406,3 +406,26 @@ leaflet(plot_data) %>%
     title = "Final Primary Dose Vaccination Proportion",
     position = "bottomright"
   )
+
+ggplot(data, aes(x = age_55to64_logratio, y = log(Primary_Vax_Rate / (1 - Primary_Vax_Rate)))) +
+  geom_point() + geom_smooth()
+library(DHARMa)
+sims <- simulate(trial2, nsim = 1000)
+res <- createDHARMa(sims, data$Primary_Vax_Rate)
+plot(res)  # Check for uniformity, outliers.
+
+
+fitted_vals <- fitted(trial1_CAR_fixed, summary = TRUE)[, "Estimate"]
+# Plot logit-transformed rates vs. key predictorr
+
+# Compute residuals: observed - fitted
+mean_resid <- trial1_CAR_fixed$data$Primary_Vax_Rate - fitted_vals
+
+resid_df <- data.frame(CSO_LEA = data$CSO_LEA, resid = mean_resid)
+
+# Merge with geo_data using CSO_LEA
+sac_data <- geo_data %>%
+  left_join(resid_df, by = "CSO_LEA")
+neighbors <- poly2nb(sac_data)
+weights <- nb2listw(neighbors, style = "W")
+moran.test(sac_data$resid, weights)

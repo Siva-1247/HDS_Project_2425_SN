@@ -5,6 +5,6 @@ account: siva47
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 14831752
-bundleId: 10349424
+bundleId: 10351145
 url: https://siva47.shinyapps.io/dashboard/
 version: 1
