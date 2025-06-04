@@ -151,8 +151,13 @@ ggplot(me_df, aes(x = logratio, y = estimate__, color = variable, fill = variabl
   ) +
   theme_minimal(base_size = 14)
 
+trial3 <- brm(
+  formula = Primary_Vax_Rate ~ 
+    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +Wt_accessibility_Initial_Vacc ,
+  data = data,
+  family = Beta())
 
-trial2 <- brm(
+rial2 <- brm(
   formula = Primary_Vax_Rate ~ 
     age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +Wt_accessibility_Initial_Vacc + accessibility_Pharmacy10 + accessibility_GP10 ,
   data = data,
@@ -310,23 +315,10 @@ trial1_CAR_fixed <- brm(
     stepsize = 0.01       
   )
 ) 
-
-#Must be updated with temporal aspect
-model_random_effects <- brm( formula = Primary_Vax_Rate ~ 
-    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio +
-    edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + 
-    edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio +
-    health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio +
-    Wt_accessibility_Initial_Vacc + accessibility_Pharmacy10 + accessibility_GP10 +
-    (1 | lea_id),  # Random intercept instead of CAR
-  data = data,
-  family = Beta(),
-  iter = 15000, warmup = 5000, chains = 4, cores = 4,
-  control = list(adapt_delta = 0.95),
-  seed = 123
-)
-summary(trial1_CAR)
-pairs(trial1_CAR)
+install.packages("bayesplot")
+library(bayesplot)
+mcmc_areas(trial1_CAR_fixed, pars = "car", prob = 0.95) +  
+  labs(title = "Uncertainty in Spatial Autocorrelation (CAR)")
 
 #Temporal Model
 long_data <- vax_data %>%
@@ -341,21 +333,48 @@ long_data$Month_num <- as.numeric(format(long_data$Month, "%m")) +
   12 * (as.numeric(format(long_data$Month, "%Y")) - as.numeric(format(min_date, "%Y")))
 long_data$Month_num <- long_data$Month_num - min(long_data$Month_num) + 1
 long_data <- long_data %>%
-  rename(Primary_Vax_Rate = `Primary.Course.Completed....`)
-long_formula <- bf(Primary_Vax_Rate ~ Month_num + (Month_num | LEA_Short))
+  rename
+library(brms)
+# Transform Primary_Vax_Rate to proportion
+long_data$Primary_Vax_Rate <- long_data$Primary_Vax_Rate/100
+# Define the model formula
+nl_formula <- bf(
+  Primary_Vax_Rate ~ Asym / (1 + exp((xmid - Month_num) / scal)),
+  Asym ~ 1 + (1 | LEA_Short),
+  xmid ~ 1 + (1 | LEA_Short),
+  scal ~ 1,
+  nl = TRUE,
+  family = Beta()
+)
 
-fit_long <- brm(
-  formula = long_formula,
+# Define priors with explicit lower bound for scal
+nl_prior <- c(
+  prior(normal(0.8, 0.1), nlpar = "Asym"),
+  prior(normal(6, 2), nlpar = "xmid"),
+  prior(exponential(1), nlpar = "scal", lb = 0)
+)
+
+# Fit the model
+nl_model <- brm(
+  nl_formula,
   data = long_data,
-  family = inflat,
+  prior = nl_prior,
+  chains = 4,
   iter = 4000,
-  warmup = 2000,
   control = list(adapt_delta = 0.95)
 )
-install.packages("bayesplot")
-library(bayesplot)
-mcmc_areas(trial1_CAR_fixed, pars = "car", prob = 0.95) +  
-  labs(title = "Uncertainty in Spatial Autocorrelation (CAR)")
+
+nl_model_nopriors <- brm(
+  nl_formula,
+  data = long_data,
+  # No 'prior =' argument specified → uses defaults
+  chains = 4,
+  iter = 15000,
+  control = list(adapt_delta = 0.95)
+)
+
+conditional_effects(nl_model, effects = "Month_num") %>% 
+  plot(points = TRUE) 
 ######Vaccination Rate Map
 geo_data
 filtered_data <- vax_data %>%
