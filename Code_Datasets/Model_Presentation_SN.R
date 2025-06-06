@@ -157,7 +157,7 @@ trial3 <- brm(
   data = data,
   family = Beta())
 
-trial2 <- brm(
+  trial2 <- brm(
   formula = Primary_Vax_Rate ~ 
     age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +Wt_accessibility_Initial_Vacc + accessibility_Pharmacy10 + accessibility_GP10 ,
   data = data,
@@ -338,6 +338,17 @@ long_data <- long_data %>%
 long_data <- long_data %>%
   rename(Primary_Vax_Rate = `Primary.Course.Completed....`)
 long_data$Primary_Vax_Rate <- long_data$Primary_Vax_Rate/100
+long_data <- long_data %>%
+  rename(CSO_LEA = `LEA_Short`)
+head(mergelong_data)
+mergelong_data <- long_data %>%
+  left_join(data, by = "CSO_LEA")
+names(data_1)
+data_1 <- mergelong_data %>% select(CSO_LEA, Primary_Vax_Rate.x, Month, Month_num, age_18to54_logratio, age_55to64_logratio, age_65to70_logratio, male_logratio)
+data_1 <- data_1 %>%
+  rename(Primary_Vax_Rate = `Primary_Vax_Rate.x`)
+
+
 # Define the model formula
 nl_formula <- bf(
   Primary_Vax_Rate ~ Asym / (1 + exp((xmid - Month_num) / scal)),
@@ -368,11 +379,48 @@ nl_model <- brm(
 conditional_effects(nl_model, effects = "Month_num") %>% 
   plot(points = TRUE)
 
-nl_noprior_model <- brm(
-  nl_formula,
-  data = long_data,
+nl2_formula <- bf(
+  Primary_Vax_Rate ~ Asym / (1 + exp((xmid - Month_num) / scal)),
+  Asym ~ 1 + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + male_logratio + (1 | CSO_LEA),
+  xmid ~ 1 + (1 | CSO_LEA),
+  scal ~ 1,
+  nl = TRUE,
+  family = Beta()
+)
+
+# Define priors with explicit lower bound for scal
+nl2_prior <- c(
+  prior(normal(0.8, 0.1), nlpar = "Asym"),
+  prior(normal(6, 2), nlpar = "xmid"),
+  prior(exponential(1), nlpar = "scal", lb = 0)
+)
+
+# Fit the model
+nl2_model <- brm(
+  nl2_formula,
+  data = data_1,
+  prior = nl2_prior,
   chains = 4,
-  iter = 30000,
+  iter = 4000,
+  control = list(adapt_delta = 0.95)
+)
+
+nl3_formula <- bf(
+  Primary_Vax_Rate ~ base + (Asym - base) / (1 + exp((xmid - Month_num) / scal)),
+  Asym ~ 1 + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + male_logratio +  (1 | CSO_LEA),
+  base ~ 1 + (1 | CSO_LEA),
+  xmid ~ 1 + (1 | CSO_LEA),
+  scal ~ 1,
+  nl = TRUE,
+  family = Beta()
+)
+
+nl3_model <- brm(
+  nl3_formula,
+  data = data_1,
+  prior = nl2_prior,
+  chains = 4,
+  iter = 4000,
   control = list(adapt_delta = 0.95)
 )
 library(tidybayes)
@@ -462,7 +510,6 @@ trial4 <- brm(
 dep_vars <- c("Depriviation")
 age_dep <- extract_marginal_effects(age_vars, trial4, "Age")
 dep_df <- extract_marginal_effects(dep_vars, trial4, "Depriviation")
-
 # Plot Age
 ggplot(age_dep, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
   geom_line(linewidth = 1) +
