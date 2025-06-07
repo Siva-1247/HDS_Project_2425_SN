@@ -18,7 +18,7 @@ library(dplyr)
 
 
 ```{r}
-vaccination_rate = read.csv("CDC47_Stats.csv")
+vaccination_rate = read.csv("../Vacc_Rates&Geocoded_Data/CDC47_Stats.csv")
 head(vaccination_rate)
 ```
 ```{r}

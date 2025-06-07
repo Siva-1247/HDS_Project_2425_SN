@@ -23,8 +23,7 @@ library(scales)
 Distance Matrix
 
 ```{r pressure, echo=FALSE}
-setwd("C:/Users/Sivagami Nedumaran/OneDrive/เอกสาร/HDS_Project_2425_SN/Code_Datasets")
-Dist_long <- read.csv("Vacc_Rates&Geocoded_Data/Centroid_distances.csv")
+Dist_long <- read.csv("../Vacc_Rates&Geocoded_Data/Centroid_distances.csv")
 Dist_l <- Dist_long[Dist_long$LEA %in% unique(Dist_long$LEA)[1:20], ]
 Dist_l<- ddply(Dist_l, .(Center), transform,
                Scaled_Distance = rescale(Distance))
@@ -50,7 +49,7 @@ p
 
 Vaccination Rate Plot
 ```{r, echo=FALSE}
-vaccination_rate = read.csv("Vacc_Rates&Geocoded_Data/CDC47_Stats.csv")
+vaccination_rate = read.csv("../Vacc_Rates&Geocoded_Data/CDC47_Stats.csv")
 vaccination_rate <- vaccination_rate %>%
   filter(Age.Group=='12 years and over')
 vaccine_rate <- vaccination_rate %>% mutate(area_type = case_when(grepl('city|dublin', Local.Electoral.Area, ignore.case = TRUE) ~ 'City', TRUE ~ 'Rural'))
