@@ -7,18 +7,24 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-
-## R Markdown
-
-Distance Matrix
-
-```{r pressure, echo=FALSE}
-Dist_long <- read.csv("Centroid_distances.csv")
+library(ggExtra)
 library(ggplot2)
 library(viridis)
 library(scales)
 library(plyr)
+library(nlme)
+library(mgcv)
+library(dplyr)
+library(lubridate)
+library(scales)
+```
+
+
+Distance Matrix
+
+```{r pressure, echo=FALSE}
+Dist_long <- read.csv("Vacc_Rates&Geocoded_Data/Centroid_distances.csv")
+
 Dist_l <- Dist_long[Dist_long$LEA %in% unique(Dist_long$LEA)[1:20], ]
 Dist_l<- ddply(Dist_l, .(Center), transform,
                Scaled_Distance = rescale(Distance))
@@ -44,18 +50,14 @@ p
 
 Vaccination Rate Plot
 ```{r, echo=FALSE}
-library(ggplot2)
-library(dplyr)
-vaccination_rate = read.csv("CDC47_Stats.csv")
+vaccination_rate = read.csv("Vacc_Rates&Geocoded_Data/CDC47_Stats.csv")
 vaccination_rate <- vaccination_rate %>%
   filter(Age.Group=='12 years and over')
 vaccine_rate <- vaccination_rate %>% mutate(area_type = case_when(grepl('city|dublin', Local.Electoral.Area, ignore.case = TRUE) ~ 'City', TRUE ~ 'Rural'))
-library(lubridate)
-library(scales)
+
 vaccine_rate$Month <- parse_date_time(vaccine_rate$Month, orders = "Y B")
-library(nlme)
-library(mgcv)
-library(dplyr)
+
+#Vaccination Rate trend plot
 p1 <- vaccine_rate %>%
   filter(!is.na(Primary.Course.Completed....)) %>%
   ggplot(aes(x = Month, y = Primary.Course.Completed...., group = Local.Electoral.Area)) +
@@ -76,8 +78,8 @@ p1 <- vaccine_rate %>%
     y = "Primary Vaccination Completion Rate (%)"
   )
 p1
+
 ##Overall Primary course vaccination distributions
-library(ggExtra)
 plot_1<- ggplot(data = vaccine_rate, aes(x = Month, y = Primary.Course.Completed....)) +
   geom_point(size = 2, alpha = 0.6, color = "#CD96CD") +
   geom_smooth(aes(group = Local.Electoral.Area),method = "gam", formula = y ~ s(x), se = FALSE, color = "#CD96CD", size = 0.8, alpha=0.2)+
