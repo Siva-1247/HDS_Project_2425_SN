@@ -1,21 +1,23 @@
+#Display leaflet based primary vaccination dose rate for Jan 2022 with initial vaccination center locations highlighted
+
 library(sf)
 library(leaflet)
 library(dplyr)
 
 # Step 1: Read the file
-gfile <- "Merged_Data_Final.shp"
+gfile <- "C:/Users/Sivagami Nedumaran/Downloads/Merged_Data_Final.shp"
 geo_data <- st_read(gfile)
 head(geo_data)
-# Step 2: Transform to longlat (WGS84)
+
+# Step 2: Transform to longlat (WGS84) and use only Jan 2022 data
 geo_data_jan <- geo_data %>%
   filter(month == "2022 January")
 head(geo_data_jan)
 geo_data_jan <- st_transform(geo_data_jan, crs = 4326)
 
-# Step 3: (Optional) Simplify the geometry to improve performance
-#geo_data_simplified <- st_simplify(geo_data, dTolerance = 100)
 vaccination_centers <- read.csv("Initial_Vacc.csv")
-# Step 4: Define a color palette based on a numeric column (e.g., vaccination percentage)
+
+# Step 3: Defining a color palette based primary vaccination dose percentage
 color_palette <- colorBin(
   palette = "RdYlGn",
   domain = geo_data_jan$prmry_cm,
@@ -23,7 +25,7 @@ color_palette <- colorBin(
   reverse = FALSE
 )
 
-# Step 5: Create a leaflet map
+# Step 4: Creating a leaflet map
 leaflet(geo_data_jan) %>%
   addTiles() %>%  # Add default OpenStreetMap tiles
   addPolygons(
