@@ -1,27 +1,33 @@
+##Naive Distance Matrix generation and visualization for initial vaccination center
 library(sf)
+##Read data - Not in git as shp file was too big
 Data <- st_read("C:/Users/Sivagami Nedumaran/Downloads/Merged_Data_Final.shp")
 head(Data)
 #install.packages("geodist")
 library(geodist)
 # Cannot use as in IZRENZET95 system rather than WGS84
+
 #centroids <- st_centroid(Data$geometry)
 #boundary_centroids <- Data
 #boundary_centroids$longitude <- st_coordinates(centroids)[,1]
 #boundary_centroids$latitude <- st_coordinates(centroids)[,2]
 #head(boundary_centroids)
 
-Initial_Vacc <- read.csv("geocoded_addresses_vac_final.csv")
+#Read in geocoded initial vaccination center
+Initial_Vacc <- read.csv("Vacc_Rates&Geocoded_Data/geocoded_addresses_vac_final.csv")
 head(Initial_Vacc)
 nrow(Initial_Vacc)
 names(Data)
 LEA_Cord <- data.frame(lon_l=boundary_centroids$longitude, lat_l =boundary_centroids$latitude)
 Vac_Cord <- data.frame(lon_v=Initial_Vacc$longitude, lat_v =Initial_Vacc$latitude)
+
 ## Dist returned N/A as coordinates are not in WGS84 format
 Dist <-  geodist(
   LEA_Cord,
   Vac_Cord,
   measure = "geodesic")
 Dist
+
 ##Conversion to stnd coordinate system
 st_crs(Data)
 library(dplyr)
@@ -34,6 +40,7 @@ boundary_centroids <- Data_84
 boundary_centroids$longitude <- st_coordinates(centroids)[,1]
 boundary_centroids$latitude <- st_coordinates(centroids)[,2]
 head(boundary_centeroids)
+#Writing boundary files for future use
 write.csv(boundary_centroids,"lea_centroids.csv")
 BC_Data <- boundary_centroids %>%  st_drop_geometry() %>% select(cso_lea, longitude, latitude) %>% distinct()
 write.csv(BC_Data, "LEA_Centroids.csv")
@@ -59,7 +66,8 @@ Dist_long <- read.csv("Centroid_distances.csv")
 
 library(ggplot2)
 library(viridis)
-###########
+
+#### First 20 LEAs and their distance
 library(scales)
 Dist_l <- Dist_long[Dist_long$LEA %in% unique(Dist_long$LEA)[1:20], ]
 Dist_l<- ddply(Dist_l, .(Center), transform,
@@ -69,14 +77,15 @@ Dist_l<- ddply(Dist_l, .(Center), transform,
     theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1),axis.text.y = element_text(size = 6))+
   labs(title = "Distances 20 LEAs to Initial Vaccination Centers",
        x="Initial Vaccination Centers", y="LEA in IRL"))
-##Heatmap
+
+##Other visualizations not used for poster
+
 Dist_viz <- ggplot(Dist_long, aes(x=Center, y=LEA, fill=Distance)) + geom_tile() +
   scale_fill_viridis(name = "Distance (m)") +
   theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1),axis.text.y = element_text(size = 6)) +
   labs(title = "Distances from LEA centroids to Initial Vaccination Centers",
          x="Initial Vaccination Centers", y="LEA in IRL")
 print(Dist_viz)
-##Not appealing
 
 clean_data <- Dist_long %>%
   select(-X) %>%  # Remove the X column
@@ -127,7 +136,7 @@ ggplot(highlight_data, aes(x = reorder(LEA, Mean_Distance), y = Mean_Distance, f
     plot.title = element_text(size = 14, face = "bold")
   )
 
-################################
+
 Dist_long$County <- boundary_centroids$county
 head(Dist_long)
 library(dplyr)
@@ -148,7 +157,8 @@ Dist_viz1 <- ggplot(Dist_long, aes(x=Center, y=County, fill=Distance)) + geom_ti
   labs(title = "5 closest Initial Vaccination Centers to Counties",
        x="Initial Vaccination Centers", y="Counties")
 print(Dist_viz1)
-##Still not convinced
+
+
 closest_center_data <- Dist_long %>%
   group_by(LEA) %>%
   slice_min(order_by = Distance, n = 1) %>%  # Select the center with the smallest distance
@@ -170,7 +180,7 @@ bar_plot <- ggplot(closest_center_data, aes(x = reorder(LEA, Distance), y = Dist
   )
 
 print(bar_plot)
-###
+
 # Calculate average distance by county and find nearest center
 summary_viz <- Dist_long %>%
   group_by(County) %>%
@@ -181,7 +191,7 @@ summary_viz <- Dist_long %>%
   arrange(min_dist) %>%
   head(10)
 
-# Create single clear visualization
+
 ggplot(summary_viz, aes(x = reorder(County, min_dist), y = min_dist)) +
   geom_bar(stat = "identity", fill = "#EEB4B4", alpha = 0.8) +
   geom_text(aes(label = sprintf("%0.1f km\n%s", min_dist, nearest_center)), 
