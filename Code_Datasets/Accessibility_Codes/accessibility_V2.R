@@ -6,7 +6,7 @@ library(leaflet)
 ##ORS for batch generation of isochrones
 library(openrouteservice)
 
-ors_api_key("5b3ce3597851110001cf62486cbc3afb79d04cf492c9e160d17ae49c")
+ors_api_key("Your API Key")
 
 # Function to generate isochrones for multiple pharmacies in batches using OpenRouteService
 generate_batch_isochrones_ors <- function(pharmacies_sf, travel_time, batch_size = 5) {
