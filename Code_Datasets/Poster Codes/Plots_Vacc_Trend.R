@@ -2,7 +2,7 @@
 
 library(ggplot2)
 library(dplyr)
-vaccination_rate = read.csv("Vacc_Rates&Geocoded_Data/CDC47_Stats.csv")
+vaccination_rate = read.csv("../Vacc_Rates&Geocoded_Data/CDC47_Stats.csv")
 vaccination_rate <- vaccination_rate %>%
   filter(Age.Group=='12 years and over')
 

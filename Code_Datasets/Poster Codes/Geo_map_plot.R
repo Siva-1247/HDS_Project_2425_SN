@@ -15,7 +15,7 @@ geo_data_jan <- geo_data %>%
 head(geo_data_jan)
 geo_data_jan <- st_transform(geo_data_jan, crs = 4326)
 
-vaccination_centers <- read.csv("Initial_Vacc.csv")
+vaccination_centers <- read.csv("Vacc_Rates&Geocoded_Data/Initial_Vacc.csv")
 
 # Step 3: Defining a color palette based primary vaccination dose percentage
 color_palette <- colorBin(
