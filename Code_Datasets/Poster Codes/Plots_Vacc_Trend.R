@@ -1,8 +1,13 @@
+##Overall Primary course vaccination trend
+
 library(ggplot2)
 library(dplyr)
-vaccination_rate = read.csv("CDC47_Stats.csv")
+vaccination_rate = read.csv("Vacc_Rates&Geocoded_Data/CDC47_Stats.csv")
 vaccination_rate <- vaccination_rate %>%
   filter(Age.Group=='12 years and over')
+
+#City and Urban Divide
+
 vaccine_rate <- vaccination_rate %>% mutate(area_type = case_when(grepl('city|dublin', Local.Electoral.Area, ignore.case = TRUE) ~ 'City', TRUE ~ 'Rural'))
 library(lubridate)
 library(scales)
@@ -10,6 +15,9 @@ vaccine_rate$Month <- parse_date_time(vaccine_rate$Month, orders = "Y B")
 library(nlme)
 library(mgcv)
 head(vaccine_rate)
+
+#Plot
+
 vaccine_rate %>%
   filter(!is.na(Primary.Course.Completed....)) %>%
   ggplot(aes(x = Month, y = Primary.Course.Completed...., group = Local.Electoral.Area)) +
@@ -29,7 +37,9 @@ vaccine_rate %>%
     x = "Month",
     y = "Primary Vaccination Completion Rate (%)"
   )
+
 ##Overall Primary course vaccination distributions
+
 library(ggExtra)
 plot_1<- ggplot(data = vaccine_rate, aes(x = Month, y = Primary.Course.Completed....)) +
   geom_point(size = 2, alpha = 0.6, color = "#CD96CD") +
