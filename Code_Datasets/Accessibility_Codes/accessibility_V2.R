@@ -1,3 +1,5 @@
+#LEA polygon and facility isochrones intersection based method - alsmo population normalised
+#Load libraries
 library(sf)
 library(tidyverse)
 library(osrm)
@@ -65,7 +67,7 @@ dim(geo_data)
 head(geo_data)
 #Reading pharmacy locations
 
-pharmacies <- read.csv("geocoded_addresses_p_final.csv", stringsAsFactors = FALSE) %>%
+pharmacies <- read.csv("Vacc_Rates&Geocoded_Data/geocoded_addresses_p_final.csv", stringsAsFactors = FALSE) %>%
   filter(grepl("COVID-19", COVID.19_Vaccines_Offered, ignore.case = TRUE))
 
 pharmacies_sf <- st_as_sf(pharmacies, coords = c("longitude", "latitude"), crs = 4326)
@@ -82,7 +84,7 @@ isochrones <- st_read("Accessibility_Data\\isochrones.geojson")
 geo_data <- st_make_valid(geo_data)
 isochrones <- st_make_valid(isochrones)
 
-#Sampling 10 LEAs
+#Sampling 10 LEA
 set.seed(452)
 geo_sample<- geo_data %>% filter(COUNTY=="GALWAY")
 head(geo_sample)
@@ -125,7 +127,7 @@ accessibility_results <- C_ij_10min %>%
   ) %>%
   st_as_sf()
 
-#Retry
+#Retry better normalized accessibility score
 access_values <- C_ij_10min %>%
   st_drop_geometry() %>%
   group_by(CSO_LEA.x) %>%

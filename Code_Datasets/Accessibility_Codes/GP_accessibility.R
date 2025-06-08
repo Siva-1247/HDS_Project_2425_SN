@@ -1,6 +1,10 @@
 library(openrouteservice)
+library(dplyr)
 
-simple_isochrones <- function(loc_sf, travel_time = 600, batch_size = 3, 
+#Isochrone generator with more timeout for GPs to accommodate larger # of GPs
+#Feature to capture failed GPs as many failed due to timeouts initially
+
+generate_isochrones <- function(loc_sf, travel_time = 600, batch_size = 3, 
                               max_retries = 3, pause_time = 2, timeout = 30) {
   require(dplyr)
   require(sf)
@@ -100,10 +104,14 @@ simple_isochrones <- function(loc_sf, travel_time = 600, batch_size = 3,
   ))
 }
 
-GPs <- read.csv("geocoded_addresses_final.csv", stringsAsFactors = FALSE)
-ors_api_key("5b3ce3597851110001cf62486cbc3afb79d04cf492c9e160d17ae49c")
+#Read GPs
+
+GPs <- read.csv("Vacc_Rates&Geocoded_Data/geocoded_addresses_final.csv", stringsAsFactors = FALSE)
+ors_api_key("Your API")
 gp_sf <- st_as_sf(GPs, coords = c("longitude", "latitude"), crs = 4326)
-library(dplyr)
+
+#Sliced to process in smaller batches to accommodate daily limit of isochrone generation
+
 gp_sf_batch1 <- gp_sf %>% slice(1:400)
 gp_sf_batch2 <- gp_sf %>% slice(401:800)
 gp_sf_batch3 <- gp_sf %>% slice(801:1200)
@@ -114,7 +122,7 @@ isochrones_5gp_2 <- simple_isochrones (gp_sf_batch2)
 isochrones_5gp_3 <- simple_isochrones (gp_sf_batch3)
 isochrones_5gp_4 <- simple_isochrones (gp_sf_batch4)
 
-#Retry
+#Retry for failed isochrones
 
 isochrones_5gp_failed <- isochrones_5gp_1$failed_points
 isochrones_5gp_5 <- simple_isochrones(isochrones_5gp_failed)
@@ -125,7 +133,9 @@ isochrones_5gp_7 <- simple_isochrones(isochrones_5gp_failed_3)
 isochrones_5gp_failed_4 <- isochrones_5gp_4$failed_points
 isochrones_5gp_8 <- simple_isochrones(isochrones_5gp_failed_4)
 
+#Only failed points
 isochrones_5gp_7$failed_points
+
 # Combine all successful isochrones (primary + retry)
 all_isochrones <- bind_rows(
   isochrones_5gp_1$isochrones,
@@ -151,10 +161,41 @@ st_write(
   driver = "GeoJSON",
   delete_dsn = TRUE
 )
+
+
 all_isochrones_fixed <- st_read("C:/Users/Sivagami Nedumaran/Downloads/all_isochrones.geojson")
 st_write(all_isochrones, "C:/Users/Sivagami Nedumaran/Downloads/all_isochrones.geojson", driver = "GeoJSON", delete_dsn = TRUE)
 
-
+#Accessibility for GPs calculated
+calculate_accessibility_per_isochrone <- function(geo_sample, isochrone_sf, time_label) {
+  isochrone_sf$isochrone_id <- 1:nrow(isochrone_sf)
+  
+  # Ensure geometries are valid
+  geo_sample <- st_make_valid(geo_sample)
+  isochrone_sf <- st_make_valid(isochrone_sf)
+  
+  # Transform to common CRS
+  isochrone_sf <- st_transform(isochrone_sf, st_crs(geo_sample))
+  
+  # Compute intersection
+  intersections <- st_intersection(geo_sample, isochrone_sf)
+  intersections$intersection_area <- st_area(intersections)
+  
+  # Total area per isochrone
+  iso_areas <- isochrone_sf %>%
+    mutate(total_area = st_area(geometry)) %>%
+    st_drop_geometry() %>%
+    select(isochrone_id, total_area)
+  
+  # Join and compute share
+  C_ij <- intersections %>%
+    left_join(iso_areas, by = "isochrone_id") %>%
+    mutate(access_share = as.numeric(intersection_area / total_area)) %>%
+    group_by(CSO_LEA) %>%
+    reframe(!!paste0("accessibility_", time_label) := sum(access_share, na.rm = TRUE))
+  
+  return(C_ij)
+}
 access_gps <- calculate_accessibility_per_isochrone(geo_sample, all_isochrones, "10")
 st_write(access_gps, "C:/Users/Sivagami Nedumaran/Downloads/access_gp.gpkg", delete_dsn = TRUE)
 

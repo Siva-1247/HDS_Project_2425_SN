@@ -2,6 +2,10 @@ library(sf)
 library(tidyverse)
 library(osrm)
 library(leaflet)
+library(htmlwidgets)
+library(leaflet)
+library(RColorBrewer)
+library(viridis)
 
 ##ORS for batch generation of isochrones
 library(openrouteservice)
@@ -59,10 +63,9 @@ geo_data %>%
   group_by(CSO_LEA) %>%
   summarize(count = n())%>%
   filter(count > 1)
+#Rename Athlone
 geo_data %>% filter(CSO_LEA == "ATHLONE")
 geo_data <- geo_data %>% mutate(CSO_LEA=case_when(CSO_LEA == "ATHLONE" & COUNTY == "WESTMEATH" ~ "ATHLONE_WESTMEATH",TRUE ~ CSO_LEA))
-#Check drop
-geo_data %>% filter(CSO_LEA == "ATHLONE")
 # Population data 
 pop_data <- read.csv("Accessibility_Data\\LEA_POP22.csv", stringsAsFactors = FALSE)
 names(pop_data)
@@ -72,6 +75,7 @@ pop_data$CSO_LEA <- ifelse(pop_data$CSO_LEA == "ATHLONE-LEA 5", "ATHLONE_WESTMEA
                               toupper(pop_data$CSO_LEA)))  
 
 pop_data %>% filter(CSO_LEA == "ATHLONE")
+
 # Merging population data with geo_data using cso_lea as the key
 geo_data <- geo_data %>%
   left_join(pop_data, by = "CSO_LEA")  
@@ -91,7 +95,6 @@ dim(loc_sf)
 #isochrones_geometry <- isochrones %>% select(geometry)
 dim(isochrones)
 
-
 #st_write(isochrones_geometry, "C:/Users/Sivagami Nedumaran/Downloads/isochrones.geojson", driver = "GeoJSON")
 
 #Read isochrones from Accessibility_Data
@@ -102,8 +105,7 @@ isochrones <- st_read("Accessibility_Data\\isochrones.geojson")
 geo_data <- st_make_valid(geo_data)
 isochrones <- st_make_valid(isochrones_geometry)
 
-#Sampling 10 LEAs
-set.seed(452)
+#Including Population
 geo_sample<- geo_data
 head(geo_sample)
 class(pop_data$TOTPOP22)
@@ -120,7 +122,8 @@ isochrones_10min <- st_transform(isochrones, st_crs(geo_sample))
 intersections_10min <- st_intersection(geo_sample, isochrones_10min)
 intersections_10min$intersection_area <- st_area(intersections_10min)
 dim(intersections_10min)
-# Normalizing intersection areas to get C_ij
+
+# Calculating total intersection areas to get accessibility measure C_ij
 isochrones_area <- isochrones_10min  %>% mutate(total_area= st_area(geometry)) %>% st_drop_geometry() %>% select(isochrone_id, total_area)
 C_ij_10min <- intersections_10min %>%
   left_join(isochrones_area, by = "isochrone_id") %>%
@@ -139,6 +142,7 @@ C_ij_10min <- intersections_10min %>%
 LEA_no_intersection <- setdiff(geo_sample$CSO_LEA, C_ij_10min$CSO_LEA)
 LEA_no_intersection
 
+#accessibility normalized by population
 access_values <- C_ij_10min %>%
   left_join(
     geo_sample %>%
@@ -155,7 +159,6 @@ access_values
 
 #Add accessibility measures across all the different isochrones
 #Add the data together
-#Build the X's - with naive measures too - 30 and 60 minute centers more necessary for initial vacc centers and not for the GPs nd pharmacies
 
 ggplot(access_values) +
   geom_sf(aes(fill = accessibility)) +
@@ -191,8 +194,6 @@ isochrones_20 <- st_make_valid(isochrones_20)
 isochrones_30 <- st_make_valid(isochrones_30)
 isochrones_60 <- st_make_valid(isochrones_60)
 
-#Sampling 10 LEAs
-set.seed(452)
 geo_sample<- geo_data
 head(geo_sample)
 class(pop_data$TOTPOP22)
@@ -226,6 +227,7 @@ intersections_30min <- st_intersection(geo_sample, isochrones_30min)
 intersections_30min$intersection_area <- st_area(intersections_30min)
 intersections_60min <- st_intersection(geo_sample, isochrones_60min)
 intersections_60min$intersection_area <- st_area(intersections_60min)
+
 # Normalizing intersection areas to get C_ij
 isochrones_area_10 <- isochrones_10min  %>% mutate(total_area= st_area(geometry)) %>% st_drop_geometry() %>% select(isochrone_id, total_area)
 isochrones_area_20 <- isochrones_20min  %>% mutate(total_area= st_area(geometry)) %>% st_drop_geometry() %>% select(isochrone_id, total_area)
@@ -270,7 +272,8 @@ LEA_no_30intersection
 LEA_no_60intersection <- setdiff(geo_sample$CSO_LEA, C_ij_60min$CSO_LEA)
 LEA_no_60intersection
 
-
+#Final accessibility score not normalized by population as it lead to misleading scores for densely populated areas
+#Only final sum of intersected area as accessibility score - inversely weighted by travel times
 combined_access_values <- geo_sample %>%
   select(CSO_LEA, TOTPOP22, geometry) %>%
   left_join(C_ij_10min, by = "CSO_LEA") %>%
@@ -322,7 +325,7 @@ center <- loc_sf[1, ]
 # Extract lon/lat coordinates
 coords <- st_coordinates(center)
 
-# Generate the 10-min isochrone (600 seconds)
+# Carlow center's isochrone visuaization
 iso_10min_Carlow_Vacc <- ors_isochrones(
   locations = matrix(coords, nrow = 1),
   profile = "driving-car",
@@ -389,7 +392,7 @@ ggplot() +
 
 
 
-#Function to carry out above code
+#Function to carry out accessibility measure calculation efficiently
 calculate_accessibility_per_isochrone <- function(geo_sample, isochrone_sf, time_label) {
   isochrone_sf$isochrone_id <- 1:nrow(isochrone_sf)
   
@@ -427,6 +430,8 @@ isochrones_p10 <- st_read("C:/Users/Sivagami Nedumaran/Downloads/isochronesp10.g
 isochrones_p20 <- st_read("C:/Users/Sivagami Nedumaran/Downloads/isochronesp20.geojson")
 isochrones_list_p = list("5" = isochrones_p5,"10" = isochrones_p10,"20" = isochrones_p20)
 geo_sample <- st_make_valid(geo_sample)
+
+#Accessibility measure calculation for 5 and 10 minute isochrones
 isochrones_p5 <- st_make_valid(isochrones_p5)
 access_5 <- calculate_accessibility_per_isochrone(geo_sample, isochrones_p5, "5")
 st_write(access_5, "C:/Users/Sivagami Nedumaran/Downloads/access_5p.gpkg", delete_dsn = TRUE)
@@ -435,6 +440,8 @@ access_5 <- st_read("C:/Users/Sivagami Nedumaran/Downloads/access_5p.gpkg")
 st_write(access_10, "C:/Users/Sivagami Nedumaran/Downloads/access_10p.gpkg", delete_dsn = TRUE)
 access_p10 <- st_read("C:/Users/Sivagami Nedumaran/Downloads/access_10p.gpkg")
 access_p10 <- access_p10 %>% rename(accessibility_Pharmacy10 = accessibility_10)
+
+#Combining accessibility measure for initial vaccination center and 10 min pharmacy drive time
 combined_access_values_LEA <- combined_access_values %>%
   left_join(access_p10, by = "CSO_LEA")
 combined_access_values_LEA <- combined_access_values_LEA %>% select(-accessibility_10, -accessibility_20, -accessibility_30, -accessibility_60, -TOTPOP22)
@@ -442,7 +449,7 @@ combined_access_values_LEA <- combined_access_values_LEA %>% rename(Wt_accessibi
 st_write(combined_access_values, "C:/Users/Sivagami Nedumaran/Downloads/combined_access_values.gpkg", delete_dsn = TRUE)
 st_write(combined_access_values_LEA, "combined_access_values_LEA.gpkg", delete_dsn = TRUE)
 
-
+#Visualize pharmacy accessibility measure
 ggplot(combined_access_values_LEA) + geom_sf(aes(fill=accessibility_Pharmacy10)) + scale_fill_viridis_c(
   option = "plasma",
   direction = -1,
@@ -451,13 +458,10 @@ ggplot(combined_access_values_LEA) + geom_sf(aes(fill=accessibility_Pharmacy10))
   labs(
     title = "Accessibility to Pharmacy within a 10 min drive") +
   theme_minimal()
-install.packages("htmlwidgets")
-library(htmlwidgets)
-library(leaflet)
-library(RColorBrewer)
-library(viridis)
+
 combined_access_values_LEA <- st_transform(combined_access_values_LEA, 4326)
 
+#Testing html widget for accessibility plots
 basic_test <- leaflet(combined_access_values_LEA) %>%
   addTiles() %>%
   addPolygons()
@@ -507,6 +511,7 @@ if(exists("basic_test")) {
 }
 saveWidget(accessibility_map, file = "accessibility_map.html", selfcontained = TRUE)
 
+#Visualization for initial vaccination center accessibility
 pal1 <- colorNumeric(
   palette = rev(plasma(100)),  # Reversed plasma like your ggplot
   domain = combined_access_values_LEA$Wt_accessibility_Initial_Vacc,
@@ -562,6 +567,8 @@ accessibility_IVmap <- leaflet(combined_access_values_LEA) %>%
 
 accessibility_IVmap
 
+#Visualization for initial vaccination center accessibility - top 20 centers
+
 top20_access <- combined_access_values_LEA %>%
   arrange(desc(Wt_accessibility_Initial_Vacc)) %>%
   slice(1:20)
@@ -584,11 +591,11 @@ ggplot(top10_access, aes(x = reorder(CSO_LEA, Wt_accessibility_Initial_Vacc),
     panel.grid.minor.y = element_blank()
   )
 
-
+#Map of GP isochrones
 leaflet() %>%
   addTiles() %>%
   
-  # Add 10-minute GP isochrones
+  # 10-minute GP isochrones
   addPolygons(
     data = all_isochrones_fixed,
     fillColor = "#9ecae1",
@@ -598,7 +605,7 @@ leaflet() %>%
     popup = ~paste0("Center: ", center, "<br>Group: ", group_index)
   ) %>%
   
-  # Add GP location points
+  # GP location points
   addCircleMarkers(
     data = gp_sf,
     radius = 4,
@@ -607,9 +614,7 @@ leaflet() %>%
     stroke = FALSE,
     popup = ~paste0("GP: ", GP_Name)  # Replace 'Name' with actual column
   ) %>%
-  
-  # Optional legend
-  addLegend(
+    addLegend(
     position = "bottomright",
     colors = "#9ecae1",
     labels = "10-Min GP Isochrone",
@@ -618,13 +623,13 @@ leaflet() %>%
   )
 
 
-# Extract the failed points sf object
+# Extract the failed points for GPs
 failed_gps <- isochrones_5gp_7$failed_points
 st_write(failed_gps, "failed_gps.gpkg", delete_dsn = TRUE)
 leaflet() %>%
   addTiles() %>%
   
-  # Add failed GP points with distinct color and larger radius
+  # Failed GP points added
   addCircleMarkers(
     data = failed_gps,
     radius = 8,
@@ -636,9 +641,7 @@ leaflet() %>%
                     GP_Address, "<br>",
                     "<a href='", GP_LocationLink, "' target='_blank'>Google Maps</a>")
   ) %>%
-  
-  # Add a label on the map for each point
-  addLabelOnlyMarkers(
+    addLabelOnlyMarkers(
     data = failed_gps,
     label = ~GP_Name,
     labelOptions = labelOptions(noHide = TRUE, direction = "top", 

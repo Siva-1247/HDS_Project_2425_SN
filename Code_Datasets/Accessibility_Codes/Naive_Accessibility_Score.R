@@ -1,16 +1,17 @@
-#install.packages("openrouteservice")
-
+#install.packages("openrouteservice") - LEA centroid based measures
+#Load libraries
 library(sf)
 library(osrm)
 library(dplyr)
 
 # Load LEA and pharmacy data
-lea_data <- read.csv("BC_data.csv", stringsAsFactors = FALSE)
-pharmacies <- read.csv("geocoded_addresses_p_final.csv", stringsAsFactors = FALSE)
+lea_data <- read.csv("Vacc_Rates&Geocoded_Data/BC_data.csv", stringsAsFactors = FALSE)
+pharmacies <- read.csv("Vacc_Rates&Geocoded_Data/geocoded_addresses_p_final.csv", stringsAsFactors = FALSE)
 pharmacies$COVID.19_Vaccines_Offered
 pharm <- pharmacies %>% filter(grepl("COVID-19", COVID.19_Vaccines_Offered, ignore.case = TRUE))
 head(pharm)
 head(lea_data)
+
 # Convert to spatial format
 lea_sf <- st_as_sf(lea_data, coords = c("longitude", "latitude"), crs = 4326)
 pharmacies_sf <- st_as_sf(pharm, coords = c("longitude", "latitude"), crs = 4326)
@@ -57,15 +58,15 @@ for(i in 1:nrow(lea_sf)) {
 # Add this information to the LEA data
 lea_sf$has_pharmacy_access <- lea_with_pharmacy_access
 summary(lea_sf$has_pharmacy_access)
+
 #######################################################
+
 ## No.of pharmacies within 5 km radius of a centroid
 pharmacies_buffer <- st_buffer(pharmacies_sf, dist = 5000)
 
 # Check if LEA centroids are within the 5 km buffer zone of any pharmacy
 intersects_matrix <- st_intersects(lea_sf, pharmacies_buffer, sparse = FALSE)
 lea_sf$has_pharmacy_access <- apply(intersects_matrix, 1, function(x) sum(x))
-
-
 
 gfile <- "C:/Users/Sivagami Nedumaran/Downloads/Merged_Data_Final.shp"
 geo_data <- suppressWarnings(st_read(gfile, quiet = TRUE))
@@ -90,14 +91,13 @@ geo_data_jan <- st_join(geo_data_jan, lea_sf %>% select(cso_lea, has_pharmacy_ac
 head(geo_data_jan)
 
 color_palette <- colorBin(
-  palette = "YlOrRd",  # Yellow -> Orange -> Red gradient
-  domain = geo_data_jan$has_pharmacy_access,  # Numeric range of pharmacy access
-  bins = 10,  # Define 10 bins for better visualization
-  pretty = TRUE  # Ensure rounded breakpoints for readability
-)
+  palette = "YlOrRd",  
+  domain = geo_data_jan$has_pharmacy_access,  #
+  bins = 10,  
+  pretty = TRUE)
 
 leaflet(geo_data_jan) %>%
-  addProviderTiles("OpenStreetMap") %>%  # Choose base map tiles
+  addProviderTiles() 
   addPolygons(
     fillColor = ~color_palette(has_pharmacy_access),  # Color polygons based on pharmacy access bins
     weight = 1,  # Border width
@@ -127,20 +127,19 @@ lea_sf <- lea_sf %>%
 lea_sf <- lea_sf %>%
   left_join(pop_data, by = "CSO_LEA")
 lea_sf$TOTPOP22 <- as.numeric(lea_sf$TOTPOP22)
+
 # Initialize a vector for accessibility scores
 lea_accessibility <- numeric(nrow(lea_sf))
 
-# Step 1: Compute Pharmacy-to-Population Ratio (Rj)
+# Compute Pharmacy-to-Population Ratio (Rj)
 pharmacy_ratios <- numeric(nrow(pharmacies_sf))
 
 for (j in 1:nrow(pharmacies_sf)) {
   accessible_leas <- numeric(nrow(lea_sf))  # Ensure it's a numeric vector
   
   for (i in 1:nrow(lea_sf)) {
-    # Fetch the route between LEA and pharmacy
     route <- retry_osrmRoute(lea_sf$centroid[i], pharmacies_sf[j,])
     
-    # Check if route is valid and the duration is under the threshold (30 minutes)
     if (!is.null(route) && !is.na(route$duration) && route$duration < 30*60) {
       # Ensure population is numeric before assignment
       if (!is.na(lea_sf$TOTPOP22[i])) {
@@ -178,9 +177,6 @@ summary(lea_sf$accessibility_score)
 
 
 ##############################################################################################
-library(sf)
-library(osrm)
-library(dplyr)
 
 # Define travel time threshold (minutes)
 travel_time_threshold <- 15 * 60  # Convert to seconds
@@ -190,7 +186,8 @@ lea_sf$pharmacy_count <- 0
 
 for (i in 1:nrow(lea_sf)) {
   count <- 0
-  for (j in 1:nrow(pharmacies_sf)) {
+  for (j in 1:nrow(pharmacies_sf)) 
+    {
     # Calculate travel time between LEA centroid and pharmacy
     route <- retry_osrmRoute(lea_sf[i,], pharmacies_sf[j,])
     
@@ -202,5 +199,5 @@ for (i in 1:nrow(lea_sf)) {
   lea_sf$pharmacy_count[i] <- count  # Store pharmacy count for each LEA
 }
 
-# FCA Score (Pharmacy count per LEA)
+# Pharmacy count per LEA
 lea_sf$FCA_score <- lea_sf$pharmacy_count
