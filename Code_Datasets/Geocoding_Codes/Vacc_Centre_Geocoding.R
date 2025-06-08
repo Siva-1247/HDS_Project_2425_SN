@@ -72,7 +72,7 @@ library(jsonlite)
   api_key <- "API_Key"
   
   # Read and process the data
-  result_df <- read_csv("vaccination_centres.csv")
+  result_df <- read_csv("Vacc_Rates&Geocoded_Data/vaccination_centres.csv")
   result_df <- process_data(result_df, api_key)
   
   # Write results and display summary

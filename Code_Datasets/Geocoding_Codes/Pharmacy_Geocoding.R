@@ -72,7 +72,7 @@ process_data <- function(data, api_key) {
 api_key <- "API_Key" 
 
 # Read and process the data
-result_df <- read_csv("pharmacy_data_full.csv")
+result_df <- read_csv("Vacc_Rates&Geocoded_Data/pharmacy_data_full.csv")
 result_df <- process_data(result_df, api_key)
 
 # Write results and display summary

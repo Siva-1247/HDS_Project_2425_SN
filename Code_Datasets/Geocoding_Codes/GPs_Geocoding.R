@@ -6,7 +6,7 @@ library(tidyverse)
 library(httr)
 library(jsonlite)
 
-data <- read_csv("gp_data_final.csv")
+data <- read_csv("Vacc_Rates&Geocoded_Data/gp_data_final.csv")
 ----------------------------------------------------------------------
   
   geocode_address <- function(address, api_key) {
