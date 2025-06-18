@@ -99,7 +99,6 @@ ui <- fluidPage(
       helpText("Exploring isochrones and accessibility across LEAs in Ireland."),
       width = 3
     ),
-    
     mainPanel(
       tabsetPanel(
         tabPanel("Isochrones Map",
