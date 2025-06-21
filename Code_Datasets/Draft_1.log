@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.6.17)  21 JUN 2025 11:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.6.17)  21 JUN 2025 22:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -308,7 +308,8 @@ File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) (c:/ProgramData/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-04-14 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count307
-) (./Draft_1.aux)
+)
+No file Draft_1.aux.
 \openout1 = `Draft_1.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 80.
@@ -396,7 +397,6 @@ LaTeX Font Info:    ... okay on input line 80.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 Package hyperref Info: Link coloring OFF on input line 80.
-(./Draft_1.out) (./Draft_1.out)
 \@outlinefile=\write3
 \openout3 = `Draft_1.out'.
 
@@ -505,193 +505,44 @@ Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/9'.
 (microtype)             Ignoring protrusion settings for this character.
 [2]
+Underfull \hbox (badness 2334) in paragraph at lines 290--294
+[]\T1/lmr/bx/n/10 (+20) Self-Reported Health Sta-tus: \T1/lmr/m/n/10 (+20) Data on gen-eral health con-di-tions were ob-tained from the
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
 
 [3]
-
-[4{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}]
-Underfull \hbox (badness 6893) in paragraph at lines 471--474
-[]\T1/lmr/m/n/10 (+20) Primary_Vax_Rate ~ age_12to17_logratio + age_18to54_logratio + age_55to64_logratio +
- []
-
-
-Underfull \hbox (badness 6893) in paragraph at lines 487--494
-[]\T1/lmr/m/n/10 (+20) Primary_Vax_Rate ~ age_12to17_logratio + age_18to54_logratio + age_55to64_logratio +
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 487--494
-\T1/lmr/m/n/10 (+20) + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio
- []
-
-
-Underfull \hbox (badness 6348) in paragraph at lines 487--494
-\T1/lmr/m/n/10 (+20) + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +
- []
-
-
-Underfull \vbox (badness 7777) has occurred while \output is active []
-
-
-
-[5]
-Underfull \hbox (badness 6893) in paragraph at lines 515--522
-[]\T1/lmr/m/n/10 (+20) Primary_Vax_Rate ~ age_12to17_logratio + age_18to54_logratio + age_55to64_logratio +
- []
-
-
-Underfull \hbox (badness 3536) in paragraph at lines 515--522
-\T1/lmr/m/n/10 (+20) + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio +
- []
-
-
-Underfull \hbox (badness 6893) in paragraph at lines 537--544
-[]\T1/lmr/m/n/10 (+20) Primary_Vax_Rate ~ age_12to17_logratio + age_18to54_logratio + age_55to64_logratio +
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 537--544
-\T1/lmr/m/n/10 (+20) + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio
- []
-
-
-Underfull \hbox (badness 6348) in paragraph at lines 537--544
-\T1/lmr/m/n/10 (+20) + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +
- []
-
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-
-[6]
-
-Package hyperref Warning: Difference (2) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 610.
-
-<Figures/Model_1.png, id=91, 432.11438pt x 289.83281pt>
-File: Figures/Model_1.png Graphic file (type png)
-<use Figures/Model_1.png>
-Package pdftex.def Info: Figures/Model_1.png  used on input line 626.
-(pdftex.def)             Requested size: 234.87749pt x 157.53781pt.
-<Figures/marginal_effects_age0.png, id=93, 578.16pt x 433.62pt>
-File: Figures/marginal_effects_age0.png Graphic file (type png)
-<use Figures/marginal_effects_age0.png>
-Package pdftex.def Info: Figures/marginal_effects_age0.png  used on input line 633.
-(pdftex.def)             Requested size: 234.87749pt x 176.15768pt.
-<Figures/marginal_effects_sex0.png, id=94, 578.16pt x 433.62pt>
-File: Figures/marginal_effects_sex0.png Graphic file (type png)
-<use Figures/marginal_effects_sex0.png>
-Package pdftex.def Info: Figures/marginal_effects_sex0.png  used on input line 634.
-(pdftex.def)             Requested size: 234.87749pt x 176.15768pt.
-
-
-[7 <./Figures/Model_1.png>]
-<Figures/marginal_effects_age.png, id=102, 578.16pt x 433.62pt>
-File: Figures/marginal_effects_age.png Graphic file (type png)
-<use Figures/marginal_effects_age.png>
-Package pdftex.def Info: Figures/marginal_effects_age.png  used on input line 684.
-(pdftex.def)             Requested size: 140.92792pt x 105.69196pt.
-<Figures/marginal_effects_sex.png, id=103, 578.16pt x 433.62pt>
-File: Figures/marginal_effects_sex.png Graphic file (type png)
-<use Figures/marginal_effects_sex.png>
-Package pdftex.def Info: Figures/marginal_effects_sex.png  used on input line 685.
-(pdftex.def)             Requested size: 140.92792pt x 105.69196pt.
-<Figures/marginal_effects_education.png, id=104, 578.16pt x 433.62pt>
-File: Figures/marginal_effects_education.png Graphic file (type png)
-<use Figures/marginal_effects_education.png>
-Package pdftex.def Info: Figures/marginal_effects_education.png  used on input line 686.
-(pdftex.def)             Requested size: 140.92792pt x 105.69196pt.
-<Figures/marginal_effects_health.png, id=105, 578.16pt x 433.62pt>
-File: Figures/marginal_effects_health.png Graphic file (type png)
-<use Figures/marginal_effects_health.png>
-Package pdftex.def Info: Figures/marginal_effects_health.png  used on input line 687.
-(pdftex.def)             Requested size: 140.92792pt x 105.69196pt.
-<Figures/marginal_effects_access.png, id=106, 578.16pt x 433.62pt>
-File: Figures/marginal_effects_access.png Graphic file (type png)
-<use Figures/marginal_effects_access.png>
-Package pdftex.def Info: Figures/marginal_effects_access.png  used on input line 688.
-(pdftex.def)             Requested size: 140.92792pt x 105.69196pt.
-
-Underfull \vbox (badness 3078) has occurred while \output is active []
-
-
-
-[8 <./Figures/marginal_effects_age0.png> <./Figures/marginal_effects_sex0.png>]
-<Figures/depri_plot.png, id=114, 578.16pt x 433.62pt>
-File: Figures/depri_plot.png Graphic file (type png)
-<use Figures/depri_plot.png>
-Package pdftex.def Info: Figures/depri_plot.png  used on input line 742.
-(pdftex.def)             Requested size: 375.80542pt x 281.84966pt.
-<Figures/plot_male_jd.png, id=115, 578.16pt x 433.62pt>
-File: Figures/plot_male_jd.png Graphic file (type png)
-<use Figures/plot_male_jd.png>
-Package pdftex.def Info: Figures/plot_male_jd.png  used on input line 759.
-(pdftex.def)             Requested size: 234.87749pt x 176.15768pt.
-<Figures/plot_female_jd.png, id=116, 578.16pt x 433.62pt>
-File: Figures/plot_female_jd.png Graphic file (type png)
-<use Figures/plot_female_jd.png>
-Package pdftex.def Info: Figures/plot_female_jd.png  used on input line 760.
-(pdftex.def)             Requested size: 234.87749pt x 176.15768pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-
-[9 <./Figures/marginal_effects_age.png> <./Figures/marginal_effects_sex.png> <./Figures/marginal_effects_education.png> <./Figures/marginal_effects_health.png> <./Figures/marginal_effects_access.png>]
-<Figures/Top_LEA.png, id=127, 578.16pt x 433.62pt>
-File: Figures/Top_LEA.png Graphic file (type png)
-<use Figures/Top_LEA.png>
-Package pdftex.def Info: Figures/Top_LEA.png  used on input line 802.
-(pdftex.def)             Requested size: 375.80542pt x 281.84966pt.
-<Figures/Bottom_LEA.png, id=128, 578.16pt x 433.62pt>
-File: Figures/Bottom_LEA.png Graphic file (type png)
-<use Figures/Bottom_LEA.png>
-Package pdftex.def Info: Figures/Bottom_LEA.png  used on input line 809.
-(pdftex.def)             Requested size: 375.80542pt x 281.84966pt.
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 826.
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 387.
 (c:/ProgramData/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 
-[10{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc} <./Figures/depri_plot.png>]
-Underfull \vbox (badness 3148) has occurred while \output is active []
+[4{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}]
 
+[5{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}]
 
+! LaTeX Error: Unicode character φ (U+03C6)
+               not set up for use with LaTeX.
 
-[11 <./Figures/plot_male_jd.png> <./Figures/plot_female_jd.png>]
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.570 ...kedasticity via a precision parameter (φ
+                                                  ). We did not go for
+You may provide a definition with
+\DeclareUnicodeCharacter 
 
-[12 <./Figures/Top_LEA.png> <./Figures/Bottom_LEA.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 892--895
-\T1/lmtt/m/n/10 respiratory / coronavirus / novelcoronavirus / vaccination / covid-[]19vaccinationuptakereports /
- []
-
-No file Draft_1.bbl.
-
-
-[13] (./Draft_1.aux)
- ***********
-LaTeX2e <2025-06-01> patch level 1
-L3 programming layer <2025-05-26>
- ***********
-
-LaTeX Font Warning: Some font shapes were not available, defaults substituted.
-
-Package rerunfilecheck Info: File `Draft_1.out' has not changed.
-(rerunfilecheck)             Checksum: DFA132EBCAAE480117782FBFFE56E5E4;1596.
- ) 
+ 
 Here is how much of TeX's memory you used:
- 12403 strings out of 469824
- 200276 string characters out of 5483040
- 633834 words of memory out of 5000000
- 40353 multiletter control sequences out of 15000+600000
- 679472 words of font info for 138 fonts, out of 8000000 for 9000
+ 12247 strings out of 469824
+ 195983 string characters out of 5483040
+ 638134 words of memory out of 5000000
+ 40211 multiletter control sequences out of 15000+600000
+ 676041 words of font info for 147 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
- 75i,13n,79p,1004b,463s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on Draft_1.pdf (13 pages, 2628183 bytes).
-PDF statistics:
- 244 PDF objects out of 1000 (max. 8388607)
- 175 compressed objects within 2 object streams
- 39 named destinations out of 1000 (max. 500000)
- 29346 words of extra memory for PDF output out of 29859 (max. 10000000)
-
+ 75i,13n,79p,1004b,457s stack positions out of 10000i,1000n,20000p,200000b,200000s
+!  ==> Fatal error occurred, no output PDF file produced!
