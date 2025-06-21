@@ -371,6 +371,15 @@ was based on the intuitive premise that any spatial overlap between a
 healthcare service's catchment and an LEA indicates at least some degree
 of physical access for residents.
 
+Accessibility Score Calculation: \[C_{ijk} = \frac{I_{ijk}}{T_k}\]
+\[A_{ij} = \sum_{k=1}^{K} C_{ijk}\]
+\[A_{vacc} = \frac{1}{10} \cdot A_{i,10} + \frac{1}{20} \cdot A_{i,20} + \frac{1}{30} \cdot A_{i,30} + \frac{1}{60} \cdot A_{i,60}\]
+\[A_{pharm} = A_{i,10}\]
+
+Where \(C_{ijk}\) is the coverage share, \$ I\_\{ijk\}\$ is intersection
+area, \(T_k\) is isochrone area, and \(A_{ij}\) is the accessibility
+score
+
 Applying 2SFCA---or an advanced variation---would yield a more
 comprehensive assessment of healthcare accessibility with more specific
 data and specialized resources, particularly in contrasting rural and
@@ -421,127 +430,203 @@ for exploratory and modelling components of the study.
 
 \subsubsection{Model}\label{model}
 
-The beta regression model was chosen to handle the bounded, proportional
-nature of Primary Vaccination Rate. In beta regression, the mean
-parameter models the expected value of the outcome on a logit scale (or
-other link functions), while the precision parameter accounts for how
-tightly values are clustered around the mean. Its logit link ensures
-predictions stay within {[}0,1{]}, while the precision parameter
-accounts for heteroskedasticity. In zero-inflated beta models, an
-additional parameter, zi (zero-inflation probability), models the
-likelihood of structural zeros (i.e., excess observations at exactly 0
-or 1). As our data did not contain exact zeros or ones, we did not use
-this.
+We employed a hierarchical Bayesian modelling framework to examine
+determinants of primary COVID-19 vaccination uptake rate across LEAs. A
+total of six modelling approaches were implemented, each designed to
+address specific research questions, including bounded proportional
+outcomes, spatial autocorrelation, and nonlinear temporal trends. The
+models progressively build on one another, beginning with basic
+compositional demographic factors of age and gender and expanding to
+include compositional health and education metrics, spatial structure,
+deprivation, interaction effects of age and gender, and temporal
+dynamics.
 
-Demographic factors were compositional proportions, so they were
-additive log ratio transformed to enable their inclusion in the models.
-The baseline chosen for the transformation were the following: - Age:
-71+ year olds - Education: Post Graduate Level - Health Outcome: Very
-Good - Sex: Female
+All models were implemented using the brms, a Bayesian regression
+modelling interface to Stan, which supports complex hierarchical,
+spatial, and temporal modelling structures, and leverages Markov Chain
+Monte Carlo (MCMC) sampling for full posterior inference.
 
-In the initial beta regression model, we examined the relationship of
-primary vaccination rate with age and sex. Then it was adjusted with
-predictors of health, education level and accessibility to initial
-vaccination center. Both utilized Markov Chain Monte Carlo (MCMC)
-sampling with 4 chains of 2000 iterations each, including 1000 warmup
-iterations, yielding 4000 post-warmup draws for posterior inference.
+The primary outcome was the final rate of primary COVID-19 vaccination
+(bounded between 0 and 1), with booster dose data available for future
+extensions. The compositional nature of demographic covariates (e.g.,
+age, sex, education, health) required Additive Log-Ratio (ALR)
+transformations to avoid issues of perfect multicollinearity due to
+unit-sum constraints.
 
-Morans'I was calculated to identify if spatial autocorrelation existed
-in the residuals. The presence of spatial autocorrelation led to testing
-spatial models, specifically Conditional Autoregressive (CAR)
-({``Spatial Conditional Autoregressive ({CAR}) Structures --- Car''}
-n.d.)priors, which allow neighboring LEAs to share information through
-structured random effects based on an adjacency matrix of LEAs. This
-model utilized extended MCMC sampling with 30,000 iterations per chain
-and 10,000 warmup iterations, yielding 80,000 post-warmup draws to
-ensure adequate exploration of the posterior distribution for the more
-complex spatial model. We examined the role of socioeconomic deprivation
-beyond individual education measures, by extending the non-spatial model
-by incorporating a composite deprivation index .
+All cross-sectional models used Beta regression with a logit link
+function, which is ideal for modelling proportional data as it ensures
+predictions remain in (0, 1) while also accounting for
+heteroskedasticity via a precision parameter. We did not go for
+zero-inflated beta regression, as our data did not contain exact 0s or
+1s This allowed robust estimation of proportional outcomes while
+capturing uncertainty in both the mean and spread of the distribution.
 
-We also utilized the joint distribution of age and sex as predictor
-variables in addition to examining these factors in isolation. For
-instance, vaccination attitudes among young men may differ substantially
-from those of older women, and analyzing age and sex as separate
-variables would fail to detect these important interaction patterns. To
-examine potential differential effects of age across gender groups, we
-fitted a model using sex-specific age categories rather than separate
-age and sex terms. This approach allowed for the identification of age
-patterns that may vary between males and females, moving beyond the
-additive assumption of previous models.
+Model 1 focussed on basic demographic variables---namely age and
+gender---relate to the final uptake of the primary COVID-19 vaccine dose
+across LEAs. Bayesian inference was conducted via MCMC sampling with
+four chains of 2,000 iterations each (including 1,000 warm-up
+iterations), resulting in 4,000 post-warmup posterior draws and this was
+the functions' default in R.
 
-We incorporated joint age-sex proportions (such as women aged 55-64 or
-men aged 18-24) to better represent population heterogeneity and its
-relationship with vaccination behaviour. They were proportions and were
-also additive log-ratio transformed to make them suitable for regression
-analysis.
+Primary\_Vax\_Rate \textasciitilde{} age\_12to17\_logratio +
+age\_18to54\_logratio + age\_55to64\_logratio + age\_65to70\_logratio +
+male\_logratio
 
-We captured the nonlinear trajectory of primary COVID-19 vaccination
-uptake over time and across different regions, by specifying a nonlinear
-growth model using a sigmoidal function of time (month-level) fitted
-within a hierarchical Bayesian framework. The outcome variable was
-modeled using a beta regression with a four-parameter logistic function
-of the form:
+The base model was extended to model 2 by adjusting for health,
+education, and accessibility to initial vaccination center. The
+accessibility measure was particularly relevant to the primary dose,
+which was more likely administered at centralized mass vaccination
+centres as opposed to decentralized locations like GPs or pharmacies,
+which were more important for booster doses. This model retained the
+beta regression framework and used the same MCMC setup as Model 1.
+Incorporating these additional variables allowed us to capture social
+determinants of health and logistical barriers to access, thereby
+enriching our understanding of factors influencing vaccine uptake beyond
+demographic composition alone.
+
+Primary\_Vax\_Rate \textasciitilde{} age\_12to17\_logratio +
+age\_18to54\_logratio + age\_55to64\_logratio + age\_65to70\_logratio +
+edu\_NoFormal\_logratio + edu\_Primary\_logratio +
+edu\_UpperSecondary\_logratio + edu\_Apprenticeship\_logratio +
+edu\_HonoursBachelor\_logratio + health\_VeryBad\_logratio +
+health\_Bad\_logratio + health\_Fair\_logratio + health\_Good\_logratio
++ male\_logratio + Wt\_accessibility\_Initial\_Vacc
+
+Model 3: Morans'I was calculated to identify if spatial autocorrelation
+existed in the residuals. The presence of significant spatial clustering
+suggested that residuals were not independent across LEAs, violating a
+core assumption of standard regression models. To address this, we
+introduced a spatial modelling approach using Conditional Autoregressive
+(CAR) priors. This model built upon the covariates included in Model 2
+and incorporated spatially structured random effects via an adjacency
+matrix representing geographical contiguity among LEAs. The CAR prior
+allows neighbouring areas to ``borrow strength'' from each other by
+sharing information, thus improving parameter estimation in areas with
+sparse or noisy data. Because spatial models are more complex and prone
+to convergence issues, we extended the MCMC sampling regime to 30,000
+iterations per chain with 10,000 warm-up iterations, resulting in a
+total of 80,000 post-warmup draws. We also increased adapt\_delta to
+0.999 and set max\_treedepth to 20 to stabilize sampling using the
+No-U-Turn Sampler (NUTS). This spatially informed model was crucial for
+appropriately accounting for geographic dependencies in vaccination
+rates that may arise from shared infrastructure, regional policies, or
+cultural clustering.
+
+Primary\_Vax\_Rate \textasciitilde{} age\_12to17\_logratio +
+age\_18to54\_logratio + age\_55to64\_logratio + age\_65to70\_logratio +
+edu\_NoFormal\_logratio + edu\_Primary\_logratio +
+edu\_UpperSecondary\_logratio + edu\_Apprenticeship\_logratio +
+edu\_HonoursBachelor\_logratio + health\_VeryBad\_logratio +
+health\_Bad\_logratio + health\_Fair\_logratio + health\_Good\_logratio
++ Wt\_accessibility\_Initial\_Vacc + car(lea\_mat, gr = lea\_id)
+
+To further capture the socioeconomic context beyond individual-level
+education indicators, the fourth model introduced a deprivation index,
+representing a composite measure of material and social disadvantage at
+the area level. This variable was added to the extended multivariable
+model (Model 2) and allowed us to quantify how deprivation might
+influence vaccine uptake independently of individual education. The
+deprivation index was not compositional in nature, so it was included in
+its raw form. This model retained the beta regression framework and
+standard MCMC settings. By disentangling the effects of both individual
+(e.g., education, health) and area-level (e.g., deprivation)
+determinants, this model aimed to improve explanatory power and helped
+identify if communities could potentially be vulnerable to lower vaccine
+uptake due to systemic disadvantage.
+
+Primary\_Vax\_Rate \textasciitilde{} age\_12to17\_logratio +
+age\_18to54\_logratio + age\_55to64\_logratio + age\_65to70\_logratio +
+edu\_NoFormal\_logratio + edu\_Primary\_logratio +
+edu\_UpperSecondary\_logratio + edu\_Apprenticeship\_logratio +
+edu\_HonoursBachelor\_logratio + health\_VeryBad\_logratio +
+health\_Bad\_logratio + health\_Fair\_logratio + health\_Good\_logratio
++ male\_logratio + Wt\_accessibility\_Initial\_Vacc + Depriviation
+
+With model 5 we departed from the additive structure of previous models
+and explicitly modelled the joint distribution of age and gender. This
+approach allowed us to identify group-specific patterns that could not
+be detected when age and sex were considered independently. For example,
+vaccine hesitancy might be disproportionately higher among younger males
+compared to older females. To capture such differential effects, we
+included ALR-transformed proportions of eight age-gender combinations
+(e.g., females aged 12--17, males aged 55--64, etc.), using females and
+males aged 71+ as the reference group. This model did not include
+additional covariates like education or health and focused solely on the
+interaction structure. Like earlier models, it employed beta regression
+with a standard MCMC sampling regime of 4,000 post-warmup draws. This
+model was aimed at offering a more granular understanding of population
+heterogeneity in vaccine uptake.
+
+Primary\_Vax\_Rate \textasciitilde{} alr\_age\_12to17\_females +
+alr\_age\_18to54\_females + alr\_age\_55to64\_females +
+alr\_age\_65to70\_females + alr\_age\_12to17\_males +
+alr\_age\_18to54\_males + alr\_age\_55to64\_males +
+alr\_age\_65to70\_males
+
+While the previous models were cross-sectional in nature, model 6 was
+used to introduce a longitudinal perspective to capture how vaccination
+rates evolved over time within each LEA. We observed that vaccination
+uptake followed a characteristic sigmoidal (S-shaped) growth
+curve---slow at first, then rapidly increasing before eventually
+plateauing. To model this trajectory, we specified a four-parameter
+logistic function within a hierarchical Bayesian framework. The function
+estimated key curve parameters: base (the lower asymptote or initial
+vaccination rate), Asym (the upper asymptote or finalsaturation level),
+xmid (the inflection point where uptake accelerates most rapidly), and
+scal (the spread or steepness of the curve). LEA-specific random
+intercepts were included for base, Asym, and xmid, while scal was
+assumed to be globally constant due to model identifiability
+constraints. Furthermore, we modeled Asym as a function of
+ALR-transformed covariates (e.g., age and gender composition) to
+understand how basic demographic characteristics shape the final uptake
+level.
+
+Priors for the nonlinear parameters were carefully chosen based on
+empirical inspection of the data. Specifically, we set a normal(0.8,
+0.1) prior on Asym, reflecting the assumption that final vaccine
+coverage would typically plateau around 80\%, with moderate uncertainty.
+This aligns with observed saturation levels in many LEAs. For xmid, we
+used a normal(6, 2) prior, based on the understanding that the
+inflection point---the month with the fastest uptake---was likely to
+occur within the first half-year after vaccine rollout. This prior
+captures temporal heterogeneity while remaining centered around
+plausible empirical timing. Finally, we applied an exponential(1) prior
+(constrained to be positive via lb = 0) on scal, ensuring strictly
+positive steepness while favoring gradual curves unless strong data
+signals indicate rapid growth.
+
+The model was fitted to 4,980 monthly observations across 166 LEAs using
+the No-U-Turn Sampler (NUTS) with four chains of 4,000 iterations (2,000
+warm-up), yielding 8,000 post-warmup draws. This hierarchical model
+would allow us to disentangle local variations in the speed and extent
+of vaccine uptake over time, offering valuable insights into both
+structural and behavioral determinants of vaccination trajectories.
 
 Primary\_Vax\_Rate \textasciitilde{} base + (Asym - base)/(1 + exp((xmid
-- Month\_num)/scal))
-
-where base represents the lower asymptote (initial vaccination rate),
-Asym represents the upper asymptote (maximum vaccination rate), xmid
-denotes the inflection point (i.e., the month at which uptake growth is
-steepest), and scal controls the slope or spread of the curve.
-
-To account for spatial variation and demographic influences, the model
-incorporated hierarchical structure with group-level random intercepts
-for each LEA. Asym was modeled as a function of demographic covariates
-including ALR transformed age distribution ratios and male population
-ratio, with LEA-specific random intercepts. Both the base and xmid
-included LEA-specific random effects to capture regional variation in
-initial uptake rates and timing of vaccination acceleration. The scal
-was estimated globally across all regions.
-
-The analysis employed longitudinal data with 4,980 observations across
-166 LEAs over multiple time points and the model was fitted using
-No-U-Turn Sampler (NUTS) with 4 chains, each with 4,000 iterations and
-2,000 warmup iterations, yielding 8,000 post-warmup draws.
-
-The models were all implemented in brms (Bayesian Regression Models
-using Stan) (Heiss n.d.; {``Parameterization of {Response}
-{Distributions} in Brms''} n.d.) package in R as it offers a flexible
-Bayesian framework ideal for modeling complex structures like spatial,
-temporal, and hierarchical effects; it supports beta regression for
-proportion outcomes and can easily extend to other model families,
-making it well-suited for our geographically structured vaccination
-data.
+- Month\_num)/scal
 
 \section{Results}\label{results}
 
-\subsubsection{Exploratory data
-analysis}\label{exploratory-data-analysis}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.5\textwidth]{Figures/Final_Rate_Primary_Dose.png}
-  \caption{LEA wise primary dose final vaccination proportion}
-  \label{fig:Final_Rate_Primary_Dose}
-\end{figure}
+\subsubsection{Descriptive Statistics}\label{descriptive-statistics}
 
 \subsubsection{Model}\label{model-1}
 
-In the initial beta regression model, we examined the relationship of
-primary vaccination rate with age and sex. Younger age groups
-demonstrated significantly lower vaccination rates compared to the
-reference category, with particularly strong negative effects for the
-18-54 year age group (-1.42 log-odds, 95\% CI: -1.75 to -1.07) and the
-12-17 year age group (-0.60 log-odds, 95\% CI: -1.00 to -0.24). The
-55-64 year olds exhibited substantially higher vaccination rates (2.48
-log-odds, 95\% CI: 1.49 to 3.45), a strong positive predictor in the
-model. The 65-70 year olds showed a modest negative coefficient (-0.42
-log-odds, 95\% CI: -1.11 to 0.30), though the credible interval (CI)
-included zero, suggesting uncertainty around this effect. Male
-proportion demonstrated a negative association with vaccination rates
-(-1.77 log-odds, 95\% CI: -3.52 to -0.08), with the CI marginally
-excluding zero.
+Model 1- Younger age groups demonstrated significantly lower vaccination
+rates compared to the reference category, with particularly strong
+negative effects for the 18-54 year age group and the 12-17 year age
+group. The 55-64 year old variable was a strong positive predictor in
+the model. The credible interval (CI) for 65-70 year olds included zero,
+suggesting uncertainty around this effect. Male proportion demonstrated
+a negative association with vaccination rates but the CI included zero.
+The marginal effects plots are used to understand the impact to the
+predictors better.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{Figures/Model_1.png}
+  \caption{Model 1 Summary}
+  \label{fig:Model_1}
+\end{figure}
 
 \begin{figure}[htbp]
   \centering
@@ -551,29 +636,48 @@ excluding zero.
   \label{fig:Marginal_Effects_Base_Model}
 \end{figure}
 
-In the model adjusted with health, education level and accessibility to
-initial vaccination center, we could see that the age effects persist
-but attenuated slightly while revealing additional significant
-associations. Upper secondary education emerged as a significant
-positive predictor (1.34 log-odds, 95\% CI: 0.53 to 2.16), suggesting
-higher vaccination rates among populations with this educational level.
-Conversely, areas with higher proportions of individuals with no formal
-education showed lower vaccination rates (-0.47 log-odds, 95\% CI: -0.83
-to -0.11). Health status variables showed no statistically significant
-associations with vaccination rates. While very bad and bad health were
-positively associated, and fair/good health negatively associated, all
-credible intervals included zero, indicating high uncertainty and weak
-effects.The male proportion effect changed dramatically between models,
-shifting from negative in the initial model to positive (1.39 log-odds,
-95\% CI: -0.73 to 3.45) in the adjusted model, though with substantial
-uncertainty as evidenced by the wide confidence interval. Accessibility
-to initial vaccination centers showed negligible impact (-0.03 log-odds,
-95\% CI: -0.09 to 0.03), with the credible interval centered on zero,
-suggesting that geographic accessibility was not a significant barrier
-to vaccination uptake in our population. The precision parameter (phi)
-increased from 57.18 (95\% CI: 45.23-70.46) in the initial model to
-77.74 (95\% CI: 61.18-97.02) in the expanded model, indicating improved
-model fit and reduced residual variance.
+Each curve's starting position represents the log-ratio of that age
+group compared to the elderly reference category, revealing Ireland's
+uneven age distribution across Local Electoral Areas. The teal curve
+(ages 55-64) starts farthest right at approximately +1.8, indicating
+that these areas typically have about 6 times more people aged 55-64
+than seniors (e\^{}1.8 approx 6). This pattern is common in
+workforce-heavy LEAs where working-age populations dominate. Conversely,
+the pink curve (ages 12-17) starts in negative territory around -0.3,
+showing fewer adolescents than seniors in most areas---characteristic of
+aging communities or retirement-focused regions. Critically, this
+demographic baseline has direct implications for vaccination outcomes:
+regions with proportionally more adolescents (12-17) compared to the
+elderly (71+) tend to have lower vaccination rates. This relationship
+emerges because the compositional constraints mean that areas with
+higher youth populations necessarily have different age structures that
+correlate with vaccination hesitancy patterns. As you move along the
+x-axis (representing underlying gradients like socioeconomic status,
+education, or area deprivation), each curve shows how vaccination
+probability changes across different demographic contexts. The crossing
+points where curves intersect reveal critical thresholds where both
+demographic composition and vaccination behavior shift
+dramatically---identifying socioeconomic tipping points crucial for
+targeted public health interventions. This log-ratio approach is
+particularly valuable because it accounts for the compositional nature
+of demographic data: since all age proportions must sum to 1, increasing
+one group necessarily affects others, and the extreme positions on the
+x-axis highlight areas where certain age ratios dominate (positive
+values) or are scarce (negative values) relative to the senior
+population.
+
+Model 2 -- We could see that the age effects persist but attenuated
+slightly while revealing additional significant associations. Upper
+secondary education emerged as a significant positive predictor,
+suggesting higher vaccination rates among populations with this
+educational level. Conversely, areas with higher proportions of
+individuals with no formal education showed lower vaccination rates.
+Health status variables showed no statistically significant associations
+with vaccination rates. The male proportion effect changed to be
+positive but was still non-significant. Accessibility to initial
+vaccination centres showed non-significant impact suggesting that
+geographic accessibility was not a significant barrier to vaccination
+uptake in our population.
 
 \begin{figure}[htbp]
   \centering
@@ -586,53 +690,52 @@ model fit and reduced residual variance.
   \label{fig:Marginal_Effects_Adjusted_Model}
 \end{figure}
 
-Mapping the residuals from the adjusted beta regression model revealed
-clear spatial clustering---neighboring LEAs often shared similar under-
-or over-predictions. To formally test for spatial autocorrelation, we
-conducted a Moran's I test on the residuals: Moran's I = 0.1906, p
-\textless{} 0.001 --- indicating significant positive spatial
-autocorrelation in residuals (i.e., LEAs geographically close to one
-another tend to have similar unexplained vaccination patterns) This
-confirmed that standard regression models failed to fully account for
-spatial dependencies.
+Model 3 - To formally test for spatial autocorrelation, we conducted a
+Moran's I test on the residuals: Moran's I = 0.1906, p \textless{} 0.001
+--- indicating significant positive spatial autocorrelation in residuals
+(i.e., LEAs geographically close to one another tend to have similar
+unexplained vaccination patterns) This confirmed that standard
+regression models failed to fully account for spatial dependencies,
+prompting the use of a CAR model, introducing a structured spatial
+random effect term that smooths values across neighboring areas The
+spatial correlation parameter (car) was estimated at 0.56 (95\% CI: 0.03
+to 0.99), suggesting moderate positive spatial autocorrelation between
+neighboring LEAs, i.e., 56\% of unexplained variance was attributable to
+spatial autocorrelation, indicating strong neighborhood-level
+similarities. This spatial clustering may reflect unmeasured factors
+such as local social networks, community attitudes, healthcare provider
+practices, or other geographically-clustered influences on vaccination
+behavior. The relatively modest spatial standard deviation (0.21)
+indicates that while spatial correlation exists, the magnitude of
+unexplained spatial variation is limited, suggesting that the measured
+covariates capture much of the systematic variation in vaccination
+rates. Demographic patterns remained robust: Age 55--64 still had the
+strongest positive effect on uptake. Upper secondary education, remains
+a large positive driver and healthcare proximity and healthcare outcomes
+continued to show near-zero effects. The consistency of these effects
+across spatial and non-spatial models suggests that educational
+disparities in vaccination uptake operate independently of geographic
+clustering and supply-side geographic barriers and self-reported health
+outcomes were not significant determinants of vaccination disparities.
 
-To directly address spatial clustering, we implemented a CAR model,
-introducing a structured spatial random effect term that smooths values
-across neighboring areas. The spatial correlation parameter (car) was
-estimated at 0.56 (95\% CI: 0.03 to 0.99), suggesting moderate positive
-spatial autocorrelation between neighboring LEAs, i.e., 56\% of
-unexplained variance was attributable to spatial autocorrelation,
-indicating strong neighborhood-level similarities. This spatial
-clustering may reflect unmeasured factors such as local social networks,
-community attitudes, healthcare provider practices, or other
-geographically-clustered influences on vaccination behavior. The
-relatively modest spatial standard deviation (0.21) indicates that while
-spatial correlation exists, the magnitude of unexplained spatial
-variation is limited, suggesting that the measured covariates capture
-much of the systematic variation in vaccination rates. Demographic
-patterns remained robust: Age 55--64 still had the strongest positive
-effect on uptake. Upper secondary education, remains a large positive
-driver and healthcare proximity and healthcare outcomes continued to
-show near-zero effects. The consistency of these effects across spatial
-and non-spatial models suggests that educational disparities in
-vaccination uptake operate independently of geographic clustering and
-supply-side geographic barriers and self-reported health outcomes were
-not significant determinants of vaccination disparities.
-
-The inclusion of the deprivation index had minimal impact on previously
-observed demographic and educational patterns. Age, education, health
-and accessibility effects remained consistent with prior models. The
+The inclusion of the Pobal HP Deprivation Index, which measures relative
+affluence and disadvantage across Irish communities using composite
+scores derived from employment, education, housing quality, and
+demographic variables, had minimal impact on vaccination rates despite
+capturing broader socioeconomic conditions at the LEA level. The
 composite deprivation index showed a negligible association with
-vaccination rates (0.01 log-odds, 95\% CI: -0.03 to 0.05), with the CI
-including zero. This finding suggests that area-level socioeconomic
-deprivation, as measured by the composite index, does not provide
-additional explanatory power beyond the specific educational attainment
-variables already included in the model. The minimal effect may indicate
-that educational composition captures the most relevant aspects of
-socioeconomic variation affecting vaccination behaviour, or that
-deprivation effects operate primarily through the measured demographic
-and educational pathways rather than through additional unmeasured
-mechanisms.
+vaccination rates, with confidence intervals including zero, suggesting
+that area-level socioeconomic deprivation does not provide additional
+explanatory power beyond the specific educational attainment variables
+already included in the model. This finding indicates that educational
+composition effectively captures the most relevant aspects of
+socioeconomic variation affecting vaccination behavior, and that
+deprivation effects operate primarily through already-measured
+demographic and educational pathways rather than through additional
+unmeasured mechanisms. The lack of significant association suggests that
+while the Pobal index comprehensively measures community-level
+disadvantage, individual educational characteristics remain the dominant
+socioeconomic predictor of vaccination uptake.
 
 \begin{figure}[htbp]
   \centering
@@ -643,30 +746,13 @@ mechanisms.
 
 The age-sex interaction model revealed striking differences in
 age-vaccination relationships between males and females. Among females,
-younger age groups showed strong negative associations, particularly the
-18-54 year group (-2.17 log-odds, 95\% CI: -4.11 to -0.26), while the
-12-17 year group showed a non-significant negative trend (-0.41
-log-odds, 95\% CI: -1.61 to 0.80). Older female groups demonstrated
-positive associations, with 55-64 year females showing 1.51 log-odds
-(95\% CI: -0.17 to 3.23) and 65-70 year females showing 1.24 log-odds
-(95\% CI: -0.29 to 2.76), though confidence intervals included zero for
-both groups. Younger male groups showed minimal negative effects, with
-12-17 year males at -0.10 log-odds (95\% CI: -1.16 to 1.01) and 18-54
-year males showing a positive coefficient of 0.40 log-odds (95\% CI:
--1.23 to 2.08). The 55-64 year male group demonstrated a positive
-association (1.43 log-odds, 95\% CI: -0.21 to 3.03) similar to their
-female counterparts. However, the 65-70 year male group uniquely showed
-a significant negative association (-1.86 log-odds, 95\% CI: -3.34 to
--0.34), contrasting sharply with the positive trend observed in older
-females. The strong negative association between middle-aged females
-(18-54) and vaccination contrasts with the near-neutral effect for
-middle-aged males, suggesting that vaccine hesitancy patterns differ
-substantially between genders within the same age cohorts. Conversely,
-the significant negative association for older males (65-70) versus
-positive trends for older females indicates that gender effects may
-reverse across age groups, with older men showing unexpectedly lower
-vaccination rates despite generally being considered a high-priority
-group.
+younger age groups showed strong negative associations, with the 18-54
+year group showing significant impact and among men the 65-70 year group
+uniquely showed a significant negative association contrasting sharply
+with the positive trend observed in older females, despite generally
+being considered a high-priority group.These results suggest that
+vaccine hesitancy patterns differ substantially between genders within
+the same age cohorts.
 
 \begin{figure}[htbp]
   \centering
@@ -700,28 +786,16 @@ LEAs and the inflection point random effect standard deviation was only
 patterns across LEAs despite substantial differences in final
 vaccination levels.
 
-The demographic predictors revealed positive associations between all
-covariates and final vaccination rate achievement. We found that 18-54
-year olds showed a moderate positive effect on the asymptote (0.44
-log-odds, 95\% CI: 0.33-0.56), while 55-64 year olds demonstrated a
-stronger positive association (0.57 log-odds, 95\% CI: 0.38-0.76). We
-observed that early retirement age populations (65-70 years) exhibited
-the strongest positive effect among age groups (0.64 log-odds, 95\% CI:
-0.45-0.82). Most notably, we found that male population proportion
-showed the largest positive association with ultimate vaccination rates
-(0.78 log-odds, 95\% CI: 0.58-0.99), indicating that LEAs with higher
-male proportions achieved substantially higher maximum vaccination
-coverage.
-
-The lower asymptote at -3.44 (95\% CI: -3.49 to -3.39) on the logit
-scale, represents the minimal initial vaccination rates at the program's
-outset. Our demographic model maintained temporal stability, with the
-inflection point remaining consistent and the scale parameter showing
-minimal variation. We found that phi was 398.70 (95\% CI: 382.35-415.69)
-which indicates low dispersion in the beta distribution, suggesting that
-our four-parameter logistic function effectively captured the systematic
-variation in vaccination trajectories while accounting for both
-demographic influences and spatial heterogeneity across Ireland's LEAs.
+The demographic predictors revealed significant positive associations
+between all covariates and final vaccination rate achievement. We found
+that more 65-70 years olds with respect to the 71+ year olds exhibited a
+strongest positive effect among age groups. It was also identified that
+LEAs with higher male proportions achieved substantially higher maximum
+vaccination coverage. The lower asymptote at -3.44 (95\% CI: -3.49 to
+-3.39) on the logit scale, represents the minimal initial vaccination
+rates at the program's outset. Our demographic model maintained temporal
+stability, with the inflection point remaining consistent and the scale
+parameter showing minimal variation.
 
 \begin{figure}[htbp]
   \centering
@@ -831,27 +905,11 @@ Dropkin, Greg. 2022. {``Variation in {COVID}-19 Booster Uptake in
 \emph{PLOS ONE} 17 (6): e0270624.
 \url{https://doi.org/10.1371/journal.pone.0270624}.
 
-\bibitem[\citeproctext]{ref-heiss_guide_nodate}
-Heiss, Andrew. n.d. {``A Guide to Modeling Proportions with {Bayesian}
-Beta and Zero-Inflated Beta Regression Models.''} \emph{Andrew Heiss}.
-Accessed June 17, 2025.
-\url{https://www.andrewheiss.com/blog/2021/11/08/beta-regression-guide/}.
-
 \bibitem[\citeproctext]{ref-luo_enhanced_2009}
 Luo, Wei, and Yi Qi. 2009. {``An Enhanced Two-Step Floating Catchment
 Area ({E2SFCA}) Method for Measuring Spatial Accessibility to Primary
 Care Physicians.''} \emph{Health \& Place}.
 \url{https://doi.org/10.1016/j.healthplace.2009.06.002}.
-
-\bibitem[\citeproctext]{ref-noauthor_parameterization_nodate}
-{``Parameterization of {Response} {Distributions} in Brms.''} n.d.
-Accessed June 17, 2025.
-\url{https://paulbuerkner.com/brms/articles/brms_families.html}.
-
-\bibitem[\citeproctext]{ref-noauthor_spatial_nodate}
-{``Spatial Conditional Autoregressive ({CAR}) Structures --- Car.''}
-n.d. Accessed June 17, 2025.
-\url{https://paulbuerkner.com/brms/reference/car.html}.
 
 \bibitem[\citeproctext]{ref-watson_global_2022}
 Watson, Oliver J, Gregory Barnsley, Jaspreet Toor, Alexandra B Hogan,

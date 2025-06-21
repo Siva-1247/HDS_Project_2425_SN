@@ -119,7 +119,7 @@ All models were implemented using the brms, a Bayesian regression modelling inte
 
 The primary outcome was the final rate of primary COVID-19 vaccination (bounded between 0 and 1), with booster dose data available for future extensions. The compositional nature of demographic covariates (e.g., age, sex, education, health) required Additive Log-Ratio (ALR) transformations to avoid issues of perfect multicollinearity due to unit-sum constraints.
 
-All cross-sectional models used Beta regression with a logit link function, which is ideal for modelling proportional data as it ensures predictions remain in (0, 1) while also accounting for heteroskedasticity via a precision parameter (φ). We did not go for zero-inflated beta regression, as our data did not contain exact 0s or 1s
+All cross-sectional models used Beta regression with a logit link function, which is ideal for modelling proportional data as it ensures predictions remain in (0, 1) while also accounting for heteroskedasticity via a precision parameter. We did not go for zero-inflated beta regression, as our data did not contain exact 0s or 1s
 This allowed robust estimation of proportional outcomes while capturing uncertainty in both the mean and spread of the distribution.
 
 Model 1 focussed on basic demographic variables—namely age and gender—relate to the final uptake of the primary COVID-19 vaccine dose across LEAs. Bayesian inference was conducted via MCMC sampling with four chains of 2,000 iterations each (including 1,000 warm-up iterations), resulting in 4,000 post-warmup posterior draws and this was the functions’ default in R.
@@ -179,13 +179,20 @@ Model 1-  Younger age groups demonstrated significantly lower vaccination rates 
 
 \begin{figure}[htbp]
   \centering
+  \includegraphics[width=0.5\textwidth]{Figures/Model_1.png}
+  \caption{Model 1 Summary}
+  \label{fig:Model_1}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
   \includegraphics[width=0.5\textwidth]{Figures/marginal_effects_age0.png}
   \includegraphics[width=0.5\textwidth]{Figures/marginal_effects_sex0.png}
   \caption{Base Model Marginal Effects of Adjusted Model}
   \label{fig:Marginal_Effects_Base_Model}
 \end{figure}
 
-Each curve's starting position represents the log-ratio of that age group compared to the elderly reference category, revealing Ireland's uneven age distribution across Local Electoral Areas. The teal curve (ages 55-64) starts farthest right at approximately +1.8, indicating that these areas typically have about 6 times more people aged 55-64 than seniors (e^1.8 ≈ 6). This pattern is common in workforce-heavy LEAs where working-age populations dominate. Conversely, the pink curve (ages 12-17) starts in negative territory around -0.3, showing fewer adolescents than seniors in most areas—characteristic of aging communities or retirement-focused regions.
+Each curve's starting position represents the log-ratio of that age group compared to the elderly reference category, revealing Ireland's uneven age distribution across Local Electoral Areas. The teal curve (ages 55-64) starts farthest right at approximately +1.8, indicating that these areas typically have about 6 times more people aged 55-64 than seniors (e^1.8 approx 6). This pattern is common in workforce-heavy LEAs where working-age populations dominate. Conversely, the pink curve (ages 12-17) starts in negative territory around -0.3, showing fewer adolescents than seniors in most areas—characteristic of aging communities or retirement-focused regions.
 Critically, this demographic baseline has direct implications for vaccination outcomes: regions with proportionally more adolescents (12-17) compared to the elderly (71+) tend to have lower vaccination rates. This relationship emerges because the compositional constraints mean that areas with higher youth populations necessarily have different age structures that correlate with vaccination hesitancy patterns.
 As you move along the x-axis (representing underlying gradients like socioeconomic status, education, or area deprivation), each curve shows how vaccination probability changes across different demographic contexts. The crossing points where curves intersect reveal critical thresholds where both demographic composition and vaccination behavior shift dramatically—identifying socioeconomic tipping points crucial for targeted public health interventions.
 This log-ratio approach is particularly valuable because it accounts for the compositional nature of demographic data: since all age proportions must sum to 1, increasing one group necessarily affects others, and the extreme positions on the x-axis highlight areas where certain age ratios dominate (positive values) or are scarce (negative values) relative to the senior population.
