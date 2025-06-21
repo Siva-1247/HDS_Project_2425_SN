@@ -157,6 +157,26 @@ p_0age <- ggplot(age_df_0, aes(x = x_val, y = estimate__, color = variable, fill
   ) +
   theme_minimal(base_size = 14)
 
+ggplot(age_df_0, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
+  geom_line(linewidth = 1) +
+  geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
+  labs(
+    title = "Marginal Effects: Age",
+    y = "Predicted Vaccination Rate",
+    color = "Age",
+    fill = "Age"
+  ) +
+  scale_x_continuous(
+    name = "Additive Log-Ratio of Age (baseline: age 71+)",
+    breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3),
+    sec.axis = dup_axis(
+      trans = ~exp(.),
+      labels = function(x) round(exp(x), 1),
+      name = "Delogged Age Ratio (relative to 71+)"
+    )
+  ) +
+  theme_minimal(base_size = 14)
+
 p_age <- ggplot(age_df, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
   geom_line(linewidth = 1) +
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
@@ -386,6 +406,27 @@ nl3_model <- brm(
   iter = 4000,
   control = list(adapt_delta = 0.95)
 )
+
+library(gtsummary)
+library(broom.mixed)
+library(webshot2)
+library(gt)
+
+tbln <- nl3_model %>%
+  tidy(effects = "fixed", conf.int = TRUE) %>%
+  select(term, estimate, conf.low, conf.high) %>%
+  gt::gt() %>%
+  gt::fmt_number(columns = c(estimate, conf.low, conf.high), 
+                 decimals = 3) %>%
+  gt::cols_label(
+    term = "Variable",
+    estimate = "Estimate",
+    conf.low = "95% CI Lower",
+    conf.high = "95% CI Upper"
+  ) %>%
+  gt::tab_header(title = "Temporal Model Results")
+gtsave(tbln, filename = "modelnm_results.html")
+
 library(tidybayes)
 
 lea_effects <- ranef(nl_model)$CSO_LEA %>%
@@ -760,3 +801,156 @@ Final_Rate_Primary_Dose <- leaflet(plot_data) %>%
   )
 
 ggsave("Final_Rate_Primary_Dose.png", plot = Final_Rate_Primary_Dose, width = 8, height = 6, dpi = 300)
+####Model Summaries
+tbl1 <- trial1 %>%
+  tidy(effects = "fixed", conf.int = TRUE) %>%
+  select(term, estimate, conf.low, conf.high) %>%
+  gt::gt() %>%
+  gt::fmt_number(columns = c(estimate, conf.low, conf.high), 
+                 decimals = 3) %>%
+  gt::cols_label(
+    term = "Variable",
+    estimate = "Estimate",
+    conf.low = "95% CI Lower",
+    conf.high = "95% CI Upper"
+  ) %>%
+  gt::tab_header(title = "Basic Demographic Model Results")
+gtsave(tbl1, filename = "model1_results.html")
+
+tbl2 <- trial3 %>%
+  tidy(effects = "fixed", conf.int = TRUE) %>%
+  select(term, estimate, conf.low, conf.high) %>%
+  gt::gt() %>%
+  gt::fmt_number(columns = c(estimate, conf.low, conf.high), 
+                 decimals = 3) %>%
+  gt::cols_label(
+    term = "Variable",
+    estimate = "Estimate",
+    conf.low = "95% CI Lower",
+    conf.high = "95% CI Upper"
+  ) %>%
+  gt::tab_header(title = "Extended Model with Education, Health & Accessibility")
+gtsave(tbl2, filename = "model2_results.html")
+
+tbl3 <- trial1_CAR_fixed %>%
+  tidy(effects = "fixed", conf.int = TRUE) %>%
+  select(term, estimate, conf.low, conf.high) %>%
+  gt::gt() %>%
+  gt::fmt_number(columns = c(estimate, conf.low, conf.high), 
+                 decimals = 3) %>%
+  gt::cols_label(
+    term = "Variable",
+    estimate = "Estimate",
+    conf.low = "95% CI Lower",
+    conf.high = "95% CI Upper"
+  ) %>%
+  gt::tab_header(title = "Spatial CAR Model Results")
+gtsave(tbl3, filename = "model3_results.html")
+
+
+tbl4 <- trial4 %>%
+  tidy(effects = "fixed", conf.int = TRUE) %>%
+  select(term, estimate, conf.low, conf.high) %>%
+  gt::gt() %>%
+  gt::fmt_number(columns = c(estimate, conf.low, conf.high), 
+                 decimals = 3) %>%
+  gt::cols_label(
+    term = "Variable",
+    estimate = "Estimate",
+    conf.low = "95% CI Lower",
+    conf.high = "95% CI Upper"
+  ) %>%
+  gt::tab_header(title = "Extended Model with Deprivation Index")
+gtsave(tbl4, filename = "model4_results.html")
+
+
+
+tbl5 <- trial5 %>%
+  tidy(effects = "fixed", conf.int = TRUE) %>%
+  select(term, estimate, conf.low, conf.high) %>%
+  gt::gt() %>%
+  gt::fmt_number(columns = c(estimate, conf.low, conf.high), 
+                 decimals = 3) %>%
+  gt::cols_label(
+    term = "Variable",
+    estimate = "Estimate",
+    conf.low = "95% CI Lower",
+    conf.high = "95% CI Upper"
+  ) %>%
+  gt::tab_header(title = "Age-Gender Stratified Model (ALR Transformed)")
+gtsave(tbl5, filename = "model5_results.html")
+
+
+library(modelsummary)
+
+# Compare all models
+model_list <- list(
+  "Basic Demographics" = trial1,
+  "Extended" = trial3,
+  "Spatial CAR" = trial1_CAR_fixed,
+  "With Deprivation" = trial4,
+  "Age-Gender Stratified" = trial5
+)
+
+modelsummary(
+  model_list,
+  fmt = 3,
+  statistic = "conf.int",
+  conf_level = 0.95,
+  title = "Comparison of All Vaccination Rate Models",
+  notes = c("95% credible intervals in brackets.", 
+            "All models use Beta regression with logit link.",
+            "ALR = Additive Log-Ratio transformation")
+)
+
+# 4-parameter logistic function
+logistic_4p <- function(x, base, Asym, xmid, scal) {
+  base + (Asym - base) / (1 + exp((xmid - x) / scal))
+}
+
+# Time values (e.g., months since rollout)
+x_vals <- seq(0, 12, length.out = 200)
+
+# Parameter sets for illustration
+param_grid <- expand.grid(
+  param = c("base", "Asym", "xmid", "scal"),
+  variant = c("low", "baseline", "high"),
+  stringsAsFactors = FALSE
+)
+
+# Define parameter variations
+param_values <- list(
+  base     = c(low = 0.0, baseline = 0.1, high = 0.2),
+  Asym     = c(low = 0.7, baseline = 0.8, high = 0.9),
+  xmid     = c(low = 4,   baseline = 6,   high = 8),
+  scal     = c(low = 0.8, baseline = 1.5, high = 3.0)
+)
+
+# Baseline values for all parameters
+baseline_params <- list(base = 0.1, Asym = 0.8, xmid = 6, scal = 1.5)
+
+curve_data <- param_grid %>%
+  rowwise() %>%
+  mutate(
+    values = list({
+      p <- baseline_params
+      p[[param]] <- param_values[[param]][[variant]]
+      y <- logistic_4p(x_vals, base = p$base, Asym = p$Asym, xmid = p$xmid, scal = p$scal)
+      tibble(x = x_vals, y = y, variant = variant)
+    })
+  ) %>%
+  unnest(values, names_sep = "_")
+
+# Plot for each parameter variation
+sigmoid_curve <- ggplot(curve_data, aes(x = values_x, y = values_y, color = variant)) +
+  geom_line(linewidth = 1.2) +
+  facet_wrap(~ param, scales = "free_y") +
+  scale_color_manual(values = c("low" = "red", "baseline" = "black", "high" = "blue")) +
+  labs(
+    title = "Effect of 4-Parameter Logistic Components on Vaccination Uptake Curves",
+    x = "Time (e.g., Months Since Rollout)",
+    y = "Vaccination Uptake",
+    color = "Parameter Level"
+  ) +
+  theme_minimal(base_size = 14)
+ggsave("sigmoid_curve.png", plot = sigmoid_curve, width = 8, height = 6, dpi = 300)
