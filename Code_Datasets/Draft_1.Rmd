@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: Geospatial Analysis of COVID-19 Vaccination, A Neighbourhood Level Analysis in Ireland
 authors:
