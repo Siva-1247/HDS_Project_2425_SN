@@ -317,13 +317,15 @@ The 55-64 year old variable was a strong positive predictor in the model. The cr
   \includegraphics[width=0.5\textwidth]{Figures/marginal_effects_age0.png}
   \includegraphics[width=0.5\textwidth]{Figures/marginal_effects_sex0.png}
   \caption{Base Model Marginal Effects of Adjusted Model}
+  \caption{Note: Log-ratios reflect the natural logarithm of the proportion of a group relative to the baseline group. This approach allows for comparison within compositional data.}
   \label{fig:Marginal_Effects_Base_Model}
 \end{figure}
 
-Each curve's starting position represents the log-ratio of that age group compared to the elderly reference category, revealing Ireland's uneven age distribution across Local Electoral Areas. The teal curve (ages 55-64) starts farthest right at approximately +1.8, indicating that these areas typically have about 6 times more people aged 55-64 than seniors (e^1.8 ≈ 6). This pattern is common in workforce-heavy LEAs where working-age populations dominate. Conversely, the pink curve (ages 12-17) starts in negative territory around -0.3, showing fewer adolescents than seniors in most areas—characteristic of aging communities or retirement-focused regions.
-Critically, this demographic baseline has direct implications for vaccination outcomes: regions with proportionally more adolescents (12-17) compared to the elderly (71+) tend to have lower vaccination rates. This relationship emerges because the compositional constraints mean that areas with higher youth populations necessarily have different age structures that correlate with vaccination hesitancy patterns.
-As you move along the x-axis (representing underlying gradients like socioeconomic status, education, or area deprivation), each curve shows how vaccination probability changes across different demographic contexts. The crossing points where curves intersect reveal critical thresholds where both demographic composition and vaccination behavior shift dramatically—identifying socioeconomic tipping points crucial for targeted public health interventions.
-This log-ratio approach is particularly valuable because it accounts for the compositional nature of demographic data: since all age proportions must sum to 1, increasing one group necessarily affects others, and the extreme positions on the x-axis highlight areas where certain age ratios dominate (positive values) or are scarce (negative values) relative to the senior population.
+Each curve’s starting position on the x-axis represents the log-ratio of that age group relative to the elderly reference category (71+), illustrating the compositional distribution of age groups across Ireland’s Local Electoral Areas (LEAs). For instance, the teal curve (ages 55–64) starts farthest to the right, around +1.8, indicating that in many LEAs this group is approximately six times more prevalent than the senior population (exp(1.8) approx 6). This pattern typically appears in workforce-heavy areas with a dominant working-age population. In contrast, the pink curve (ages 12–17) begins around –0.3, reflecting LEAs where adolescents are less numerous than seniors—often seen in aging or retirement-focused regions.
+
+Because age proportions are compositional (summing to 1), increases in one age group imply decreases in others. This structural constraint is captured by the log-ratio approach, which allows meaningful comparisons while preserving the interdependence of demographic groups. The x-axis thus reflects relative demographic composition, while the y-axis shows the predicted outcome on the log odds scale—specifically, the log odds of the mean COVID-19 vaccination rate.
+
+Importantly, LEAs with proportionally more adolescents relative to the elderly often exhibit lower vaccination rates. This is partly driven by the differing vaccine eligibility, uptake behavior, and hesitancy patterns across age groups. As one moves along the x-axis—reflecting underlying gradients such as area deprivation or socioeconomic variation—each curve shows how the log odds of vaccination change with demographic context. Points where the curves cross mark tipping zones where shifts in population structure coincide with shifts in vaccination behavior, offering insights into thresholds where targeted public health interventions may be most effective.
 
 
 Model 2 – We could see that the age effects persist but attenuated slightly while revealing additional significant associations. 
@@ -347,6 +349,7 @@ The male proportion effect changed to be positive but was still non-significant.
   \includegraphics[width=0.3\textwidth]{Figures/marginal_effects_health.png}
   \includegraphics[width=0.3\textwidth]{Figures/marginal_effects_access.png}
   \caption{Marginal Effects of Adjusted Model}
+  \caption{Note: Log-ratios reflect the natural logarithm of the proportion of a group relative to the baseline group. This approach allows for comparison within compositional data.}
   \label{fig:Marginal_Effects_Adjusted_Model}
 \end{figure}
 
@@ -397,6 +400,7 @@ The age-sex interaction model revealed striking differences in age-vaccination r
   \includegraphics[width=0.5\textwidth]{Figures/plot_male_jd.png}
   \includegraphics[width=0.5\textwidth]{Figures/plot_female_jd.png}
   \caption{Marginal Effects of Age \& Sex Interaction Model}
+  \caption{Note: Log-ratios reflect the natural logarithm of the proportion of a group relative to the baseline group. This approach allows for comparison within compositional data.}
   \label{fig:Marginal_Effects_Interaction_Model}
 \end{figure}
 

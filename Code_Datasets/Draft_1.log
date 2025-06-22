@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.6.17)  21 JUN 2025 22:55
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.6.17)  22 JUN 2025 21:43
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -308,8 +308,11 @@ File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) (c:/ProgramData/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-04-14 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count307
+) (./Draft_1.aux
+
+LaTeX Warning: Label `fig:Model_4' multiply defined.
+
 )
-No file Draft_1.aux.
 \openout1 = `Draft_1.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 80.
@@ -397,6 +400,7 @@ LaTeX Font Info:    ... okay on input line 80.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 Package hyperref Info: Link coloring OFF on input line 80.
+(./Draft_1.out) (./Draft_1.out)
 \@outlinefile=\write3
 \openout3 = `Draft_1.out'.
 
@@ -500,13 +504,73 @@ LaTeX Font Warning: Font shape `T1/lmr/bx/sc' undefined
 
 
 {c:/ProgramData/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
 
 Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/9'.
 (microtype)             Ignoring protrusion settings for this character.
 [2]
-Underfull \hbox (badness 2334) in paragraph at lines 290--294
-[]\T1/lmr/bx/n/10 (+20) Self-Reported Health Sta-tus: \T1/lmr/m/n/10 (+20) Data on gen-eral health con-di-tions were ob-tained from the
+
+[3]
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 350.
+(c:/ProgramData/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+
+[4{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+[5]
+
+[6{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}]
+Underfull \hbox (badness 6893) in paragraph at lines 650--653
+[]\T1/lmr/m/n/10 (+20) Primary_Vax_Rate ~ age_12to17_logratio + age_18to54_logratio + age_55to64_logratio +
+ []
+
+
+Underfull \hbox (badness 6893) in paragraph at lines 666--673
+[]\T1/lmr/m/n/10 (+20) Primary_Vax_Rate ~ age_12to17_logratio + age_18to54_logratio + age_55to64_logratio +
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 666--673
+\T1/lmr/m/n/10 (+20) + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio
+ []
+
+
+Underfull \hbox (badness 6348) in paragraph at lines 666--673
+\T1/lmr/m/n/10 (+20) + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +
+ []
+
+
+
+[7]
+Underfull \hbox (badness 6893) in paragraph at lines 694--701
+[]\T1/lmr/m/n/10 (+20) Primary_Vax_Rate ~ age_12to17_logratio + age_18to54_logratio + age_55to64_logratio +
+ []
+
+
+Underfull \hbox (badness 3536) in paragraph at lines 694--701
+\T1/lmr/m/n/10 (+20) + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio +
+ []
+
+
+Underfull \hbox (badness 6893) in paragraph at lines 716--723
+[]\T1/lmr/m/n/10 (+20) Primary_Vax_Rate ~ age_12to17_logratio + age_18to54_logratio + age_55to64_logratio +
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 716--723
+\T1/lmr/m/n/10 (+20) + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio
+ []
+
+
+Underfull \hbox (badness 6348) in paragraph at lines 716--723
+\T1/lmr/m/n/10 (+20) + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +
  []
 
 
@@ -514,35 +578,275 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 
-[3]
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 387.
-(c:/ProgramData/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
-File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
+[8]
+<Figures/sigmoid_curve.png, id=95, 578.16pt x 433.62pt>
+File: Figures/sigmoid_curve.png Graphic file (type png)
+<use Figures/sigmoid_curve.png>
+Package pdftex.def Info: Figures/sigmoid_curve.png  used on input line 807.
+(pdftex.def)             Requested size: 375.80542pt x 281.84966pt.
 
-[4{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}]
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 814.
 
-[5{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/ProgramData/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}]
 
-! LaTeX Error: Unicode character φ (U+03C6)
-               not set up for use with LaTeX.
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.570 ...kedasticity via a precision parameter (φ
-                                                  ). We did not go for
-You may provide a definition with
-\DeclareUnicodeCharacter 
+[9 <./Figures/sigmoid_curve.png>]
+<Figures/age_proportion_12to17.png, id=103, 1081.03876pt x 426.393pt>
+File: Figures/age_proportion_12to17.png Graphic file (type png)
+<use Figures/age_proportion_12to17.png>
+Package pdftex.def Info: Figures/age_proportion_12to17.png  used on input line 840.
+(pdftex.def)             Requested size: 187.89912pt x 74.1124pt.
+<Figures/age_proportion_18to54.png, id=104, 1081.03876pt x 426.393pt>
+File: Figures/age_proportion_18to54.png Graphic file (type png)
+<use Figures/age_proportion_18to54.png>
+Package pdftex.def Info: Figures/age_proportion_18to54.png  used on input line 841.
+(pdftex.def)             Requested size: 187.89912pt x 74.1124pt.
+<Figures/age_proportion_55to64.png, id=105, 1081.03876pt x 426.393pt>
+File: Figures/age_proportion_55to64.png Graphic file (type png)
+<use Figures/age_proportion_55to64.png>
+Package pdftex.def Info: Figures/age_proportion_55to64.png  used on input line 847.
+(pdftex.def)             Requested size: 187.89912pt x 74.1124pt.
+<Figures/age_proportion_65to70.png, id=106, 1081.03876pt x 426.393pt>
+File: Figures/age_proportion_65to70.png Graphic file (type png)
+<use Figures/age_proportion_65to70.png>
+Package pdftex.def Info: Figures/age_proportion_65to70.png  used on input line 848.
+(pdftex.def)             Requested size: 187.89912pt x 74.1124pt.
+<Figures/age_proportion_71plus.png, id=107, 1081.03876pt x 426.393pt>
+File: Figures/age_proportion_71plus.png Graphic file (type png)
+<use Figures/age_proportion_71plus.png>
+Package pdftex.def Info: Figures/age_proportion_71plus.png  used on input line 854.
+(pdftex.def)             Requested size: 281.85585pt x 111.17186pt.
 
- 
+
+[10 <./Figures/age_proportion_12to17.png> <./Figures/age_proportion_18to54.png> <./Figures/age_proportion_55to64.png> <./Figures/age_proportion_65to70.png> <./Figures/age_proportion_71plus.png>]
+<Figures/health_proportion_VeryBad.png, id=120, 1081.03876pt x 426.393pt>
+File: Figures/health_proportion_VeryBad.png Graphic file (type png)
+<use Figures/health_proportion_VeryBad.png>
+Package pdftex.def Info: Figures/health_proportion_VeryBad.png  used on input line 908.
+(pdftex.def)             Requested size: 234.87749pt x 92.64214pt.
+<Figures/health_proportion_bad.png, id=121, 1081.03876pt x 426.393pt>
+File: Figures/health_proportion_bad.png Graphic file (type png)
+<use Figures/health_proportion_bad.png>
+Package pdftex.def Info: Figures/health_proportion_bad.png  used on input line 909.
+(pdftex.def)             Requested size: 234.87749pt x 92.64214pt.
+<Figures/health_proportion_fair.png, id=122, 1081.03876pt x 426.393pt>
+File: Figures/health_proportion_fair.png Graphic file (type png)
+<use Figures/health_proportion_fair.png>
+Package pdftex.def Info: Figures/health_proportion_fair.png  used on input line 910.
+(pdftex.def)             Requested size: 234.87749pt x 92.64214pt.
+<Figures/health_proportion_good.png, id=123, 1081.03876pt x 426.393pt>
+File: Figures/health_proportion_good.png Graphic file (type png)
+<use Figures/health_proportion_good.png>
+Package pdftex.def Info: Figures/health_proportion_good.png  used on input line 911.
+(pdftex.def)             Requested size: 234.87749pt x 92.64214pt.
+<Figures/health_proportion_VeryGood.png, id=124, 1081.03876pt x 426.393pt>
+File: Figures/health_proportion_VeryGood.png Graphic file (type png)
+<use Figures/health_proportion_VeryGood.png>
+Package pdftex.def Info: Figures/health_proportion_VeryGood.png  used on input line 912.
+(pdftex.def)             Requested size: 234.87749pt x 92.64214pt.
+<Figures/deprivation_index.png, id=125, 688.37175pt x 426.393pt>
+File: Figures/deprivation_index.png Graphic file (type png)
+<use Figures/deprivation_index.png>
+Package pdftex.def Info: Figures/deprivation_index.png  used on input line 951.
+(pdftex.def)             Requested size: 187.89912pt x 116.38985pt.
+<Figures/female_unemployment_rate.png, id=126, 688.37175pt x 426.393pt>
+File: Figures/female_unemployment_rate.png Graphic file (type png)
+<use Figures/female_unemployment_rate.png>
+Package pdftex.def Info: Figures/female_unemployment_rate.png  used on input line 952.
+(pdftex.def)             Requested size: 187.89912pt x 116.38985pt.
+<Figures/male_unemployment_rate.png, id=127, 688.37175pt x 426.393pt>
+File: Figures/male_unemployment_rate.png Graphic file (type png)
+<use Figures/male_unemployment_rate.png>
+Package pdftex.def Info: Figures/male_unemployment_rate.png  used on input line 953.
+(pdftex.def)             Requested size: 187.89912pt x 116.38985pt.
+<Figures/Model_1.png, id=128, 432.11438pt x 289.83281pt>
+File: Figures/Model_1.png Graphic file (type png)
+<use Figures/Model_1.png>
+Package pdftex.def Info: Figures/Model_1.png  used on input line 967.
+(pdftex.def)             Requested size: 375.80542pt x 252.07289pt.
+<Figures/marginal_effects_age0.png, id=129, 578.16pt x 433.62pt>
+File: Figures/marginal_effects_age0.png Graphic file (type png)
+<use Figures/marginal_effects_age0.png>
+Package pdftex.def Info: Figures/marginal_effects_age0.png  used on input line 981.
+(pdftex.def)             Requested size: 234.87749pt x 176.15768pt.
+<Figures/marginal_effects_sex0.png, id=130, 578.16pt x 433.62pt>
+File: Figures/marginal_effects_sex0.png Graphic file (type png)
+<use Figures/marginal_effects_sex0.png>
+Package pdftex.def Info: Figures/marginal_effects_sex0.png  used on input line 982.
+(pdftex.def)             Requested size: 234.87749pt x 176.15768pt.
+
+Underfull \vbox (badness 1546) has occurred while \output is active []
+
+
+
+[11]
+
+[12 <./Figures/health_proportion_VeryBad.png> <./Figures/health_proportion_bad.png> <./Figures/health_proportion_fair.png> <./Figures/health_proportion_good.png> <./Figures/health_proportion_VeryGood.png>]
+
+[13 <./Figures/deprivation_index.png (PNG copy)> <./Figures/female_unemployment_rate.png (PNG copy)> <./Figures/male_unemployment_rate.png (PNG copy)> <./Figures/Model_1.png>]
+<Figures/Model_2.png, id=153, 495.35063pt x 660.96938pt>
+File: Figures/Model_2.png Graphic file (type png)
+<use Figures/Model_2.png>
+Package pdftex.def Info: Figures/Model_2.png  used on input line 1022.
+(pdftex.def)             Requested size: 375.80542pt x 501.4544pt.
+<Figures/marginal_effects_age.png, id=154, 578.16pt x 433.62pt>
+File: Figures/marginal_effects_age.png Graphic file (type png)
+<use Figures/marginal_effects_age.png>
+Package pdftex.def Info: Figures/marginal_effects_age.png  used on input line 1040.
+(pdftex.def)             Requested size: 140.92792pt x 105.69196pt.
+<Figures/marginal_effects_sex.png, id=155, 578.16pt x 433.62pt>
+File: Figures/marginal_effects_sex.png Graphic file (type png)
+<use Figures/marginal_effects_sex.png>
+Package pdftex.def Info: Figures/marginal_effects_sex.png  used on input line 1041.
+(pdftex.def)             Requested size: 140.92792pt x 105.69196pt.
+<Figures/marginal_effects_education.png, id=156, 578.16pt x 433.62pt>
+File: Figures/marginal_effects_education.png Graphic file (type png)
+<use Figures/marginal_effects_education.png>
+Package pdftex.def Info: Figures/marginal_effects_education.png  used on input line 1042.
+(pdftex.def)             Requested size: 140.92792pt x 105.69196pt.
+<Figures/marginal_effects_health.png, id=157, 578.16pt x 433.62pt>
+File: Figures/marginal_effects_health.png Graphic file (type png)
+<use Figures/marginal_effects_health.png>
+Package pdftex.def Info: Figures/marginal_effects_health.png  used on input line 1043.
+(pdftex.def)             Requested size: 140.92792pt x 105.69196pt.
+<Figures/marginal_effects_access.png, id=158, 578.16pt x 433.62pt>
+File: Figures/marginal_effects_access.png Graphic file (type png)
+<use Figures/marginal_effects_access.png>
+Package pdftex.def Info: Figures/marginal_effects_access.png  used on input line 1044.
+(pdftex.def)             Requested size: 140.92792pt x 105.69196pt.
+<Figures/Model_3.png, id=159, 568.37344pt x 621.82312pt>
+File: Figures/Model_3.png Graphic file (type png)
+<use Figures/Model_3.png>
+Package pdftex.def Info: Figures/Model_3.png  used on input line 1065.
+(pdftex.def)             Requested size: 375.80542pt x 411.16357pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+[14 <./Figures/marginal_effects_age0.png> <./Figures/marginal_effects_sex0.png>]
+
+[15 <./Figures/Model_2.png>]
+<Figures/Model_4.png, id=173, 945.5325pt x 688.82344pt>
+File: Figures/Model_4.png Graphic file (type png)
+<use Figures/Model_4.png>
+Package pdftex.def Info: Figures/Model_4.png  used on input line 1097.
+(pdftex.def)             Requested size: 375.80542pt x 273.77974pt.
+<Figures/depri_plot.png, id=174, 578.16pt x 433.62pt>
+File: Figures/depri_plot.png Graphic file (type png)
+<use Figures/depri_plot.png>
+Package pdftex.def Info: Figures/depri_plot.png  used on input line 1122.
+(pdftex.def)             Requested size: 375.80542pt x 281.84966pt.
+<Figures/Model_5.png, id=175, 645.16031pt x 432.11438pt>
+File: Figures/Model_5.png Graphic file (type png)
+<use Figures/Model_5.png>
+Package pdftex.def Info: Figures/Model_5.png  used on input line 1139.
+(pdftex.def)             Requested size: 375.80542pt x 251.70125pt.
+<Figures/plot_male_jd.png, id=176, 578.16pt x 433.62pt>
+File: Figures/plot_male_jd.png Graphic file (type png)
+<use Figures/plot_male_jd.png>
+Package pdftex.def Info: Figures/plot_male_jd.png  used on input line 1146.
+(pdftex.def)             Requested size: 234.87749pt x 176.15768pt.
+<Figures/plot_female_jd.png, id=177, 578.16pt x 433.62pt>
+File: Figures/plot_female_jd.png Graphic file (type png)
+<use Figures/plot_female_jd.png>
+Package pdftex.def Info: Figures/plot_female_jd.png  used on input line 1147.
+(pdftex.def)             Requested size: 234.87749pt x 176.15768pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+[16 <./Figures/marginal_effects_age.png> <./Figures/marginal_effects_sex.png> <./Figures/marginal_effects_education.png> <./Figures/marginal_effects_health.png> <./Figures/marginal_effects_access.png>]
+File: Figures/Model_5.png Graphic file (type png)
+<use Figures/Model_5.png>
+Package pdftex.def Info: Figures/Model_5.png  used on input line 1167.
+(pdftex.def)             Requested size: 375.80542pt x 251.70125pt.
+
+
+[17 <./Figures/Model_3.png>]
+
+[18 <./Figures/Model_4.png> <./Figures/depri_plot.png>]
+<Figures/Top_LEA.png, id=203, 578.16pt x 433.62pt>
+File: Figures/Top_LEA.png Graphic file (type png)
+<use Figures/Top_LEA.png>
+Package pdftex.def Info: Figures/Top_LEA.png  used on input line 1196.
+(pdftex.def)             Requested size: 375.80542pt x 281.84966pt.
+<Figures/Bottom_LEA.png, id=204, 578.16pt x 433.62pt>
+File: Figures/Bottom_LEA.png Graphic file (type png)
+<use Figures/Bottom_LEA.png>
+Package pdftex.def Info: Figures/Bottom_LEA.png  used on input line 1203.
+(pdftex.def)             Requested size: 375.80542pt x 281.84966pt.
+
+
+[19 <./Figures/Model_5.png>]
+Underfull \vbox (badness 3078) has occurred while \output is active []
+
+
+
+[20 <./Figures/plot_male_jd.png> <./Figures/plot_female_jd.png>]
+
+[21 <./Figures/Top_LEA.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 1328--1331
+[]\T1/lmr/m/n/10 (+20) Government of Ire-land. 2020. ``COVID-19 Vac-ci-na-tion Strat-egy and Im-ple-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1328--1331
+\T1/lmr/m/n/10 (+20) men-ta-tion Plan.'' []$\T1/lmtt/m/n/10 https : / / www . gov . ie / en / department-[]of-[]health / publications /
+ []
+
+
+Underfull \hbox (badness 6016) in paragraph at lines 1333--1336
+[]\T1/lmr/m/n/10 (+20) Health Pro-tec-tion Surveil-lance Cen-tre. 2021a. ``COVID-19 Vac-ci-na-tion Up-take Re-ports
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1338--1341
+\T1/lmtt/m/n/10 respiratory / coronavirus / novelcoronavirus / vaccination / covid-[]19vaccinationuptakereports /
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1338--1341
+\T1/lmtt/m/n/10 2021 / Vaccination / %20Uptake / %20in / %20Ireland / %20Weekly / %20Report / %20Week / %2052 / %202021 .
+ []
+
+
+Underfull \vbox (badness 4582) has occurred while \output is active []
+
+
+
+[22 <./Figures/Bottom_LEA.png>]
+No file Draft_1.bbl.
+
+
+[23] (./Draft_1.aux)
+ ***********
+LaTeX2e <2025-06-01> patch level 1
+L3 programming layer <2025-05-26>
+ ***********
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package rerunfilecheck Info: File `Draft_1.out' has not changed.
+(rerunfilecheck)             Checksum: 80059510A5D680CF5FF5236D31B389D2;1266.
+ ) 
 Here is how much of TeX's memory you used:
- 12247 strings out of 469824
- 195983 string characters out of 5483040
- 638134 words of memory out of 5000000
- 40211 multiletter control sequences out of 15000+600000
- 676041 words of font info for 147 fonts, out of 8000000 for 9000
+ 12582 strings out of 469824
+ 205737 string characters out of 5483040
+ 637769 words of memory out of 5000000
+ 40496 multiletter control sequences out of 15000+600000
+ 679884 words of font info for 142 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
- 75i,13n,79p,1004b,457s stack positions out of 10000i,1000n,20000p,200000b,200000s
-!  ==> Fatal error occurred, no output PDF file produced!
+ 75i,13n,79p,1004b,545s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
+Output written on Draft_1.pdf (23 pages, 3631342 bytes).
+PDF statistics:
+ 350 PDF objects out of 1000 (max. 8388607)
+ 237 compressed objects within 3 object streams
+ 67 named destinations out of 1000 (max. 500000)
+ 29420 words of extra memory for PDF output out of 29859 (max. 10000000)
+
