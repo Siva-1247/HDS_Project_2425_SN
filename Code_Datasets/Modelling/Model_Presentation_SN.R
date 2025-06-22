@@ -152,30 +152,11 @@ p_0age <- ggplot(age_df_0, aes(x = x_val, y = estimate__, color = variable, fill
     title = "Marginal Effects: Age",
     x = "Additive Log-Ratio of Age (baseline: age 71+)",
     y = "Predicted Vaccination Rate",
-    color = "Age",
-    fill = "Age"
+    color = "Age group log-ratio (vs 71+)",
+    fill = "Age group log-ratio (vs 71+)"
   ) +
   theme_minimal(base_size = 14)
 
-ggplot(age_df_0, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
-  geom_line(linewidth = 1) +
-  geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
-  labs(
-    title = "Marginal Effects: Age",
-    y = "Predicted Vaccination Rate",
-    color = "Age",
-    fill = "Age"
-  ) +
-  scale_x_continuous(
-    name = "Additive Log-Ratio of Age (baseline: age 71+)",
-    breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3),
-    sec.axis = dup_axis(
-      trans = ~exp(.),
-      labels = function(x) round(exp(x), 1),
-      name = "Delogged Age Ratio (relative to 71+)"
-    )
-  ) +
-  theme_minimal(base_size = 14)
 
 p_age <- ggplot(age_df, aes(x = x_val, y = estimate__, color = variable, fill = variable)) +
   geom_line(linewidth = 1) +
@@ -184,8 +165,8 @@ p_age <- ggplot(age_df, aes(x = x_val, y = estimate__, color = variable, fill = 
     title = "Marginal Effects: Age",
     x = "Additive Log-Ratio of Age (baseline: age 71+)",
     y = "Predicted Vaccination Rate",
-    color = "Age",
-    fill = "Age"
+    color = "Age group log-ratio (vs 71+)",
+    fill = "Age group log-ratio (vs 71+)"
   ) +
   theme_minimal(base_size = 14)
 
@@ -199,8 +180,8 @@ p_edu <- ggplot(edu_df, aes(x = x_val, y = estimate__, color = variable, fill = 
     title = "Marginal Effects: Education Levels",
     x = "Additive Log-Ratio of Education Level (baseline: Postgraduate)",
     y = "Predicted Vaccination Rate",
-    color = "Education",
-    fill = "Education"
+    color = "Education level log-ratio (vs Postgraduate)",
+    fill = "Education level log-ratio (vs Postgraduate)"
   ) +
   theme_minimal(base_size = 14)
 
@@ -212,8 +193,8 @@ p_health  <- ggplot(health_df, aes(x = x_val, y = estimate__, color = variable, 
     title = "Marginal Effects: Self-Reported Health Status",
     x = "Additive Log-Ratio of Education Level (baseline: Very_Good)",
     y = "Predicted Vaccination Rate",
-    color = "Health",
-    fill = "Health"
+    color = "Health status log-ratio (vs Very Good)",
+    fill = "Health status log-ratio (vs Very Good)"
   ) +
   theme_minimal(base_size = 14)
 
@@ -224,8 +205,8 @@ p_access <- ggplot(access_df, aes(x = x_val, y = estimate__, color = variable, f
     title = "Marginal Effects: Access",
     x = "Accessibility Score",
     y = "Predicted Vaccination Rate",
-    color = "Accessibility",
-    fill = "Accessibility"
+    color = "Accessibility measure",
+    fill = "Accessibility measure"
   ) +
   theme_minimal(base_size = 14)
 
@@ -236,8 +217,8 @@ p_sex <- ggplot(sex_df, aes(x = x_val, y = estimate__, color = variable, fill = 
     title = "Marginal Effects: Sex",
     x = "Additive Log-Ratio of Male (baseline: Female)",
     y = "Predicted Vaccination Rate",
-    color = "Sex",
-    fill = "Sex"
+    color = "Male vs Female log-ratio of proportions",
+    fill = "Male vs Female log-ratio of proportions"
   ) +
   theme_minimal(base_size = 14)
 
@@ -248,8 +229,8 @@ p_0sex <- ggplot(sex_df_0, aes(x = x_val, y = estimate__, color = variable, fill
     title = "Marginal Effects: Sex",
     x = "Additive Log-Ratio of Male (baseline: Female)",
     y = "Predicted Vaccination Rate",
-    color = "Sex",
-    fill = "Sex"
+    color = "Male vs Female log-ratio of proportions",
+    fill = "Male vs Female log-ratio of proportions"
   ) +
   theme_minimal(base_size = 14)
 
@@ -724,8 +705,8 @@ plot_female <- ggplot(age_female, aes(x = x_val, y = estimate__, color = variabl
     title = "Marginal Effects: Age × Female",
     x = "Additive Log-Ratio of Female Age (baseline: age 71+)",
     y = "Predicted Vaccination Rate",
-    color = "Age × Female",
-    fill = "Age × Female"
+    color = "Female age group log-ratio (vs 71+)",
+    fill = "Female age group log-ratio (vs 71+)"
   ) +
   theme_minimal(base_size = 14)
 
@@ -737,8 +718,8 @@ plot_male <- ggplot(age_male, aes(x = x_val, y = estimate__, color = variable, f
     title = "Marginal Effects: Age × Male",
     x = "Additive Log-Ratio of Male Age (baseline: age 71+)",
     y = "Predicted Vaccination Rate",
-    color = "Age × Male",
-    fill = "Age × Male"
+    color = "Male age group log-ratio (vs 71+)",
+    fill = "Male age group log-ratio (vs 71+)"
   ) +
   theme_minimal(base_size = 14)
 
