@@ -36,22 +36,22 @@ Complementing these behavioural insights, recent studies have begun to quantify 
 Barriers to Vaccination: Ireland’s COVID-19 vaccination campaign was supported by a diversified service delivery network designed to maximise accessibility, equity, and speed of distribution. This network was composed of three primary modes of vaccine administration: mass vaccination centres, general practitioners (GPs), and community pharmacies. The configuration and expansion of these services were shaped by evolving public health priorities, population needs, and logistical feasibility throughout 2021. Three distinct service delivery mechanisms formed the operational backbone of Ireland’s COVID-19 vaccination rollout and were used to develop spatial variables representing healthcare access and vaccination infrastructure:
 
 **Mass Vaccination Centres:**
-A total of 35 large-scale vaccination centres were established across the country to serve as the backbone of the national rollout strategy. These centres operated in sports arenas, conference halls, and other large public venues, enabling high-throughput administration to priority populations, especially during early phases of the campaign. Their geographic distribution was determined by regional population density and accessibility.
+A total of 35 large-scale vaccination centres [@noauthor_covid-19_2021] were established across the country to serve as the backbone of the national rollout strategy. These centres operated in sports arenas, conference halls, and other large public venues, enabling high-throughput administration to priority populations, especially during early phases of the campaign. Their geographic distribution was determined by regional population density and accessibility.
 
 **General Practice Clinics (GPs):**
-General practitioners played a pivotal role in reaching population groups that required continuity of care, personalisation, or proximity-based access. The national registry of GP clinics participating in the vaccination programme included 1,557 sites, spanning both urban and rural regions. Their involvement was particularly crucial in serving older adults, individuals with chronic illnesses, and those less likely to attend mass vaccination centres.
+General practitioners played a pivotal role in reaching population groups that required continuity of care, personalisation, or proximity-based access. The national registry of GP clinics participating in the vaccination programme included 1,557 sites [@noauthor_find_nodate-1], spanning both urban and rural regions. Their involvement was particularly crucial in serving older adults, individuals with chronic illnesses, and those less likely to attend mass vaccination centres.
 
 **Pharmacies:**
-A total of 1,041 pharmacies were authorised to administer COVID-19 vaccines as part of the community-based delivery model. Their inclusion marked a strategic expansion of the vaccination network, leveraging existing infrastructure to facilitate walk-in appointments, flexible scheduling, and enhanced accessibility—particularly for younger adults and working populations. Pharmacies became especially critical from June 2021 onward, when the 18–34 age group became eligible for vaccines outside of scheduled HSE pathways. 
+A total of 1,041 pharmacies [@noauthor_find_nodate] were authorised to administer COVID-19 vaccines as part of the community-based delivery model. Their inclusion marked a strategic expansion of the vaccination network, leveraging existing infrastructure to facilitate walk-in appointments, flexible scheduling, and enhanced accessibility—particularly for younger adults and working populations. Pharmacies became especially critical from June 2021 onward [@psi2022reform], when the 18–34 age group became eligible for vaccines outside of scheduled HSE pathways. 
 Despite Ireland achieving over 90% uptake of at least one COVID-19 vaccine dose among adults by the end of 2021, as reported by the Health Protection Surveillance Centre (HPSC) [@hpsc2021reports; @hpsc2021week52], spatial inconsistencies emerged at finer geographic scales. Disaggregated data at the Local Electoral Area (LEA) level revealed notable disparities, particularly in communities marked by higher socio-economic deprivation and limited healthcare access. These sub-national variations in vaccine uptake remain underexamined in the Irish research landscape and have not yet been systematically modelled using integrated spatial, demographic, and temporal data sources.
-In contrast, spatial epidemiological approaches have proven effective in other jurisdictions. For instance, de Figueiredo (2021) applied multilevel regression and post-stratification techniques to map vaccine hesitancy across the UK, identifying clusters of low intent that correlated strongly with ethnicity, economic precarity, and urban residency [@nature2022mrp]. Similarly, McGowan et al. (2022) demonstrated that even in high-income settings with wide vaccine availability, uptake remained uneven—often reflecting underlying inequalities tied to deprivation levels [@mcgowan2022covid]. These findings suggest that areas with persistent deprivation and low vaccine uptake may face disproportionately greater risks in future outbreaks, reinforcing the value of sub-national, place-based public health interventions.
+In contrast, spatial epidemiological approaches have proven effective in other jurisdictions. For instance, de Figueiredo (2021) applied multilevel regression and post-stratification techniques to map vaccine hesitancy across the UK, identifying clusters of low intent that correlated strongly with ethnicity, economic precarity, and urban residency [@nature2022mrp]. Similarly, McGowan et al. (2022) demonstrated that even in high-income settings with wide vaccine availability, uptake remained uneven—often reflecting underlying inequalities tied to deprivation levels [@mcgowan_covid-19_2022]. These findings suggest that areas with persistent deprivation and low vaccine uptake may face disproportionately greater risks in future outbreaks, reinforcing the value of sub-national, place-based public health interventions.
 Research Gap:  the Irish context, this represents a significant research gap. Ireland’s unique settlement patterns—combining densely populated urban centres (notably the Greater Dublin Area) with widely dispersed rural and remote communities—create spatial dynamics that differ substantially from those documented in other countries. The use of spatiao-temporal models to understand COVID-19 vaccination uptake remains limited. In particular, the integration of demographic data, healthcare accessibility metrics, and vaccination coverage over time has not been fully explored.
 In response, this thesis undertakes a spatial and demographic analysis of COVID-19 vaccination uptake for people 12 years and above in Ireland. Using LEAs as the unit of observation, it integrates official vaccination data, CSO demographic indicators, and engineered measures of healthcare accessibility to examine whether spatial inequities exist, identify their key correlates, and inform geographically targeted public health strategies.
 *Introduction*
 The COVID-19 pandemic placed extraordinary demands on global health systems and prompted one of the fastest vaccine development and distribution efforts in history. As vaccination campaigns scaled up, they brought with them a new public health challenge: ensuring that vaccines reached populations equitably. Although Ireland’s national campaign achieved high overall coverage the story beneath the national averages reveals more complexity[@hpsc2021week52]
 . Evidence from Ireland and abroad suggests that uptake has varied significantly across regions and population subgroups, shaped by underlying social, economic, and geographic inequalities.
 
-Understanding why vaccine uptake differs between communities is essential for building more resilient and equitable public health systems. Research shows that factors such as deprivation, education, age structure, and geographic access influence whether individuals get vaccinated—not just personal belief or awareness [@bmj_vaccine_hesitancy_2021] [@bmc_spatial_vax_2023]. Yet much of the current literature on vaccine equity focuses either on individual attitudes or national-level trends, with fewer studies examining how spatial and structural variables intersect at local levels to influence coverage. In Ireland, where official data are published at the LEA level, there is a valuable but underused opportunity to explore how demographic and geographic conditions shape vaccination outcomes in smaller, more granular population units.
+Understanding why vaccine uptake differs between communities is essential for building more resilient and equitable public health systems. Research shows that factors such as deprivation, education, age structure, and geographic access influence whether individuals get vaccinated—not just personal belief or awareness [@bmj_vaccine_hesitancy_2021, @bmc_spatial_vax_2023]. Yet much of the current literature on vaccine equity focuses either on individual attitudes or national-level trends, with fewer studies examining how spatial and structural variables intersect at local levels to influence coverage. In Ireland, where official data are published at the LEA level, there is a valuable but underused opportunity to explore how demographic and geographic conditions shape vaccination outcomes in smaller, more granular population units.
 
 This thesis addresses the under explored intersection of spatial access, demographic structure, and vaccination uptake in Ireland. Specifically, it investigates how demographic characteristics (e.g., age, education, general health outcomes) and spatial accessibility to vaccine services shaped COVID-19 vaccine coverage at the LEA level. This study applies both exploratory and statistical techniques to examine how structural variables—such as education, gendered unemployment, age dependency, and proximity to vaccination centres—are associated with local coverage rates. By applying a spatial-temporal lens to model vaccine uptake, this work contributes to the growing field of place-based public health research and offers empirical insights to support more equitable immunisation strategies in Ireland and beyond.
 
@@ -64,57 +64,79 @@ This study employs a quantitative, observational, and ecological research design
 Observational designs are appropriate when experimental manipulation is neither ethical nor feasible, as is the case with vaccine uptake during a pandemic. This study does not aim to infer causality but rather to identify statistical associations and spatial patterns that may inform future public health strategies. While the ecological approach limits the ability to capture individual-level behavioural determinants or utilize more granular spatial units, it offers valuable insights into structural and contextual influences affecting access and uptake at the community scale. Moreover, although individual-level or finer-resolution data could allow for deeper behavioural inferences, such data were not available for this study. Future research incorporating more granular or person-level data could complement these findings and help disentangle behavioural mechanisms from broader structural trends.
 Additionally, the study incorporates a temporal dimension by analysing vaccination uptake over successive months, enabling the identification of evolving patterns and time-based disparities in vaccine coverage. This temporally extended approach complements the spatial analysis and enhances the explanatory power of the models. The combination of spatial and temporal design elements positions this research within the growing body of data-driven public health studies aimed at understanding complex, dynamic health phenomena within real-world settings.
 
-3. Data and Variable Preparation
-3.1 Data Sources and Description
+## Data and Variable Preparation
+### Data Sources and Description
 This study draws on a range of publicly available datasets and administrative sources relevant to Ireland’s COVID-19 vaccine rollout, population characteristics, and geographic boundaries. All data were aggregated at the LEA level to enable spatial analysis at a meaningful sub-national resolution.
-Vaccination Infrastructure
-•	Data on the locations of mass vaccination centres (35 in total), GP clinics (1557), and community pharmacies (1041 in total) were obtained from the official HSE website. These represented the full network of vaccine delivery sites active during the 2021 national rollout.
+
+**Vaccination Infrastructure:**
+- Data on the locations of mass vaccination centres (35 in total), GP clinics (1557), and community pharmacies (1041 in total) were obtained from the official HSE website. These represented the full network of vaccine delivery sites active during the 2021 national rollout [@noauthor_covid-19_2021, @noauthor_find_nodate-1, @noauthor_find_nodate].
 Vaccination Uptake
-•	Vaccine uptake rates were sourced from the CSO, specifically Table CDC47, which provides the proportion of the population vaccinated in the primary vaccine dose, booster 1 and booster 2 at the LEA level monthly. This dataset is the most granular, consistent public source of COVID-19 vaccine coverage in Ireland.
-Demographic Variables
-Demographic indicators were obtained from the CSO’s 2022 Census small-area population statistics and included the following:
-Age Composition: Extracted from SAP2022T1T1LEA22, individual-level age data were to be subsequently aggregated into five analytically relevant age groups (12–17, 18–54, 55–64, 65–70, and 71+ years). These groups were not selected arbitrarily, but to reflect the sequenced eligibility criteria of Ireland’s COVID-19 vaccination rollout, which was largely structured by age and risk )[@gov_vax_strategy_2020].:
+
+**Vaccine uptake rates** were sourced from the CSO, specifically Table CDC47[@noauthor_notitle_CDC47], which provides the proportion of the population vaccinated in the primary vaccine dose, booster 1 and booster 2 at the LEA level monthly. This dataset is the most granular, consistent public source of COVID-19 vaccine coverage in Ireland.
+
+
+**Demographic indicators** were obtained from the CSO’s 2022 Census small-area population statistics and included the following:
+
+*Age Composition:* Extracted from SAP2022T1T1LEA22[@noauthor_notitle_age], individual-level age data were to be subsequently aggregated into five analytically relevant age groups (12–17, 18–54, 55–64, 65–70, and 71+ years). These groups were not selected arbitrarily, but to reflect the sequenced eligibility criteria of Ireland’s COVID-19 vaccination rollout, which was largely structured by age and risk )[@gov_vax_strategy_2020].
+
 12–17 years: This group became eligible for vaccination in August 2021, with eligibility requiring parental consent. They were primarily vaccinated through schools or dedicated youth clinics.
+
 18–54 years: Representing the largest working-age population, this group accessed vaccines through mass vaccination centres, general practitioners, and pharmacies.
+
 55–64 years: Considered higher-risk due to age-related vulnerability and comorbidities; this group was prioritised earlier in the programme.
+
 65–70 years and 71+ years: These were among the first groups offered vaccines, including individuals in congregated residential settings and older adults with mobility limitations.
 
 This age categorisation ensures alignment with the actual vaccine distribution strategy while allowing for meaningful demographic distinctions in modelling.
 
-The national campaign began on 29 December 2020 with the vaccination of frontline healthcare workers and residents in long-term residential care settings. This was followed by a sequential age-based expansion, beginning with adults aged 85 years and over, and progressing in five-year increments down to those aged 65 by March 2021. The rollout then extended to adults aged 50–64 by May 2021, and subsequently to individuals aged 35–49. The most significant expansion occurred in late June 2021, when vaccination was made available to all adults aged 18–34 years through community pharmacies [@wiki_ireland_covid_vax_2024].
+The national campaign began on 29 December 2020 with the vaccination of frontline healthcare workers and residents in long-term residential care settings. This was followed by a sequential age-based expansion, beginning with adults aged 85 years and over, and progressing in five-year increments down to those aged 65 by March 2021. The rollout then extended to adults aged 50–64 by May 2021, and subsequently to individuals aged 35–49. The most significant expansion occurred in late June 2021, when vaccination was made available to all adults aged 18–34 years through community pharmacies [@hse_beacon_review_2021, @noauthor_covid-19_nodate, @noauthor_responses_nodate].
 
-In August 2021, the programme was further extended to include adolescents aged 12–15 years, based on updated recommendations by the National Immunisation Advisory Committee (NIAC). However, children aged under 12 were not eligible for vaccination during the study period. Although vaccines were later approved for children aged 5–11 in early 2022, rollout began only in January of that year and was not accompanied by a comprehensive or sustained national campaign. Coverage in this group remained limited and inconsistent across LEAs.
+In August 2021, the programme was further extended to include adolescents aged 12–15 years, based on updated recommendations by the National Immunisation Advisory Committee (NIAC)[@noauthor_minister_nodate]. However, children aged under 12 were not eligible for vaccination during the study period. Although vaccines were later approved for children aged 5–11 in early 2022, rollout began only in January of that year and was not accompanied by a comprehensive or sustained national campaign. Coverage in this group remained limited and inconsistent across LEAs.
 
-Self-Reported Health Status: From SAP2022T12T3LEA22, respondents classified their general health using a 5-point Likert scale:
-o	Very Good
-o	Good
-o	Fair
-o	Bad
-o	Very Bad
+**Self-Reported Health Status**: From SAP2022T12T3LEA22[@noauthor_notitle_health], respondents classified their general health using a 5-point Likert scale:
+- Very Good
+- Good
+- Fair
+- Bad
+- Very Bad
 These categories capture perceived physical and mental health, which may influence vaccine-seeking behaviour.
-Educational Attainment: This was drawn from SAP2022T10T4LEA22, where the thirteen original response categories were to be grouped into the six analytically meaningful levels: no formal education, primary education, upper secondary, apprenticeship/trade, honours bachelor degree, and postgraduate qualifications.
+Educational Attainment: This was drawn from SAP2022T10T4LEA22[@noauthor_notitle_education], where the thirteen original response categories were to be grouped into the six analytically meaningful levels: no formal education, primary education, upper secondary, apprenticeship/trade, honours bachelor degree, and postgraduate qualifications.
 These reflect major stages in the Irish education system and allow analysis of educational gradients in vaccine uptake.
+
 **Deprivation Indicators:**
-To capture the structural socioeconomic context underpinning vaccine uptake variation, this study incorporated multiple area-level deprivation metrics derived from the Pobal Haase-Pratschke (HP) Deprivation Index. The Pobal HP Index is Ireland’s most widely adopted small-area deprivation framework, integrating multiple census-based dimensions—demographic profile, social class composition, and labour market status—into a single relative measure of affluence or disadvantage. All indicators were matched to the LEA level for spatial consistency.
-**Deprivation Score:** This continuous variable serves as the core summary metric of area-level deprivation, derived via principal component analysis from multiple underlying census inputs. The score is centred around a national mean of zero, where positive values reflect relative affluence and negative values indicate increasing levels of disadvantage. This variable was critical for assessing socioeconomic gradients in vaccine uptake, particularly in the context of prior research suggesting lower vaccination rates in marginalised communities. 
+To capture the structural socioeconomic context underpinning vaccine uptake variation, this study incorporated multiple area-level deprivation metrics derived from the Pobal Haase-Pratschke (HP) Deprivation Index[@pobal_hp_2022].The Pobal HP Index is Ireland’s most widely adopted small-area deprivation framework, integrating multiple census-based dimensions—demographic profile, social class composition, and labour market status—into a single relative measure of affluence or disadvantage. All indicators were matched to the LEA level for spatial consistency.
+
+**Deprivation Score:** This continuous variable serves as the core summary metric of area-level deprivation, derived via principal component analysis from multiple underlying census inputs. The score is centred around a national mean of zero, where positive values reflect relative affluence and negative values indicate increasing levels of disadvantage. This variable was critical for assessing socioeconomic gradients in vaccine uptake, particularly in the context of prior research suggesting lower vaccination rates in marginalised communities.
+
 **Unemployment Rates:** Gender-disaggregated unemployment rates were included to capture labour market exclusion and economic insecurity. Male unemployment (UNEMPM22) and female unemployment (UNEMPF22) were treated as separate indicators given known gender disparities in employment trends and household responsibilities, both of which can influence access to healthcare services. These variables further provide insight into the economic stress profile of LEAs, which may affect not only vaccine uptake but also health-seeking behaviour more broadly.
 
-Geographic Boundaries
-LEA boundary shapefiles were obtained from Ordnance Survey Ireland (OSI) via the CSO GeoHive Portal. They provided the official digital geographic boundaries necessary for spatial analysis and mapping applications. These boundary files serve as the foundational geographic framework for linking vaccination rates with corresponding service locations.
-3.2 Data Collection Methods
-Each dataset underwent systematic extraction, cleaning, and integration using a combination of R, Python, and geospatial tools. The following describes how data were collected and prepared for analysis.
-Vaccination Centre Locations
+**Geographic Boundaries:**
+LEA boundary shapefiles were obtained from Ordnance Survey Ireland (OSI) via the CSO GeoHive Portal[@noauthor_cso_nodate]. They provided the official digital geographic boundaries necessary for spatial analysis and mapping applications. These boundary files serve as the foundational geographic framework for linking vaccination rates with corresponding service locations.
+
+### Data Collection Methods
+
+Each dataset underwent systematic extraction, cleaning, and integration using a combination of R, Python, and geospatial tools. 
+
+The following describes how data were collected and prepared for analysis.
+
+**Vaccination Centre Locations**
+
 Vaccination site data were obtained through web scraping techniques applied to the HSE website:
-Static Web Pages: The rvest package in R was used for scraping data from static HTML pages. For static web pages, the information is directly available in the HTML source when the page loads, making rvest ideal for quick and simple extraction of data from the page’s structure. 
-Dynamic Web Pages: Selenium in Python was utilized to handle JavaScript-rendered content, enabling access to dynamically loaded data not accessible via static scraping. Some websites use dynamic content, where information is loaded separately through JavaScript after the initial page is displayed. Selenium can simulate a real web browser, allowing the script to wait for content to load, click buttons, or scroll down the page to access hidden or delayed information. While rvest is faster and easier for static content, Selenium is necessary for interacting with and extracting data from more complex, dynamic sites.
- All identified vaccination centers were geocoded to obtain their geographic coordinates (longitude and latitude). The Google Maps API was employed to ensure accurate and standardized geolocation across the dataset. A custom function was written to send HTTP requests to the Google API with each address and extract the corresponding latitude and longitude from the returned JSON data. This approach allowed precise control over the geocoding process and can be combined with rate limiting to comply with API usage policies.
-Vaccination Uptake Data
+
+*Static Web Pages:* The rvest package in R was used for scraping data from static HTML pages. For static web pages, the information is directly available in the HTML source when the page loads, making rvest ideal for quick and simple extraction of data from the page’s structure. 
+
+*Dynamic Web Pages:* Selenium in Python was utilized to handle JavaScript-rendered content, enabling access to dynamically loaded data not accessible via static scraping. Some websites use dynamic content, where information is loaded separately through JavaScript after the initial page is displayed. Selenium can simulate a real web browser, allowing the script to wait for content to load, click buttons, or scroll down the page to access hidden or delayed information. While rvest is faster and easier for static content, Selenium is necessary for interacting with and extracting data from more complex, dynamic sites.
+
+All identified vaccination centers were geocoded to obtain their geographic coordinates (longitude and latitude). The Google Maps Geocoding API [@noauthor_google_nodate] was employed to ensure accurate and standardized geolocation across the dataset. A custom function was written to send HTTP requests to the Google API with each address and extract the corresponding latitude and longitude from the returned JSON data. This approach allowed precise control over the geocoding process and can be combined with rate limiting to comply with API usage policies.
+
+**Vaccination Uptake Data**
 The CDC47 table from the CSO was downloaded in CSV format. Data were cleaned to remove duplicate records or inconsistent reporting dates. We restricted analysis to individuals aged 12 years and older, in line with our population of interest and matched vaccine uptake statistics to the correct LEA geometry.
-Demographic and Deprivation Data
+
+**Demographic and Deprivation Data**
+
 All demographic variables were accessed through CSO SAP datasets. Variables were to be recoded into grouped categories mentioned in section 3.1 to get marginal distributions. This would also be used to get the joint age-sex demographic proportions.
 
-Deprivation and Unemployment Indicators
-The 2022 Pobal HP Index was obtained by directly contacting a liaison working at Pobal and the data shared with us was downloaded in a CSV format. 
+Deprivation and Unemployment Indicators were present in the 2022 Pobal HP Index was obtained by directly contacting a liaison working at Pobal and the data shared with us was downloaded in a CSV format. 
 
 ### Engineering Accessibility Data
 
@@ -126,7 +148,7 @@ Nevertheless, detailed demographic statistics at the sub-LEA level and, ideally,
 
 We used an intuitive spatial coverage measure based on proximity - travel isochrones were generated for each service location. Specifically, 10, 20, 30, and 60-minute drive-time isochrones were created for the initial vaccination center, while 10-minute drive-time isochrones were generated for pharmacies and GPs. Each LEA polygon was then intersected with these isochrones to determine the extent of overlap, representing the proportion of the LEA covered by the service catchment areas. The total overlapping area was measured to produce a naive accessibility score for each LEA. For the initial vaccination center, a more refined accessibility score was calculated by inversely weighting the overlapping areas by travel time, reflecting the assumption that closer proximity implies better access. This approach was based on the intuitive premise that any spatial overlap between a healthcare service’s catchment and an LEA indicates at least some degree of physical access for residents.
 
-Accessibility Score Calculation:
+*Accessibility Score Calculation:*
 $$C_{ijk} = \frac{I_{ijk}}{T_k}$$
  $$A_{ij} = \sum_{k=1}^{K} C_{ijk}$$
  $$A_{vacc} = \frac{1}{10} \cdot A_{i,10} + \frac{1}{20} \cdot A_{i,20} + \frac{1}{30} \cdot A_{i,30} + \frac{1}{60} \cdot A_{i,60}$$ 
@@ -143,12 +165,15 @@ A substantial data merging and transformation process was undertaken to compile 
 
 The vaccination uptake data with the LEA geometries remained separate and were merged with the final analytical dataset based on the research question like the vaccination dose of interest that was studies etc.
 The age-related dataset originally included individual-level counts from age 0 to 19 and grouped intervals thereafter. The recoding involved aggregating the relevant age columns and reshaping the dataset using pivot_wider() and mutate() functions from the tidyverse package.
+
 For health and education, only a subset of categories previously mentioned in 3.1 & 3.2 were retained to maintain analytical relevance and interpretability. Health status, initially reported in six categories, was reduced to five and Education was recoded from thirteen original categories into six.
+
 Each of these demographic features was transformed into proportions to enable marginal distribution analysis at the LEA level. Additionally, joint distributions were derived to capture the proportion of males and females within each age category, allowing for sex-specific age structure assessments.
+
 Among the many available variables from Pobal HP, only those of direct analytical relevance were retained:
-Index22_rel: the composite deprivation index score
-UNEMPM22: male unemployment rate
-UNEMPF22: female unemployment rate
+- Index22_rel: the composite deprivation index score
+- UNEMPM22: male unemployment rate
+- UNEMPF22: female unemployment rate
 
 Accessibility data, calculated as discussed previously was also stored in a csv format mapped to LEA names.
 
@@ -165,10 +190,12 @@ This merged dataset formed the statistical foundation for the exploratory and mo
 
 We employed a hierarchical Bayesian modelling framework to examine determinants of primary COVID-19 vaccination uptake rate across LEAs. A total of six modelling approaches were implemented, each designed to address specific research questions, including bounded proportional outcomes, spatial autocorrelation, and nonlinear temporal trends. The models progressively build on one another, beginning with basic compositional demographic factors of age and gender and expanding to include compositional health and education metrics, spatial structure, deprivation, interaction effects of age and gender, and temporal dynamics.
 
-All models were implemented using the brms, a Bayesian regression modelling interface to Stan, which supports complex hierarchical, spatial, and temporal modelling structures, and leverages Markov Chain Monte Carlo (MCMC) sampling for full posterior inference.
+All models were implemented using the brms, a Bayesian regression modelling interface to Stan, which supports complex hierarchical, spatial, and temporal modelling structures, and leverages Markov Chain Monte Carlo (MCMC) sampling for full posterior inference [@heiss_guide_nodate, @noauthor_parameterization_nodate].
 
 The primary outcome was the final rate of primary COVID-19 vaccination (bounded between 0 and 1), with booster dose data available for future extensions. The compositional nature of demographic covariates (e.g., age, sex, education, health) required Additive Log-Ratio (ALR) transformations to avoid issues of perfect multicollinearity due to unit-sum constraints.
+
 All cross-sectional models used Beta regression with a logit link function, which is ideal for modelling proportional data as it ensures predictions remain in (0, 1). While the Beta distribution allows for heteroskedasticity through its precision parameter (phi), in our models, phi was assumed to be constant across all observations and was not modelled as a function of predictor variables.
+
 Model 1 focussed on basic demographic variables—namely age and gender—relate to the final uptake of the primary COVID-19 vaccine dose across LEAs. Bayesian inference was conducted via MCMC sampling with four chains of 2,000 iterations each (including 1,000 warm-up iterations), resulting in 4,000 post-warmup posterior draws and this was the functions’ default in R.
 
 Primary_Vax_Rate ~ age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + male_logratio
@@ -182,7 +209,7 @@ Primary_Vax_Rate ~ age_12to17_logratio + age_18to54_logratio + age_55to64_lograt
                    health_Bad_logratio + health_Fair_logratio + health_Good_logratio + 
                    male_logratio + Wt_accessibility_Initial_Vacc
 
-Model 3: Morans’I ((Moran, 1950) was calculated to identify if spatial autocorrelation existed in the residuals. The presence of significant spatial clustering suggested that residuals were not independent across LEAs, violating a core assumption of standard regression models. To address this, we introduced a spatial modelling approach using Conditional Autoregressive (CAR) priors. This model built upon the covariates included in Model 2 and incorporated spatially structured random effects via an adjacency matrix representing geographical contiguity among LEAs. The CAR prior allows neighbouring areas to "borrow strength" from each other by sharing information, thus improving parameter estimation in areas with sparse or noisy data. Because spatial models are more complex and prone to convergence issues, we extended the MCMC sampling regime to 30,000 iterations per chain with 10,000 warm-up iterations, resulting in a total of 80,000 post-warmup draws. We also increased adapt_delta to 0.999 and set max_treedepth to 20 to stabilize sampling using the No-U-Turn Sampler (NUTS). This spatially informed model was crucial for appropriately accounting for geographic dependencies in vaccination rates that may arise from shared infrastructure, regional policies, or cultural clustering.
+Model 3: Morans’I [@moraga_chapter_nodate] was calculated to identify if spatial autocorrelation existed in the residuals. The presence of significant spatial clustering suggested that residuals were not independent across LEAs, violating a core assumption of standard regression models. To address this, we introduced a spatial modelling approach using Conditional Autoregressive (CAR) priors [@noauthor_spatial_nodate]. This model built upon the covariates included in Model 2 and incorporated spatially structured random effects via an adjacency matrix representing geographical contiguity among LEAs. The CAR prior allows neighbouring areas to "borrow strength" from each other by sharing information, thus improving parameter estimation in areas with sparse or noisy data. Because spatial models are more complex and prone to convergence issues, we extended the MCMC sampling regime to 30,000 iterations per chain with 10,000 warm-up iterations, resulting in a total of 80,000 post-warmup draws. We also increased adapt_delta to 0.999 and set max_treedepth to 20 to stabilize sampling using the No-U-Turn Sampler (NUTS). This spatially informed model was crucial for appropriately accounting for geographic dependencies in vaccination rates that may arise from shared infrastructure, regional policies, or cultural clustering.
 
 Primary_Vax_Rate ~ age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + 
                    age_65to70_logratio + edu_NoFormal_logratio + edu_Primary_logratio + 
@@ -255,6 +282,7 @@ The 12–17 group represents adolescents, who required parental consent and were
   \label{fig:age_71plus}
 \end{figure}
 The 18–54 group consistently constituted the largest segment of the population, with proportions ranging from approximately 42% to 77%, reflecting the economically active, working-age cohort. The 12-17 age group, comprising adolescents, represented between 5% and 15% of local populations, with slightly elevated proportions observed in suburban and commuter-belt LEAs. The 55–64 and 65–70 cohorts showed moderate variation, each accounting for up to 20% and 18% respectively in several rural areas, suggesting pockets of pre-retirement and early-retirement demographics. The 71+ age group displayed marked geographic variability, with certain western and peripheral LEAs reaching proportions exceeding 13%, aligning with broader demographic trends of ageing populations in rural Ireland.
+
 **Health Status:**
 General health status is a core indicator of population well-being and serves as a proxy for the burden of chronic disease and overall quality of life. 
 To visualize the geographical distribution of perceived health status across Ireland, proportions for each health category were calculated at the LEA level and presented using individual bar plots. These plots facilitate comparison across areas and allow for the identification of spatial clustering or outliers.
@@ -262,6 +290,7 @@ To visualize the geographical distribution of perceived health status across Ire
 The proportion of residents reporting Very Bad health is consistently low across all LEAs, typically falling below 2%. However, subtle variations are observed, with urban-deprived LEAs such as North Inner City and Lifford-Stranorlar showing comparatively higher values. This spatial patterning corresponds with areas of higher socio-economic deprivation, suggesting a plausible link between living conditions and poor perceived health.
 In contrast, Bad health proportions are more variable, ranging between 3% and 8%. While still relatively low, this category demonstrates clearer urban-rural gradients. LEAs with higher unemployment and deprivation scores - particularly in the northwest and inner-city Dublin - tend to report elevated figures.
 The Fair health category captures a more neutral self-assessment and displays a broader distribution, with values typically between 15% and 30%. This group likely includes individuals managing chronic conditions without acute deterioration, and its prevalence further reflects socio-economic conditions, access to healthcare, and age structure of the population.
+
 Good health reports constitute the modal response in most LEAs, suggesting a generally positive health self-perception across the country. The highest proportions are concentrated in suburban regions such as Ashbourne, Lucan, and Stillorgan, which may reflect younger population structures and better access to services.12–17
 Finally, the Very Good category presents a more selective distribution, frequently ranging from 30% to over 50% in some eastern and commuter belt LEAs. The high concentration of Very Good responses in affluent LEAs likely reflects structural advantages such as employment stability, housing quality, and availability of preventive health services.
 
@@ -278,11 +307,14 @@ Finally, the Very Good category presents a more selective distribution, frequent
 
 **Education attainment:**
 The spatial distribution of educational attainment across LEAs in Ireland was examined using the six distinct categories that were derived. 
+
 LEAs such as Dún Laoghaire, Blackrock, and Stillorgan consistently report higher proportions of individuals with honours bachelor and postgraduate degrees, highlighting the concentration of tertiary-educated populations in more affluent, urbanised areas. In contrast, rural and economically deprived regions-such as Donegal, Ballinamore, and Glenties-exhibit higher proportions of residents with no formal or only primary education.
+
 Notably, Upper Secondary Education appears to be the most evenly distributed across LEAs, suggesting its widespread attainment across diverse socioeconomic settings. Meanwhile, the proportion of individuals completing apprenticeships varies substantially, with certain LEAs-especially those in semi-urban or industrial catchments-demonstrating a stronger presence of vocational education pathways.
 
 **Deprivation Scores:**
 Across the 166 LEAs, deprivation scores ranged from approximately –21.6 (severe disadvantage) to +16.3 (marked affluence). LEAs such as Buncrana, Ballinamore, and North Inner City exhibited some of the lowest index scores, pointing to persistent socioeconomic deprivation. In contrast, LEAs like Blackrock, Dún Laoghaire, and Stillorgan consistently recorded positive scores, reflecting their concentration of economic advantage.
+
 Sex-specific unemployment rates revealed complementary patterns. The male unemployment rate (UNEMPM22) ranged from under 3% to over 18%, with elevated levels in LEAs such as Donegal, Lifford-Stranorlar, and Monaghan. The female unemployment rate (UNEMPF22) also varied substantially, reaching as high as 22% in certain LEAs. While male and female unemployment rates often aligned geographically, some regions showed wider gender disparities.
 
 \begin{figure}[htbp]
@@ -294,13 +326,9 @@ Sex-specific unemployment rates revealed complementary patterns. The male unempl
   \label{fig:deprivation-maps}
 \end{figure}
 
-
-
-
-
 ### Model
 
-Model 1-  Younger age groups demonstrated significantly lower vaccination rates compared to the reference category, with particularly strong negative effects for the 18-54 year age group and the 12-17 year age group. 
+*Model 1*-  Younger age groups demonstrated significantly lower vaccination rates compared to the reference category, with particularly strong negative effects for the 18-54 year age group and the 12-17 year age group. 
 
 \begin{figure}[htbp]
   \centering
@@ -328,7 +356,7 @@ Because age proportions are compositional (summing to 1), increases in one age g
 Importantly, LEAs with proportionally more adolescents relative to the elderly often exhibit lower vaccination rates. This is partly driven by the differing vaccine eligibility, uptake behavior, and hesitancy patterns across age groups. As one moves along the x-axis—reflecting underlying gradients such as area deprivation or socioeconomic variation—each curve shows how the log odds of vaccination change with demographic context. Points where the curves cross mark tipping zones where shifts in population structure coincide with shifts in vaccination behavior, offering insights into thresholds where targeted public health interventions may be most effective.
 
 
-Model 2 – We could see that the age effects persist but attenuated slightly while revealing additional significant associations. 
+*Model 2* – We could see that the age effects persist but attenuated slightly while revealing additional significant associations. 
 
 \begin{figure}[htbp]
   \centering
@@ -338,6 +366,7 @@ Model 2 – We could see that the age effects persist but attenuated slightly wh
 \end{figure}
 
 Upper secondary education emerged as a significant positive predictor, suggesting higher vaccination rates among populations with this educational level. Conversely, areas with higher proportions of individuals with no formal education showed lower vaccination rates. Health status variables showed no statistically significant associations with vaccination rates.
+
 The male proportion effect changed to be positive but was still non-significant. Accessibility to initial vaccination centres showed non-significant impact suggesting that geographic accessibility was not a significant barrier to vaccination uptake in our population.
 
 
@@ -353,7 +382,7 @@ The male proportion effect changed to be positive but was still non-significant.
   \label{fig:Marginal_Effects_Adjusted_Model}
 \end{figure}
 
-Model 3 - To formally test for spatial autocorrelation, we conducted a Moran’s I test on the residuals:
+*Model 3* - To formally test for spatial autocorrelation, we conducted a Moran’s I test on the residuals:
 Moran’s I = 0.1906, p < 0.001 — indicating significant positive spatial autocorrelation in residuals (i.e., LEAs geographically close to one another tend to have similar unexplained vaccination patterns)
 This confirmed that standard regression models failed to fully account for spatial dependencies, prompting the use of a CAR model, introducing a structured spatial random effect term that smooths values across neighboring areas
 The spatial correlation parameter (car) was estimated at 0.56 (95% CI: 0.03 to 0.99), suggesting moderate positive spatial autocorrelation between neighboring LEAs, i.e.,  56% of unexplained variance was attributable to spatial autocorrelation, indicating strong neighborhood-level similarities.
@@ -368,7 +397,7 @@ The spatial correlation parameter (car) was estimated at 0.56 (95% CI: 0.03 to 0
 This spatial clustering may reflect unmeasured factors such as local social networks, community attitudes, healthcare provider practices, or other geographically-clustered influences on vaccination behavior. The relatively modest spatial standard deviation (0.21) indicates that while spatial correlation exists, the magnitude of unexplained spatial variation is limited, suggesting that the measured covariates capture much of the systematic variation in vaccination rates.
 Demographic patterns remained robust: Age 55–64 still had the strongest positive effect on uptake. Upper secondary education, remains a large positive driver and healthcare proximity and healthcare outcomes continued to show near-zero effects. The consistency of these effects across spatial and non-spatial models suggests that educational disparities in vaccination uptake operate independently of geographic clustering and supply-side geographic barriers and self-reported health outcomes were not significant determinants of vaccination disparities.
 
-The inclusion of the Pobal HP Deprivation Index, which measures relative affluence and disadvantage across Irish communities using composite scores derived from employment, education, housing quality, and demographic variables, had minimal impact on vaccination rates despite capturing broader socioeconomic conditions at the LEA level. We have seen that the deprivation scores ranged from approximately –21.6 (severe disadvantage) to +16.3 (marked affluence), representing a wide spectrum of socioeconomic conditions across all LEAs.
+The inclusion of the Pobal HP Deprivation Index in *Model 4*, which measures relative affluence and disadvantage across Irish communities using composite scores derived from employment, education, housing quality, and demographic variables, had minimal impact on vaccination rates despite capturing broader socioeconomic conditions at the LEA level. We have seen that the deprivation scores ranged from approximately –21.6 (severe disadvantage) to +16.3 (marked affluence), representing a wide spectrum of socioeconomic conditions across all LEAs.
 
 \begin{figure}[htbp]
   \centering
@@ -386,7 +415,7 @@ Despite this pronounced variation in area-level deprivation, the composite depri
   \label{fig:Depriviation_Plot}
 \end{figure}
 
-The age-sex interaction model revealed striking differences in age-vaccination relationships between males and females. Among females, younger age groups showed strong negative associations, with the 18-54 year group showing significant impact and among men the 65-70 year group uniquely showed a significant negative association contrasting sharply with the positive trend observed in older females, despite generally being considered a high-priority group.These results suggest that vaccine hesitancy patterns differ substantially between genders within the same age cohorts. 
+The age-sex interaction model *(Model 5)* revealed striking differences in age-vaccination relationships between males and females. Among females, younger age groups showed strong negative associations, with the 18-54 year group showing significant impact and among men the 65-70 year group uniquely showed a significant negative association contrasting sharply with the positive trend observed in older females, despite generally being considered a high-priority group.These results suggest that vaccine hesitancy patterns differ substantially between genders within the same age cohorts. 
 
 \begin{figure}[htbp]
   \centering
@@ -404,7 +433,7 @@ The age-sex interaction model revealed striking differences in age-vaccination r
   \label{fig:Marginal_Effects_Interaction_Model}
 \end{figure}
 
-We found distinct patterns in COVID-19 vaccination uptake trajectories across Ireland's LEAs using our fitted hierarchical beta regression model. The population-level upper asymptote was at 0.94 (95% CI: 0.76-1.12) on the logit scale, representing the baseline maximum vaccination rate before accounting for demographic influences. The temporal inflection point occurred at 5.61 months (95% CI: 5.57-5.66), indicating that the steepest increase in vaccination rates typically occurred during late May to early June 2021, corresponding to the period when vaccine availability expanded beyond priority groups. The scale parameter was found to be 1.36 (95% CI: 1.35-1.38), which controls the steepness of the sigmoidal curve transition and suggests a relatively gradual uptake pattern.
+We found distinct patterns in COVID-19 vaccination uptake trajectories across Ireland's LEAs using our fitted hierarchical beta regression model *(Model 6)*. The population-level upper asymptote was at 0.94 (95% CI: 0.76-1.12) on the logit scale, representing the baseline maximum vaccination rate before accounting for demographic influences. The temporal inflection point occurred at 5.61 months (95% CI: 5.57-5.66), indicating that the steepest increase in vaccination rates typically occurred during late May to early June 2021, corresponding to the period when vaccine availability expanded beyond priority groups. The scale parameter was found to be 1.36 (95% CI: 1.35-1.38), which controls the steepness of the sigmoidal curve transition and suggests a relatively gradual uptake pattern.
 
 \begin{figure}[htbp]
   \centering
