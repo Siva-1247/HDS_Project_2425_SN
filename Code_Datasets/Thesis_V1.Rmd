@@ -474,3 +474,14 @@ Based on the observed vaccination rate data, the increase-then-decline patterns 
 
 Our analysis relied on vaccination data reported only at the LEA level, not broken down by demographic subgroups or small area level data which was our biggest limitation. Population demographic characteristics were based on the 2022 Census and may not reflect the pandemic-period or vaccination roll out period scenario. Self-reported health status, used as a covariate, may be subject to bias. Our accessibility measure did not account for population demand or healthcare service’s capacity, limiting its interpretive power; while a 2SFCA approach could address these spatial limitations, it requires more granular data and computational resources beyond this study's scope. Additionally, the analysis was restricted to the Republic of Ireland; cross-border vaccination—particularly in border regions—could have influenced local rates but remains unaccounted for in our models.
 
+## Code and Dashboard Availability
+
+The code used in this thesis is available on GitHub:
+
+[GitHub Repository](https://github.com/Siva-1247/HDS_Project_2425_SN.git)
+
+An interactive Shiny dashboard showcasing accessibility measures:
+
+[Shiny Dashboard](https://siva47.shinyapps.io/dashboard/)
+
+# References
