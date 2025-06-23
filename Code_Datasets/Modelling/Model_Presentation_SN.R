@@ -623,8 +623,8 @@ depri_plot <- ggplot(dep_df, aes(x = x_val, y = estimate__, color = variable, fi
   geom_line(linewidth = 1) +
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
   labs(
-    title = "Marginal Effects: Depriviation",
-    x = "Depriviation Data",
+    title = "Marginal Effects: Deprivation",
+    x = "Deprivation Data",
     y = "Predicted Vaccination Rate",
     color = "Depriviation",
     fill = "Depriviation"

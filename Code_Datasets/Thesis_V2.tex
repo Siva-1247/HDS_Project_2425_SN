@@ -84,12 +84,12 @@ Level Analysis in Ireland}
 
 \begin{abstract}
 Despite Republic of Ireland's high national COVID-19 vaccination
-coverage, substantial disparities remain at the neighbhourhood levels.
+coverage, substantial disparities remain at the neighbourhood levels.
 This thesis presents a comprehensive neighbourhood-level geospatial
 analysis of vaccine uptake across Ireland's 166 Local Electoral Areas
 (LEAs), integrating demographic, spatial, and health service
 accessibility data to identify structural and socio-demographic
-determinants in peoplw 12 years and older. Using an ecological design
+determinants in people 12 years and older. Using an ecological design
 and publicly available data, we constructed a unified analytical dataset
 comprising vaccine uptake rates, population composition, deprivation
 metrics, and travel-time-based accessibility scores.A suite of Bayesian
@@ -400,16 +400,16 @@ The details of the age categories:
   vaccinated through schools or dedicated youth clinics.
 \item
   18--54 years: Representing the largest working-age population, this
-  group accessed vaccines through mass vaccination centres, general
-  practitioners, and pharmacies.
+  group accessed vaccines through mass vaccination centres, GPs, and
+  pharmacies.
 \item
   55--64 years: Considered higher-risk due to age-related vulnerability
   and comorbidities; this group was prioritised earlier in the
   programme.
 \item
-  65--70 years and 71+ years: These were among the first groups offered
-  vaccines, including individuals in congregated residential settings
-  and older adults with mobility limitations.
+  65--70 years and 71+ years: These groups were among the first to
+  receive vaccines, including individuals in congregated residential
+  settings and older adults with mobility limitations.
 \end{itemize}
 
 This age categorisation ensures alignment with the actual vaccine
@@ -579,7 +579,7 @@ center, a more refined accessibility score was calculated by inversely
 weighting the overlapping areas by travel time, reflecting the
 assumption that closer proximity implies better access. This approach
 was based on the intuitive premise that any spatial overlap between a
-healthcare service's catchment and an LEA indicates at least some degree
+healthcare services' catchment and an LEA indicates at least some degree
 of physical access for residents.
 
 \emph{Accessibility Score Calculation:}
@@ -594,8 +594,8 @@ score
 Applying 2SFCA---or an advanced variation---would yield a more
 comprehensive assessment of healthcare accessibility with more specific
 data and specialized resources, particularly in contrasting rural and
-urban situations where demand and service burden varied significantly
-and we strongly advise using it in subsequent research.
+urban situations where demand and service burden varied significantly.
+Future research may benefit from adopting this method.
 
 \subsubsection{Data Merging}\label{data-merging}
 
@@ -639,8 +639,8 @@ string processing functions such as str\_replace\_all() and
 str\_to\_title() to correct for spelling, punctuation, and formatting
 discrepancies. Merging was conducted using left\_join() from the dplyr
 package, maintaining a one-row-per-LEA structure in the final output.
-The resulting dataset comprised 166 observations---one for each Local
-Electoral Area in Ireland---and included:
+The resulting dataset comprised 166 observations---one for each LEA in
+Ireland---and included:
 
 \begin{itemize}
 \tightlist
@@ -693,9 +693,9 @@ constrained within the (0, 1) interval. In this framework, the mean of
 the Beta distribution---representing the expected value of vaccine
 uptake---is modelled as a function of the covariates via the logit link.
 While the Beta distribution allows for heteroskedasticity through its
-precision parameter (phi), in our models, phi was assumed to be constant
-across all observations and was not modelled as a function of predictor
-variables.
+precision parameter (\(\varphi\)), in our models, \(\varphi\) was
+assumed to be constant across all observations and was not modelled as a
+function of predictor variables.
 
 Model 1 focussed on basic demographic variables---namely age and
 gender---relate to the final uptake of the primary COVID-19 vaccine dose
@@ -708,13 +708,12 @@ Primary\_Vax\_Rate \textasciitilde{} age\_12to17\_logratio +
 age\_18to54\_logratio + age\_55to64\_logratio + age\_65to70\_logratio +
 male\_logratio
 
-The base model was extended to model 2 by adjusting for health,
-education, and accessibility to initial vaccination center. The
-accessibility measure was particularly relevant to the primary dose,
-which was more likely administered at centralized mass vaccination
-centres as opposed to decentralized locations like GPs or pharmacies,
-which were more important for booster doses. This model retained the
-beta regression framework and used the same MCMC setup as Model 1.
+Model 1 was extended to Model 2 by adjusting for health, education, and
+accessibility to initial vaccination center. This dose was more likely
+administered at centralized mass vaccination centres. In contrast,
+decentralized locations such as GPs or pharmacies played a more
+important role in delivering booster doses. This model retained the beta
+regression framework and used the same MCMC setup as Model 1.
 Incorporating these additional variables allowed us to capture social
 determinants of health and logistical barriers to access, thereby
 enriching our understanding of factors influencing vaccine uptake beyond
@@ -726,7 +725,7 @@ edu\_NoFormal\_logratio + edu\_Primary\_logratio +
 edu\_UpperSecondary\_logratio + edu\_Apprenticeship\_logratio +
 edu\_HonoursBachelor\_logratio + health\_VeryBad\_logratio +
 health\_Bad\_logratio + health\_Fair\_logratio + health\_Good\_logratio
-+ male\_logratio + Wt\_accessibility\_Initial\_Vacc
++ male\_logratio + Wt\_accessibility\_Initial\_Vacc\_Center
 
 Model 3: Morans'I (Moraga n.d.) was calculated to identify if spatial
 autocorrelation existed in the residuals. Moran's I is a global measure
@@ -758,7 +757,7 @@ edu\_NoFormal\_logratio + edu\_Primary\_logratio +
 edu\_UpperSecondary\_logratio + edu\_Apprenticeship\_logratio +
 edu\_HonoursBachelor\_logratio + health\_VeryBad\_logratio +
 health\_Bad\_logratio + health\_Fair\_logratio + health\_Good\_logratio
-+ Wt\_accessibility\_Initial\_Vacc + car(lea\_mat, gr = lea\_id)
++ Wt\_accessibility\_Initial\_Vacc\_Center + car(lea\_mat, gr = lea\_id)
 
 To further capture the socioeconomic context beyond individual-level
 education indicators, the fourth model introduced a deprivation index,
@@ -780,7 +779,8 @@ edu\_NoFormal\_logratio + edu\_Primary\_logratio +
 edu\_UpperSecondary\_logratio + edu\_Apprenticeship\_logratio +
 edu\_HonoursBachelor\_logratio + health\_VeryBad\_logratio +
 health\_Bad\_logratio + health\_Fair\_logratio + health\_Good\_logratio
-+ male\_logratio + Wt\_accessibility\_Initial\_Vacc + Depriviation
++ male\_logratio + Wt\_accessibility\_Initial\_Vacc\_Center +
+Deprivation
 
 With model 5 we departed from the additive structure of previous models
 and explicitly modelled the joint distribution of age and gender. This
@@ -890,14 +890,14 @@ relation to structural inequalities and accessibility barriers.
 required parental consent and were often vaccinated in dedicated clinics
 or school-associated pathways. The 18--54 bracket includes the bulk of
 the working-age population, who received vaccines through mass centres,
-general practitioners, and pharmacies. Individuals aged 55--64 were
-classified as higher risk due to age and comorbidities and were
-vaccinated earlier in the rollout. The 65--70 and 71+ groups were among
-the first prioritised by the state, especially those in congregated
-settings or with mobility and chronic health issues. These distinctions
-are critical not just from a clinical perspective, but also from a
-policy and accessibility standpoint, as they likely shape the speed,
-reach, and structure of vaccine deployment.
+GPs, and pharmacies. Individuals aged 55--64 were classified as higher
+risk due to age and comorbidities and were vaccinated earlier in the
+rollout. The 65--70 and 71+ groups were among the first prioritised by
+the state, especially those in congregated settings or with mobility and
+chronic health issues. These distinctions are critical not just from a
+clinical perspective, but also from a policy and accessibility
+standpoint, as they likely shape the speed, reach, and structure of
+vaccine deployment.
 
 \begin{figure}[htbp]
   \centering
@@ -951,7 +951,7 @@ deprivation, suggesting a plausible link between living conditions and
 poor perceived health.
 
 In contrast, Bad health proportions are more variable, ranging between
-3\% and 8\%. While still relatively low, this category demonstrates
+3\% and 8\%. This category still shows relatively low values but reveals
 clearer urban-rural gradients. LEAs with higher unemployment and
 deprivation scores - particularly in the northwest and inner-city Dublin
 - tend to report elevated figures.
@@ -1068,15 +1068,14 @@ predictor variables impact the predicted vaccination rates.
 For the marginal effects curve, each curve's starting position on the
 x-axis represents the log-ratio of that age group relative to the
 elderly reference category (71+), illustrating the compositional
-distribution of age groups across Ireland's Local Electoral Areas
-(LEAs). For instance, the teal curve (ages 55--64) starts farthest to
-the right, around +1.8, indicating that in many LEAs this group is
-approximately six times more prevalent than the senior population
-(exp(1.8) approx 6). This pattern typically appears in workforce-heavy
-areas with a dominant working-age population. In contrast, the pink
-curve (ages 12--17) begins around --0.3, reflecting LEAs where
-adolescents are less numerous than seniors---often seen in aging or
-retirement-focused regions.
+distribution of age groups across Ireland's LEAs. For instance, the teal
+curve (ages 55--64) starts farthest to the right, around +1.8,
+indicating that in many LEAs this group is approximately six times more
+prevalent than the senior population (exp(1.8) approx 6). This pattern
+typically appears in workforce-heavy areas with a dominant working-age
+population. In contrast, the pink curve (ages 12--17) begins around
+--0.3, reflecting LEAs where adolescents are less numerous than
+seniors---often seen in aging or retirement-focused regions.
 
 Because age proportions are compositional (summing to 1), increases in
 one age group imply decreases in others. This structural constraint is
@@ -1131,13 +1130,13 @@ close to one another tend to have similar unexplained vaccination
 patterns).This confirmed that standard regression models failed to fully
 account for spatial dependencies, prompting the use of a CAR model,
 introducing a structured spatial random effect term that smooths values
-across neighboring areas.
+across neighbouring areas.
 
 The spatial correlation parameter (car) was estimated at 0.56 (95\% CI:
 0.03 to 0.99), suggesting moderate positive spatial autocorrelation
-between neighboring LEAs, i.e., 56\% of unexplained variance was
+between neighbouring LEAs, i.e., 56\% of unexplained variance was
 attributable to spatial autocorrelation, indicating strong
-neighborhood-level similarities.
+neighbourhood-level similarities.
 
 \begin{figure}[H]
   \centering
@@ -1148,8 +1147,8 @@ neighborhood-level similarities.
 
 This spatial clustering may reflect unmeasured factors such as local
 social networks, community attitudes, healthcare provider practices, or
-other geographically-clustered influences on vaccination behavior. The
-relatively modest spatial standard deviation (0.21) indicates that while
+other geographically-clustered influences on vaccination behavior. A
+spatial standard deviation of 0.21 suggests that indicates that while
 spatial correlation exists, the magnitude of unexplained spatial
 variation is limited, suggesting that the measured covariates capture
 much of the systematic variation in vaccination rates. Demographic
@@ -1200,8 +1199,8 @@ broader area-level deprivation measures.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{Figures/depri_plot.png}
-  \caption{Marginal Effect of Depriviation}
-  \label{fig:Depriviation_Plot}
+  \caption{Marginal Effect of Deprivation}
+  \label{fig:Deprivation_Plot}
 \end{figure}
 
 The age-sex interaction model \emph{(Model 5)} revealed striking
@@ -1364,7 +1363,7 @@ was our biggest limitation. Population demographic characteristics were
 based on the 2022 Census and may not reflect the pandemic-period or
 vaccination roll out period scenario. Self-reported health status, used
 as a covariate, may be subject to bias. Our accessibility measure did
-not account for population demand or healthcare service's capacity,
+not account for population demand or healthcare services' capacity,
 limiting its interpretive power; while a 2SFCA approach could address
 these spatial limitations, it requires more granular data and
 computational resources beyond this study's scope. Additionally, the
