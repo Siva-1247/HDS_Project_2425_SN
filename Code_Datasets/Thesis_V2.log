@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.6.17)  23 JUN 2025 20:20
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.6.17)  23 JUN 2025 20:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**Thesis_V1.tex
-(./Thesis_V1.tex
+**Thesis_V2.tex
+(./Thesis_V2.tex
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2025-05-26>
 (c:/ProgramData/TinyTeX/texmf-dist/tex/latex/base/article.cls
@@ -308,12 +308,12 @@ File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) (c:/ProgramData/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-04-14 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count308
-) (./Thesis_V1.aux
+) (./Thesis_V2.aux
 
 LaTeX Warning: Label `fig:Model_4' multiply defined.
 
 )
-\openout1 = `Thesis_V1.aux'.
+\openout1 = `Thesis_V2.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 81.
 LaTeX Font Info:    ... okay on input line 81.
@@ -400,9 +400,9 @@ LaTeX Font Info:    ... okay on input line 81.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 Package hyperref Info: Link coloring OFF on input line 81.
-(./Thesis_V1.out) (./Thesis_V1.out)
+(./Thesis_V2.out) (./Thesis_V2.out)
 \@outlinefile=\write3
-\openout3 = `Thesis_V1.out'.
+\openout3 = `Thesis_V2.out'.
 
 LaTeX Info: Redefining \microtypecontext on input line 81.
 Package microtype Info: Applying patch `item' on input line 81.
@@ -945,10 +945,10 @@ Overfull \hbox (94.77563pt too wide) in paragraph at lines 1505--1509
 \T1/lmtt/m/n/10 minister-[]for-[]health-[]confirms-[]that-[]irelands-[]covid-[]19-[]vaccination-[]programme-[]will-[]open-[]to-[]12-[]15-[]year-[]olds/$[]\T1/lmr/m/n/10 (-20) . 
  []
 
-No file Thesis_V1.bbl.
+No file Thesis_V2.bbl.
 
 
-[26] (./Thesis_V1.aux)
+[26] (./Thesis_V2.aux)
  ***********
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2025-05-26>
@@ -959,7 +959,7 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package rerunfilecheck Info: File `Thesis_V1.out' has not changed.
+Package rerunfilecheck Info: File `Thesis_V2.out' has not changed.
 (rerunfilecheck)             Checksum: 87B9B7BC6E828AD5F7E2248FEA97095A;2201.
  ) 
 Here is how much of TeX's memory you used:
@@ -971,7 +971,7 @@ Here is how much of TeX's memory you used:
  36 hyphenation exceptions out of 8191
  75i,13n,79p,1006b,541s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/ProgramData/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on Thesis_V1.pdf (26 pages, 3644168 bytes).
+Output written on Thesis_V2.pdf (26 pages, 3644168 bytes).
 PDF statistics:
  438 PDF objects out of 1000 (max. 8388607)
  321 compressed objects within 4 object streams

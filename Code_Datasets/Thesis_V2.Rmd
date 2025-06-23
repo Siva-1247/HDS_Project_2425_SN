@@ -12,7 +12,7 @@ authors:
     location: Galway, Ireland, H91 TK33
     email: R.Jayashankerchithra1@universityofgalway.ie
 abstract: |
-  Despite Ireland’s high national COVID-19 vaccination coverage, substantial disparities remain at the neighbhourhood levels. This thesis presents a comprehensive neighbourhood-level geospatial analysis of vaccine uptake across Ireland’s 166 Local Electoral Areas (LEAs), integrating demographic, spatial, and health service accessibility data to identify structural and socio-demographic determinants in peoplw 12 years and older. Using an ecological design and publicly available data, we constructed a unified analytical dataset comprising vaccine uptake rates, population composition, deprivation metrics, and travel-time-based accessibility scores.A suite of Bayesian regression models—including spatial and hierarchical temporal components—was implemented to evaluate predictors of primary vaccine dose uptake. Initial models revealed that age (particularly 55–70 years) and upper secondary educational attainment were consistent, strong positive predictors, while health status and physical access to vaccination centres showed negligible influence. Spatial autocorrelation detected via Moran’s I justified the use of Conditional Autoregressive (CAR) models, which confirmed neighbourhood-level clustering not explained by covariates. A four-parameter logistic growth model further captured LEA-specific vaccination trajectories over time, showing that while uptake timing was relatively synchronized across regions, final coverage levels varied significantly by local demographics.Contrary to expectations, broader deprivation indices did not significantly improve model fit beyond education and age indicators. Our findings underscore the dominant role of demographic structure and education over physical access in shaping vaccine coverage, emphasizing the importance of localised, equity-focused strategies for future public health interventions in Ireland.
+  Despite Republic of Ireland’s high national COVID-19 vaccination coverage, substantial disparities remain at the neighbhourhood levels. This thesis presents a comprehensive neighbourhood-level geospatial analysis of vaccine uptake across Ireland’s 166 Local Electoral Areas (LEAs), integrating demographic, spatial, and health service accessibility data to identify structural and socio-demographic determinants in peoplw 12 years and older. Using an ecological design and publicly available data, we constructed a unified analytical dataset comprising vaccine uptake rates, population composition, deprivation metrics, and travel-time-based accessibility scores.A suite of Bayesian regression models—including spatial and hierarchical temporal components—was implemented to evaluate predictors of primary vaccine dose uptake. Initial models revealed that age (particularly 55–70 years) and upper secondary educational attainment were consistent, strong positive predictors, while health status and physical access to vaccination centres showed negligible influence. Spatial autocorrelation detected via Moran’s I justified the use of Conditional Autoregressive (CAR) models, which confirmed neighbourhood-level clustering not explained by covariates. A four-parameter logistic growth model further captured LEA-specific vaccination trajectories over time, showing that while uptake timing was relatively synchronized across regions, final coverage levels varied significantly by local demographics.Contrary to expectations, broader deprivation indices did not significantly improve model fit beyond education and age indicators. Our findings underscore the dominant role of demographic structure and education over physical access in shaping vaccine coverage, emphasizing the importance of localised, equity-focused strategies for future public health interventions in Ireland.
 keywords:
   - COVID-19
   - Vaccination Rate
@@ -22,6 +22,8 @@ keywords:
 bibliography: references.bib
 biblio-style: unsrt
 output: rticles::arxiv_article
+header-includes:
+  - \usepackage{float}
 ---
 
 # Background and Introduction
@@ -61,7 +63,7 @@ Although Ireland’s national COVID-19 vaccination campaign achieved high overal
 
 While global literature often emphasises individual-level attitudes or broad national trends, fewer studies examine how spatial and structural factors intersect at local levels to shape vaccination outcomes. In Ireland, LEA-level data offer a valuable but underutilized opportunity to explore these disparities more granularly. Existing reports from the CSO and the Health Protection Surveillance Centre (HPSC) provide descriptive LEA-level statistics but do not systematically model the determinants of uptake using integrated spatial, demographic, and temporal data.
 
-This thesis addresses this gap by investigating the underexplored intersection of spatial access, demographic structure, and vaccine uptake in Ireland. Specifically, it examines how factors such as age composition, educational attainment, general health outcomes, gender, unemployment, and proximity to vaccination centers are associated with local COVID-19 vaccine coverage for individuals aged 12 and older. Using both exploratory and statistical techniques—including Bayesian beta regression, CAR models, and sigmoidal curve-fitting—this study models spatial and temporal variation in vaccine uptake across Ireland’s 166 LEAs.
+This thesis addresses this gap by investigating the underexplored intersection of spatial access, demographic structure, and vaccine uptake in Ireland. Specifically, it examines how factors such as age composition, educational attainment, general health outcomes, gender, unemployment, and proximity to vaccination centers are associated with local COVID-19 vaccine coverage for individuals aged 12 and older in the Republic of Ireland. Using both exploratory and statistical techniques—including Bayesian beta regression, CAR models, and sigmoidal curve-fitting—this study models spatial and temporal variation in vaccine uptake across Ireland’s 166 LEAs.
 
 By adopting a spatial-temporal lens and integrating diverse public data sources, this thesis contributes to the growing field of place-based public health research. The findings offer empirical insights that can inform more geographically targeted, demographically sensitive, and equity-driven immunization strategies for future pandemic responses in Ireland and comparable settings.
 .
@@ -252,7 +254,7 @@ Primary_Vax_Rate ~ alr_age_12to17_females + alr_age_18to54_females +
                    alr_age_55to64_males + alr_age_65to70_males
 
 
-While the previous models were cross-sectional in nature, model 6 was used to introduce a longitudinal perspective to capture how vaccination rates evolved over time within each LEA. We observed that vaccination uptake followed a characteristic sigmoidal (S-shaped) growth curve—slow at first, then rapidly increasing before eventually plateauing. To model this trajectory, we specified a four-parameter logistic function within a hierarchical Bayesian framework. The function estimated key curve parameters: base (the lower asymptote or initial vaccination rate), Asym (the upper asymptote or finalsaturation level), xmid (the inflection point where uptake accelerates most rapidly), and scal (the spread or steepness of the curve). LEA-specific random intercepts were included for base, Asym, and xmid, while scal was assumed to be globally constant due to model identifiability constraints. Furthermore, we modeled Asym as a function of ALR-transformed covariates (e.g., age and gender composition) to understand how basic demographic characteristics shape the final uptake level.The pother parameters can also be modelled as a function of the covariates in the future.
+While the previous models were cross-sectional in nature, model 6 was used to introduce a longitudinal perspective to capture how vaccination rates evolved over time within each LEA. We observed that vaccination uptake followed a characteristic sigmoidal (S-shaped) growth curve—slow at first, then rapidly increasing before eventually plateauing. To model this trajectory, we specified a four-parameter logistic function within a hierarchical Bayesian framework. The function estimated key curve parameters: base (the lower asymptote or initial vaccination rate), Asym (the upper asymptote or finalsaturation level), xmid (the inflection point where uptake accelerates most rapidly), and scal (the spread or steepness of the curve). LEA-specific random intercepts were included for base, Asym, and xmid, while scal was assumed to be globally constant due to model identifiability constraints. Furthermore, we modeled Asym as a function of ALR-transformed covariates (e.g., age and gender composition) to understand how basic demographic characteristics shape the final uptake level.The pother parameters can also be modelled as a function of the covariates in the future.We used longitudinal data, that represents the monthly vaccination rate for the primary vaccination dose for this model.
 
 Priors for the nonlinear parameters were carefully chosen based on empirical inspection of the data. Specifically, we set a normal(0.8, 0.1) prior on Asym, reflecting the assumption that final vaccine coverage would typically plateau around 80%, with moderate uncertainty. This aligns with observed saturation levels in many LEAs. For xmid, we used a normal(6, 2) prior, based on the understanding that the inflection point—the month with the fastest uptake—was likely to occur within the first half-year after vaccine roll out. This prior captures temporal heterogeneity while remaining centered around plausible empirical timing. Finally, we applied an exponential(1) prior (constrained to be positive via lb = 0) on scal, ensuring strictly positive steepness while favoring gradual curves unless strong data signals indicate rapid growth. 
 
@@ -280,15 +282,15 @@ The 12–17 group represents adolescents, who required parental consent and were
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.4\textwidth]{Figures/age_proportion_12to17.png}
-  \includegraphics[width=0.4\textwidth]{Figures/age_proportion_18to54.png}
+  \includegraphics[width=0.5\textwidth]{Figures/age_proportion_12to17.png}
+  \includegraphics[width=0.5\textwidth]{Figures/age_proportion_18to54.png}
   \caption{Age Proportion Distributions: 12–17 and 18-54}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.4\textwidth]{Figures/age_proportion_55to64.png}
-  \includegraphics[width=0.4\textwidth]{Figures/age_proportion_65to70.png}
+  \includegraphics[width=0.5\textwidth]{Figures/age_proportion_55to64.png}
+  \includegraphics[width=0.5\textwidth]{Figures/age_proportion_65to70.png}
   \caption{Age Proportion Distributions: 55-64 and 65-70}
 \end{figure}
 
@@ -298,6 +300,7 @@ The 12–17 group represents adolescents, who required parental consent and were
   \caption{Age Proportion Distribution: 71+}
   \label{fig:age_71plus}
 \end{figure}
+
 The 18–54 group consistently constituted the largest segment of the population, with proportions ranging from approximately 42% to 77%, reflecting the economically active, working-age cohort. The 12-17 age group, comprising adolescents, represented between 5% and 15% of local populations, with slightly elevated proportions observed in suburban and commuter-belt LEAs. The 55–64 and 65–70 cohorts showed moderate variation, each accounting for up to 20% and 18% respectively in several rural areas, suggesting pockets of pre-retirement and early-retirement demographics. The 71+ age group displayed marked geographic variability, with certain western and peripheral LEAs reaching proportions exceeding 13%, aligning with broader demographic trends of ageing populations in rural Ireland.
 
 **Health Status:**
@@ -305,13 +308,15 @@ General health status is a core indicator of population well-being and serves as
 To visualize the geographical distribution of perceived health status across Ireland, proportions for each health category were calculated at the LEA level and presented using individual bar plots. These plots facilitate comparison across areas and allow for the identification of spatial clustering or outliers.
 
 The proportion of residents reporting Very Bad health is consistently low across all LEAs, typically falling below 2%. However, subtle variations are observed, with urban-deprived LEAs such as North Inner City and Lifford-Stranorlar showing comparatively higher values. This spatial patterning corresponds with areas of higher socio-economic deprivation, suggesting a plausible link between living conditions and poor perceived health.
+
 In contrast, Bad health proportions are more variable, ranging between 3% and 8%. While still relatively low, this category demonstrates clearer urban-rural gradients. LEAs with higher unemployment and deprivation scores - particularly in the northwest and inner-city Dublin - tend to report elevated figures.
+
 The Fair health category captures a more neutral self-assessment and displays a broader distribution, with values typically between 15% and 30%. This group likely includes individuals managing chronic conditions without acute deterioration, and its prevalence further reflects socio-economic conditions, access to healthcare, and age structure of the population.
 
 Good health reports constitute the modal response in most LEAs, suggesting a generally positive health self-perception across the country. The highest proportions are concentrated in suburban regions such as Ashbourne, Lucan, and Stillorgan, which may reflect younger population structures and better access to services.12–17
 Finally, the Very Good category presents a more selective distribution, frequently ranging from 30% to over 50% in some eastern and commuter belt LEAs. The high concentration of Very Good responses in affluent LEAs likely reflects structural advantages such as employment stability, housing quality, and availability of preventive health services.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.5\textwidth]{Figures/health_proportion_VeryBad.png}
   \includegraphics[width=0.5\textwidth]{Figures/health_proportion_bad.png}
@@ -334,7 +339,7 @@ Across the 166 LEAs, deprivation scores ranged from approximately –21.6 (sever
 
 Sex-specific unemployment rates revealed complementary patterns. The male unemployment rate (UNEMPM22) ranged from under 3% to over 18%, with elevated levels in LEAs such as Donegal, Lifford-Stranorlar, and Monaghan. The female unemployment rate (UNEMPF22) also varied substantially, reaching as high as 22% in certain LEAs. While male and female unemployment rates often aligned geographically, some regions showed wider gender disparities.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.4\textwidth]{Figures/deprivation_index.png}
   \includegraphics[width=0.4\textwidth]{Figures/female_unemployment_rate.png}
@@ -343,34 +348,32 @@ Sex-specific unemployment rates revealed complementary patterns. The male unempl
   \label{fig:deprivation-maps}
 \end{figure}
 
+
 ### Model
 
 *Model 1*-  Younger age groups demonstrated significantly lower vaccination rates compared to the reference category, with particularly strong negative effects for the 18-54 year age group and the 12-17 year age group. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{Figures/Model_1.png}
   \caption{Model 1 Summary Table}
   \label{fig:Model_1}
 \end{figure}
 
-The 55-64 year old variable was a strong positive predictor in the model. The credible interval (CI) for 65-70 year olds included zero, suggesting uncertainty around this effect. Male proportion demonstrated a negative association with vaccination rates but the CI included zero. The marginal effects plots are used to understand the impact to the predictors better.
+The 55-64 year old variable was a strong positive predictor in the model. The credible interval (CI) represents the range within which the true value of a parameter lies with a certain probability—typically 95%—based on the posterior distribution in a Bayesian model. For example, the CI for the 65–70 year age group includes zero, indicating that there is substantial uncertainty around the estimated effect; it is plausible that there is no effect at all. Similarly, while the proportion of males showed a negative association with vaccination rates, the inclusion of zero in its CI also suggests that this effect is not statistically robust. To better interpret the influence of each predictor, marginal effects plots are used to visualize how changes in predictor variables impact the predicted vaccination rates.
 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
-  \includegraphics[width=0.5\textwidth]{Figures/marginal_effects_age0.png}
-  \includegraphics[width=0.5\textwidth]{Figures/marginal_effects_sex0.png}
-  \caption{Base Model Marginal Effects of Adjusted Model}
-  \caption{Note: Log-ratios reflect the natural logarithm of the proportion of a group relative to the baseline group. This approach allows for comparison within compositional data.}
+  \includegraphics[width=0.45\textwidth]{Figures/marginal_effects_age0.png}
+  \includegraphics[width=0.45\textwidth]{Figures/marginal_effects_sex0.png}
+  \caption{Base Model Marginal Effects of Adjusted Model. \textit{Note:} Log-ratios reflect the natural logarithm of the proportion of a group relative to the baseline group. This approach allows for comparison within compositional data.}
   \label{fig:Marginal_Effects_Base_Model}
 \end{figure}
 
-Each curve’s starting position on the x-axis represents the log-ratio of that age group relative to the elderly reference category (71+), illustrating the compositional distribution of age groups across Ireland’s Local Electoral Areas (LEAs). For instance, the teal curve (ages 55–64) starts farthest to the right, around +1.8, indicating that in many LEAs this group is approximately six times more prevalent than the senior population (exp(1.8) approx 6). This pattern typically appears in workforce-heavy areas with a dominant working-age population. In contrast, the pink curve (ages 12–17) begins around –0.3, reflecting LEAs where adolescents are less numerous than seniors—often seen in aging or retirement-focused regions.
+For the marginal effects curve, each curve’s starting position on the x-axis represents the log-ratio of that age group relative to the elderly reference category (71+), illustrating the compositional distribution of age groups across Ireland’s Local Electoral Areas (LEAs). For instance, the teal curve (ages 55–64) starts farthest to the right, around +1.8, indicating that in many LEAs this group is approximately six times more prevalent than the senior population (exp(1.8) approx 6). This pattern typically appears in workforce-heavy areas with a dominant working-age population. In contrast, the pink curve (ages 12–17) begins around –0.3, reflecting LEAs where adolescents are less numerous than seniors—often seen in aging or retirement-focused regions.
 
-Because age proportions are compositional (summing to 1), increases in one age group imply decreases in others. This structural constraint is captured by the log-ratio approach, which allows meaningful comparisons while preserving the interdependence of demographic groups. The x-axis thus reflects relative demographic composition, while the y-axis shows the predicted outcome on the log odds scale—specifically, the log odds of the mean COVID-19 vaccination rate.
-
-Importantly, LEAs with proportionally more adolescents relative to the elderly often exhibit lower vaccination rates. This is partly driven by the differing vaccine eligibility, uptake behavior, and hesitancy patterns across age groups. As one moves along the x-axis—reflecting underlying gradients such as area deprivation or socioeconomic variation—each curve shows how the log odds of vaccination change with demographic context. Points where the curves cross mark tipping zones where shifts in population structure coincide with shifts in vaccination behavior, offering insights into thresholds where targeted public health interventions may be most effective.
+Because age proportions are compositional (summing to 1), increases in one age group imply decreases in others. This structural constraint is captured by the log-ratio approach, which allows meaningful comparisons while preserving the interdependence of demographic groups. The x-axis thus reflects relative demographic composition, while the y-axis shows the predicted outcome on the log odds scale—specifically, the log odds of the mean COVID-19 vaccination rate.Importantly, LEAs with proportionally more adolescents relative to the elderly often exhibit lower vaccination rates. This is partly driven by the differing vaccine eligibility, uptake behavior, and hesitancy patterns across age groups.
 
 
 *Model 2* – We could see that the age effects persist but attenuated slightly while revealing additional significant associations. 
@@ -394,17 +397,17 @@ The male proportion effect changed to be positive but was still non-significant.
   \includegraphics[width=0.3\textwidth]{Figures/marginal_effects_education.png}
   \includegraphics[width=0.3\textwidth]{Figures/marginal_effects_health.png}
   \includegraphics[width=0.3\textwidth]{Figures/marginal_effects_access.png}
-  \caption{Marginal Effects of Adjusted Model}
-  \caption{Note: Log-ratios reflect the natural logarithm of the proportion of a group relative to the baseline group. This approach allows for comparison within compositional data.}
+  \caption{Marginal Effects of Adjusted Model\textit{Note:} Log-ratios reflect the natural logarithm of the proportion of a group relative to the baseline group. This approach allows for comparison within compositional data.}
   \label{fig:Marginal_Effects_Adjusted_Model}
 \end{figure}
 
 *Model 3* - To formally test for spatial autocorrelation, we conducted a Moran’s I test on the residuals:
-Moran’s I = 0.1906, p < 0.001 — indicating significant positive spatial autocorrelation in residuals (i.e., LEAs geographically close to one another tend to have similar unexplained vaccination patterns)
-This confirmed that standard regression models failed to fully account for spatial dependencies, prompting the use of a CAR model, introducing a structured spatial random effect term that smooths values across neighboring areas
+
+Moran’s I = 0.1906, p < 0.001 — indicating significant positive spatial autocorrelation in residuals (i.e., LEAs geographically close to one another tend to have similar unexplained vaccination patterns).This confirmed that standard regression models failed to fully account for spatial dependencies, prompting the use of a CAR model, introducing a structured spatial random effect term that smooths values across neighboring areas.
+
 The spatial correlation parameter (car) was estimated at 0.56 (95% CI: 0.03 to 0.99), suggesting moderate positive spatial autocorrelation between neighboring LEAs, i.e.,  56% of unexplained variance was attributable to spatial autocorrelation, indicating strong neighborhood-level similarities.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{Figures/Model_3.png}
   \caption{Spatial Model Summary Table}
@@ -416,16 +419,16 @@ Demographic patterns remained robust: Age 55–64 still had the strongest positi
 
 The inclusion of the Pobal HP Deprivation Index in *Model 4*, which measures relative affluence and disadvantage across Irish communities using composite scores derived from employment, education, housing quality, and demographic variables, had minimal impact on vaccination rates despite capturing broader socioeconomic conditions at the LEA level. We have seen that the deprivation scores ranged from approximately –21.6 (severe disadvantage) to +16.3 (marked affluence), representing a wide spectrum of socioeconomic conditions across all LEAs.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
-  \includegraphics[width=0.8\textwidth]{Figures/Model_4.png}
+  \includegraphics[width=0.6\textwidth]{Figures/Model_4.png}
   \caption{Model 4 Summary Table}
   \label{fig:Model_4}
 \end{figure}
 
-Despite this pronounced variation in area-level deprivation, the composite deprivation index showed a negligible association with vaccination rates, with confidence intervals including zero, suggesting that area-level socioeconomic deprivation does not provide additional explanatory power beyond the specific educational attainment variables already included in the model. This finding is particularly noteworthy given the substantial socioeconomic disparities observed across LEAs, indicating that educational composition effectively captures the most relevant aspects of socioeconomic variation affecting vaccination behavior. The results suggest that deprivation effects operate primarily through already-measured demographic and educational pathways rather than through additional unmeasured mechanisms. The lack of significant association indicates that while the Pobal index comprehensively measures community-level disadvantage across a wide range of conditions, individual educational characteristics remain the dominant socioeconomic predictor of vaccination uptake, effectively mediating the influence of broader area-level deprivation measures.
+Despite this pronounced variation in area-level deprivation, the composite deprivation index showed a negligible association with vaccination rates, with the CI including zero, suggesting that area-level socioeconomic deprivation does not provide additional explanatory power beyond the specific educational attainment variables already included in the model. This finding is particularly noteworthy given the substantial socioeconomic disparities observed across LEAs, indicating that educational composition effectively captures the most relevant aspects of socioeconomic variation affecting vaccination behavior. The results suggest that deprivation effects operate primarily through already-measured demographic and educational pathways rather than through additional unmeasured mechanisms. The lack of significant association indicates that while the Pobal index comprehensively measures community-level disadvantage across a wide range of conditions, individual educational characteristics remain the dominant socioeconomic predictor of vaccination uptake, effectively mediating the influence of broader area-level deprivation measures.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{Figures/depri_plot.png}
   \caption{Marginal Effect of Depriviation}
@@ -434,7 +437,7 @@ Despite this pronounced variation in area-level deprivation, the composite depri
 
 The age-sex interaction model *(Model 5)* revealed striking differences in age-vaccination relationships between males and females. Among females, younger age groups showed strong negative associations, with the 18-54 year group showing significant impact and among men the 65-70 year group uniquely showed a significant negative association contrasting sharply with the positive trend observed in older females, despite generally being considered a high-priority group.These results suggest that vaccine hesitancy patterns differ substantially between genders within the same age cohorts. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{Figures/Model_5.png}
   \caption{Model 5 Summary Table}
@@ -445,14 +448,13 @@ The age-sex interaction model *(Model 5)* revealed striking differences in age-v
   \centering
   \includegraphics[width=0.5\textwidth]{Figures/plot_male_jd.png}
   \includegraphics[width=0.5\textwidth]{Figures/plot_female_jd.png}
-  \caption{Marginal Effects of Age \& Sex Interaction Model}
-  \caption{Note: Log-ratios reflect the natural logarithm of the proportion of a group relative to the baseline group. This approach allows for comparison within compositional data.}
+  \caption{Marginal Effects of Age \& Sex Interaction Model\textit{Note:} Log-ratios reflect the natural logarithm of the proportion of a group relative to the baseline group. This approach allows for comparison within compositional data.}
   \label{fig:Marginal_Effects_Interaction_Model}
 \end{figure}
 
-We found distinct patterns in COVID-19 vaccination uptake trajectories across Ireland's LEAs using our fitted hierarchical beta regression model *(Model 6)*. The population-level upper asymptote was at 0.94 (95% CI: 0.76-1.12) on the logit scale, representing the baseline maximum vaccination rate before accounting for demographic influences. The temporal inflection point occurred at 5.61 months (95% CI: 5.57-5.66), indicating that the steepest increase in vaccination rates typically occurred during late May to early June 2021, corresponding to the period when vaccine availability expanded beyond priority groups. The scale parameter was found to be 1.36 (95% CI: 1.35-1.38), which controls the steepness of the sigmoidal curve transition and suggests a relatively gradual uptake pattern.
+We found distinct patterns in COVID-19 vaccination uptake trajectories across Ireland's LEAs using our fitted temporal model *(Model 6)*. The population-level upper asymptote was at 0.94 (95% CI: 0.76-1.12) on the logit scale, representing the baseline maximum vaccination rate before accounting for demographic influences. The temporal inflection point occurred at 5.61 months (95% CI: 5.57-5.66), indicating that the steepest increase in vaccination rates typically occurred during late May to early June 2021, corresponding to the period when vaccine availability expanded beyond priority groups. The scale parameter was found to be 1.36 (95% CI: 1.35-1.38), which controls the steepness of the sigmoidal curve transition and suggests a relatively gradual uptake pattern.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{Figures/Model_5.png}
   \caption{Temporal Model Summary Table}
@@ -463,14 +465,14 @@ We identified substantial between-LEA heterogeneity in vaccination achievements,
 
 The demographic predictors revealed significant positive associations between all covariates and final vaccination rate achievement. We found that more 65-70 years olds with respect to the 71+ year olds exhibited a strongest positive effect among age groups. It was also identified that LEAs with higher male proportions achieved substantially higher maximum vaccination coverage. The lower asymptote at -3.44 (95% CI: -3.49 to -3.39) on the logit scale, represents the minimal initial vaccination rates at the program's outset. Our demographic model maintained temporal stability, with the inflection point remaining consistent and the scale parameter showing minimal variation. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{Figures/Top_LEA.png}
   \caption{Vaccination Trend for Top 5 LEAs}
   \label{fig:Top_Leas}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{Figures/Bottom_LEA.png}
   \caption{Vaccination Trend for Bottom 5 LEAs}
