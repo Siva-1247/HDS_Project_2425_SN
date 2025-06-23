@@ -16,7 +16,7 @@ lea_mat[1:10, 1:10]
 any(lea_mat != 0)
 Vax_data <- read.csv("Vacc_Rates&Geocoded_Data/CDC47_Stats.csv")
 
-Final_Merged_Data <- read.csv("Final_Merged_Dataset/Final_Merged_dataset.csv")
+Final_Merged_Data <- read.csv("Final_Merged_Dataset/Complete_Merged_dataset.csv")
 vax_data$LEA_Short <- toupper(sapply(strsplit(as.character(vax_data$Local.Electoral.Area), ","), `[`, 1))
 vax_data$LEA_Short <- gsub("GRAIGUECULLEN -PORTARLINGTON", 
                            "GRAIGUECULLEN-PORTARLINGTON", 
@@ -39,8 +39,6 @@ Final_Data <-  merge(Final_Merged_Data, filtered_data,
                                all.y = FALSE)
 dim(Final_Data)
 head(Final_Data)
-Final_Data <- Final_Data %>%
-  rename(accessibility_GP10 = `accessibility_10`)
 
 names(Final_Data)
 
@@ -77,7 +75,7 @@ data <- data %>%
     health_Good_logratio = log(p_health_Good / p_health_VeryGood),
     
     #gender (reference: p_female)
-    male_logratio = log(p_male / p_female)
+    male_logratio = log(p_sex_male / p_sex_female)
     
   )
 
@@ -100,7 +98,7 @@ plot(marginal_effects(trial1, effects = "age_65to70_logratio"))
 #Model adjusted with education health outcomes and access to initial vaccination center
 trial3 <- brm(
   formula = Primary_Vax_Rate ~ 
-    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +Wt_accessibility_Initial_Vacc ,
+    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +Weighted_Access_Initial_Vacc_Center ,
   data = data,
   family = Beta())
 
@@ -108,7 +106,7 @@ trial3 <- brm(
 
   trial2 <- brm(
   formula = Primary_Vax_Rate ~ 
-    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +Wt_accessibility_Initial_Vacc + accessibility_Pharmacy10 + accessibility_GP10 ,
+    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +Weighted_Access_Initial_Vacc_Center + Access_Pharmacies + Access_GPs ,
   data = data,
   family = Beta())
 
@@ -123,7 +121,7 @@ edu_vars <- c("edu_NoFormal_logratio", "edu_Primary_logratio",
 health_vars <- c("health_VeryBad_logratio", "health_Bad_logratio", 
                  "health_Fair_logratio", "health_Good_logratio")
 
-access_vars <- c("Wt_accessibility_Initial_Vacc")
+access_vars <- c("Weighted_Access_Initial_Vacc_Center")
 
 extract_marginal_effects <- function(var_list, model, label) {
   lapply(var_list, function(var) {
@@ -265,9 +263,7 @@ trial1_CAR_fixed <- brm(
     age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio +
     edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + 
     edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio +
-    health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio +
-    Wt_accessibility_Initial_Vacc+ 
-    car(lea_mat, gr = lea_id),
+    health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +Weighted_Access_Initial_Vacc_Center + car(lea_mat, gr = lea_id),
   data = data,
   data2 = list(lea_mat = lea_mat),
   family = Beta(),
@@ -556,6 +552,7 @@ top_plot2
 ggsave("Top_LEA.png", plot = top_plot2, width = 8, height = 6, dpi = 300)
 ggsave("Bottom_LEA.png", plot = bottom_plot2, width = 8, height = 6, dpi = 300)
 
+#Analysing LEAs with dips
 increase_dip_analysis <- long_data %>%
   group_by(CSO_LEA) %>%
   arrange(Month_num) %>%
@@ -594,14 +591,14 @@ decline_leas <- increase_dip_analysis %>%
   arrange(desc(decline_magnitude))
 
 decline_leas$CSO_LEA
-##Model with Depriviation
-dep_data <- read.csv("Final_Merged_Dataset/Complete_Merged_Dataset.csv")
-names(dep_data)
-data$Depriviation <- dep_data$Index22_rel
 
+##Model with Depriviation
+data <- data %>%
+  rename(Depriviation = `Index22_rel`)
+names(data)
 trial4 <- brm(
   formula = Primary_Vax_Rate ~ 
-    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio +Wt_accessibility_Initial_Vacc + Depriviation,
+    age_12to17_logratio + age_18to54_logratio + age_55to64_logratio + age_65to70_logratio + edu_NoFormal_logratio + edu_Primary_logratio + edu_UpperSecondary_logratio + edu_Apprenticeship_logratio + edu_HonoursBachelor_logratio + health_VeryBad_logratio + health_Bad_logratio + health_Fair_logratio + health_Good_logratio + male_logratio + Weighted_Access_Initial_Vacc_Center + Depriviation,
   data = data,
   family = Beta())
 
@@ -656,21 +653,21 @@ merged_data <- data_1 %>%
   left_join(dep_subset, by = "CSO_LEA")
 
 # ALR transform for female age groups
-merged_data <- merged_data %>%
+merged_data <- data %>%
   mutate(
-    alr_age_12to17_females = log(p_age_12to17_females / p_age_71plus_females),
-    alr_age_18to54_females = log(p_age_18to54_females / p_age_71plus_females),
-    alr_age_55to64_females = log(p_age_55to64_females / p_age_71plus_females),
-    alr_age_65to70_females = log(p_age_65to70_females / p_age_71plus_females)
+    alr_age_12to17_females = log(p_age_12to17_sex_female / p_age_71plus_sex_female),
+    alr_age_18to54_females = log(p_age_18to54_sex_female / p_age_71plus_sex_female),
+    alr_age_55to64_females = log(p_age_55to64_sex_female / p_age_71plus_sex_female),
+    alr_age_65to70_females = log(p_age_65to70_sex_female / p_age_71plus_sex_female)
   )
 
 # ALR transform for male age groups
 merged_data <- merged_data %>%
   mutate(
-    alr_age_12to17_males = log(p_age_12to17_males / p_age_71plus_males),
-    alr_age_18to54_males = log(p_age_18to54_males / p_age_71plus_males),
-    alr_age_55to64_males = log(p_age_55to64_males / p_age_71plus_males),
-    alr_age_65to70_males = log(p_age_65to70_males / p_age_71plus_males)
+    alr_age_12to17_males = log(p_age_12to17_sex_male / p_age_71plus_sex_male),
+    alr_age_18to54_males = log(p_age_18to54_sex_male / p_age_71plus_sex_male),
+    alr_age_55to64_males = log(p_age_55to64_sex_male / p_age_71plus_sex_male),
+    alr_age_65to70_males = log(p_age_65to70_sex_male / p_age_71plus_sex_male)
   )
 
 trial5 <- brm(
@@ -724,7 +721,7 @@ plot_male <- ggplot(age_male, aes(x = x_val, y = estimate__, color = variable, f
   theme_minimal(base_size = 14)
 
 # Combine side by side
-plot_female + plot_male + plot_layout(ncol = 2)
+#plot_female + plot_male + plot_layout(ncol = 2)
 
 ggsave("plot_male_jd.png", plot = plot_female, width = 8, height = 6, dpi = 300)
 ggsave("plot_female_jd.png", plot = plot_male, width = 8, height = 6, dpi = 300)
@@ -884,7 +881,7 @@ modelsummary(
             "ALR = Additive Log-Ratio transformation")
 )
 
-# 4-parameter logistic function
+# 4-parameter logistic function visualization
 logistic_4p <- function(x, base, Asym, xmid, scal) {
   base + (Asym - base) / (1 + exp((xmid - x) / scal))
 }

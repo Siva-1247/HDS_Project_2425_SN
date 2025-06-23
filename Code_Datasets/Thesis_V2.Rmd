@@ -403,7 +403,7 @@ The male proportion effect changed to be positive but was still non-significant.
 
 *Model 3* - To formally test for spatial autocorrelation, we conducted a Moran’s I test on the residuals:
 
-Moran’s I = 0.1906, p < 0.001 — indicating significant positive spatial autocorrelation in residuals (i.e., LEAs geographically close to one another tend to have similar unexplained vaccination patterns).This confirmed that standard regression models failed to fully account for spatial dependencies, prompting the use of a CAR model, introducing a structured spatial random effect term that smooths values across neighboring areas.
+Moran’s I = 0.1907, p < 0.001 — indicating significant positive spatial autocorrelation in residuals (i.e., LEAs geographically close to one another tend to have similar unexplained vaccination patterns).This confirmed that standard regression models failed to fully account for spatial dependencies, prompting the use of a CAR model, introducing a structured spatial random effect term that smooths values across neighboring areas.
 
 The spatial correlation parameter (car) was estimated at 0.56 (95% CI: 0.03 to 0.99), suggesting moderate positive spatial autocorrelation between neighboring LEAs, i.e.,  56% of unexplained variance was attributable to spatial autocorrelation, indicating strong neighborhood-level similarities.
 
