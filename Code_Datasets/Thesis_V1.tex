@@ -82,40 +82,34 @@ Level Analysis in Ireland}
 
 
 \begin{abstract}
-The COVID-19 vaccination rollout in Ireland achieved commendably high
-national coverage; however, substantial geographic disparities in uptake
-remain underexplored at finer spatial resolutions. This thesis presents
-a neighbourhood-level geospatial analysis of COVID-19 vaccination uptake
-across Ireland's 166 Local Electoral Areas (LEAs), integrating
-demographic, spatial, and health service accessibility data to identify
-structural and socio-demographic predictors of vaccine coverage.Using an
-ecological design and publicly available data sources, we constructed a
-unified analytical dataset linking LEA-level vaccine uptake rates with
-socio-demographic indicators from the Central Statistics Office (CSO),
-spatial accessibility scores based on drive-time isochrones to
-vaccination service locations, and LEA boundaries from Ordnance Survey
-Ireland. Accessibility scores were engineered using geocoded vaccination
-service locations and travel-time isochrones, while demographic
-predictors were ALR-transformed to accommodate compositional data
-structures.We applied a series of Bayesian models, beginning with beta
-regression to model the proportion of individuals vaccinated, followed
-by spatial models incorporating Conditional Autoregressive (CAR) priors
-to address spatial autocorrelation. Additionally, a hierarchical
-nonlinear beta regression model with a four-parameter logistic growth
-function captured temporal vaccination trends across LEAs. Across all
-model specifications, age (especially 55--70 years) and upper secondary
-educational attainment consistently emerged as strong positive
-predictors of vaccine uptake. Accessibility and health status showed
-weak or non-significant associations. The CAR model revealed significant
-spatial clustering, indicating the presence of unmeasured
-neighbourhood-level influences.The findings emphasize the primacy of
-demographic and educational determinants over geographic accessibility
-in shaping vaccination behaviours in the Irish context. The study
-provides novel insights into localised health inequities and supports
-the case for more spatially targeted public health interventions. It
-also highlights the value of integrating spatial epidemiological methods
-with Bayesian hierarchical modelling for future health services research
-in Ireland.
+Despite Ireland's high national COVID-19 vaccination coverage,
+substantial disparities remain at the neighbhourhood levels. This thesis
+presents a comprehensive neighbourhood-level geospatial analysis of
+vaccine uptake across Ireland's 166 Local Electoral Areas (LEAs),
+integrating demographic, spatial, and health service accessibility data
+to identify structural and socio-demographic determinants in peoplw 12
+years and older. Using an ecological design and publicly available data,
+we constructed a unified analytical dataset comprising vaccine uptake
+rates, population composition, deprivation metrics, and
+travel-time-based accessibility scores.A suite of Bayesian regression
+models---including spatial and hierarchical temporal components---was
+implemented to evaluate predictors of primary vaccine dose uptake.
+Initial models revealed that age (particularly 55--70 years) and upper
+secondary educational attainment were consistent, strong positive
+predictors, while health status and physical access to vaccination
+centres showed negligible influence. Spatial autocorrelation detected
+via Moran's I justified the use of Conditional Autoregressive (CAR)
+models, which confirmed neighbourhood-level clustering not explained by
+covariates. A four-parameter logistic growth model further captured
+LEA-specific vaccination trajectories over time, showing that while
+uptake timing was relatively synchronized across regions, final coverage
+levels varied significantly by local demographics.Contrary to
+expectations, broader deprivation indices did not significantly improve
+model fit beyond education and age indicators. Our findings underscore
+the dominant role of demographic structure and education over physical
+access in shaping vaccine coverage, emphasizing the importance of
+localised, equity-focused strategies for future public health
+interventions in Ireland.
 \end{abstract}
 
 \keywords{
@@ -132,77 +126,84 @@ in Ireland.
 
 \section{Background and Introduction}\label{background-and-introduction}
 
-\textbf{Background} COVID-19 vaccination has been one of the most
-impactful public health tools in mitigating the global burden of the
-pandemic. According to estimates published in The Lancet Infectious
-Diseases, vaccines prevented approximately 20 million deaths in their
-first year of rollout, highlighting their role in reducing transmission,
-hospitalisation, and mortality in high-coverage settings(Watson et al.
+\textbf{Background}
+
+COVID-19 vaccination has been one of the most impactful public health
+tools in mitigating the global burden of the pandemic. According to
+estimates published in The Lancet Infectious Diseases, vaccines
+prevented approximately 20 million deaths in their first year of
+rollout, highlighting their role in reducing transmission,
+hospitalization, and mortality in high-coverage settings(Watson et al.
 2022). However, significant disparities in vaccine uptake have persisted
 across regions and population groups, reflecting deeper socio-political
-and structural divides. A growing body of evidence underscores the
-influence of socio-demographic factors on vaccine acceptance. A global
-systematic review by Sallam in 2021(Sallam 2021) found that individuals
-with higher levels of education, income, and more trust in government
-and health authorities were more likely to accept COVID-19 vaccines. In
-contrast, mistrust, misinformation, and perceived risks were
-disproportionately prevalent in marginalised and underserved
-populations. Mohammad S Razai introduced the ``Five Cs''
-framework---Confidence, Complacency, Convenience, Calculation, and
-Collective responsibility (Razai et al. 2021)-as a useful model for
-understanding vaccine hesitancy at the individual level. Other
-studies(Troiano and Nardi 2021), found that lower vaccine willingness
-was more common among women, younger adults, and ethnic minorities.
-Spatial Patterns: While much of the literature on vaccine hesitancy has
-focused on individual-level attitudes and beliefs, an emerging body of
-research highlights the critical role of structural
+and structural divides.
+
+A growing body of evidence underscores the influence of
+socio-demographic factors on vaccine acceptance. A global systematic
+review by Sallam in 2021(Sallam 2021) found that individuals with higher
+levels of education, income, and more trust in government and health
+authorities were more likely to accept COVID-19 vaccines. In contrast,
+mistrust, misinformation, and perceived risks were disproportionately
+prevalent in marginalized and under-served populations. Mohammad S Razai
+introduced the ``Five Cs'' framework---Confidence, Complacency,
+Convenience, Calculation, and Collective responsibility (Razai et al.
+2021)- as a useful model for understanding vaccine hesitancy at the
+individual level. Other studies(Troiano and Nardi 2021), found that
+lower vaccine willingness was more common among women, younger adults,
+and ethnic minorities.
+
+\textbf{Spatial Patterns:} While much of the literature on vaccine
+hesitancy has focused on individual-level attitudes and beliefs, an
+emerging body of research highlights the critical role of structural
 barriers---particularly geographic access---in shaping vaccination
 uptake. Spatial and logistical constraints---including distance to
-vaccination centres, lack of public transport, or regional disparities
+vaccination centers, lack of public transport, or regional disparities
 in health infrastructure---have been cited as major obstacles, even in
-high-income countries. Evidence from England: Evidence from England
-(Dropkin 2022): Research examining spatial patterns in COVID-19
-vaccination uptake has provided valuable insights into geographic
-disparities. A notable study of COVID-19 booster uptake across England
-found substantial variation, with Third Injection uptake rates ranging
-from 27.2\% in Newham to 67.4\% in Gloucestershire---representing a 40
-percentage point difference between areas. This research examined
-area-level predictors beyond typical individual characteristics such as
-age, gender, ethnicity, and deprivation levels. The findings revealed
-that while individual socio-demographic factors remained significant
-predictors of vaccination uptake, considerable unexplained area-level
-variation persisted, suggesting that geographic factors play an
-important role in vaccination decision-making processes.
+high-income countries.
+
+\emph{Evidence from England:} Research examining spatial patterns in
+COVID-19 vaccination uptake has provided valuable insights into
+geographic disparities. A notable study (Dropkin 2022)of COVID-19
+booster uptake across England found substantial variation, with Third
+Injection uptake rates ranging from 27.2\% in Newham to 67.4\% in
+Gloucestershire---representing a 40 percentage point difference between
+areas. This research examined area-level predictors beyond typical
+individual characteristics such as age, gender, ethnicity, and
+deprivation levels. The findings revealed that while individual
+socio-demographic factors remained significant predictors of vaccination
+uptake, considerable unexplained area-level variation persisted,
+suggesting that geographic factors play an important role in vaccination
+decision-making processes.
 
 Research employing geographically weighted regression (MGWR) models
-(Chen et al. 2023b) investigated how relationships between
+(Chen et al. 2023) investigated how relationships between
 socio-demographic variables and vaccination rates vary across different
-geographic locations. The study found that socio-economic-demographic
-variables explained 83.2\% of the variance in vaccination uptake
-patterns, with the strongest positive associations observed for
+geographic locations. The study found that social, economic, and
+demographic determinants explained 83.2\% of the variance in vaccination
+uptake patterns, with the strongest positive associations observed for
 proportion of population over 40 years, car ownership rates, and average
 household income. Importantly, this research demonstrated that the
 strength of associations between predictors and vaccination uptake
 varied significantly across geographic areas, indicating that
 traditional global statistical models may not adequately capture local
-variations in these relationships. Complementing these behavioural
-insights, recent studies have begun to quantify spatial inequities in
-vaccination service availability. A UK-based analysis using Gini
-coefficients revealed that rural areas consistently experienced poorer
-geographic access to vaccine centres compared to urban counterparts
-(Chen et al. 2024). Barriers to Vaccination: Ireland's COVID-19
-vaccination campaign was supported by a diversified service delivery
-network designed to maximise accessibility, equity, and speed of
-distribution. This network was composed of three primary modes of
-vaccine administration: mass vaccination centres, general practitioners
-(GPs), and community pharmacies. The configuration and expansion of
-these services were shaped by evolving public health priorities,
-population needs, and logistical feasibility throughout 2021. Three
-distinct service delivery mechanisms formed the operational backbone of
-Ireland's COVID-19 vaccination rollout and were used to develop spatial
-variables representing healthcare access and vaccination infrastructure:
+variations in these relationships.
 
-\textbf{Mass Vaccination Centres:} A total of 35 large-scale vaccination
+Complementing these behavioural insights, recent studies have begun to
+quantify spatial inequities in vaccination service availability. A
+UK-based analysis using Gini coefficients revealed that rural areas
+consistently experienced poorer geographic access to vaccine centers
+compared to urban counterparts (Chen et al. 2024).
+
+\textbf{Ireland's Vaccination Strategy:} Ireland's COVID-19 vaccination
+campaign was supported by a diversified service delivery network
+designed to maximise accessibility, equity, and speed of distribution.
+This network was composed of three primary modes of vaccine
+administration: mass vaccination centres, general practitioners (GPs),
+and community pharmacies. The configuration and expansion of these
+services were shaped by evolving public health priorities, population
+needs, and logistical feasibility throughout the roll out period.
+
+\emph{Mass Vaccination Centres:} A total of 35 large-scale vaccination
 centres ({``{COVID}-19 Vaccination Centres and Walk-Ins - {HSE}.ie''}
 2021) were established across the country to serve as the backbone of
 the national rollout strategy. These centres operated in sports arenas,
@@ -211,16 +212,16 @@ high-throughput administration to priority populations, especially
 during early phases of the campaign. Their geographic distribution was
 determined by regional population density and accessibility.
 
-\textbf{General Practice Clinics (GPs):} General practitioners played a
-pivotal role in reaching population groups that required continuity of
-care, personalisation, or proximity-based access. The national registry
-of GP clinics participating in the vaccination programme included 1,557
-sites ({``Find a {GP} in {Ireland}''} n.d.), spanning both urban and
-rural regions. Their involvement was particularly crucial in serving
-older adults, individuals with chronic illnesses, and those less likely
-to attend mass vaccination centres.
+\emph{GPs:} They played a pivotal role in reaching population groups
+that required continuity of care, personalisation, or proximity-based
+access. The national registry of GP clinics participating in the
+vaccination programme included 1,557 sites ({``Find a {GP} in
+{Ireland}''} n.d.), spanning both urban and rural regions. Their
+involvement was particularly crucial in serving older adults,
+individuals with chronic illnesses, and those less likely to attend mass
+vaccination centres.
 
-\textbf{Pharmacies:} A total of 1,041 pharmacies ({``Find a Vaccine
+\emph{Pharmacies:} A total of 1,041 pharmacies ({``Find a Vaccine
 Location in {Ireland}''} n.d.) were authorised to administer COVID-19
 vaccines as part of the community-based delivery model. Their inclusion
 marked a strategic expansion of the vaccination network, leveraging
@@ -228,81 +229,70 @@ existing infrastructure to facilitate walk-in appointments, flexible
 scheduling, and enhanced accessibility---particularly for younger adults
 and working populations. Pharmacies became especially critical from June
 2021 onward (Ireland 2022), when the 18--34 age group became eligible
-for vaccines outside of scheduled HSE pathways. Despite Ireland
-achieving over 90\% uptake of at least one COVID-19 vaccine dose among
-adults by the end of 2021, as reported by the Health Protection
-Surveillance Centre (HPSC) (Health Protection Surveillance Centre 2021a,
-2021b), spatial inconsistencies emerged at finer geographic scales.
-Disaggregated data at the Local Electoral Area (LEA) level revealed
-notable disparities, particularly in communities marked by higher
-socio-economic deprivation and limited healthcare access. These
-sub-national variations in vaccine uptake remain underexamined in the
-Irish research landscape and have not yet been systematically modelled
-using integrated spatial, demographic, and temporal data sources. In
-contrast, spatial epidemiological approaches have proven effective in
-other jurisdictions. For instance, de Figueiredo (2021) applied
-multilevel regression and post-stratification techniques to map vaccine
-hesitancy across the UK, identifying clusters of low intent that
-correlated strongly with ethnicity, economic precarity, and urban
-residency (Figueiredo 2022). Similarly, McGowan et al.~(2022)
-demonstrated that even in high-income settings with wide vaccine
-availability, uptake remained uneven---often reflecting underlying
-inequalities tied to deprivation levels (McGowan and Bambra 2022). These
-findings suggest that areas with persistent deprivation and low vaccine
-uptake may face disproportionately greater risks in future outbreaks,
-reinforcing the value of sub-national, place-based public health
-interventions. Research Gap: the Irish context, this represents a
-significant research gap. Ireland's unique settlement
-patterns---combining densely populated urban centres (notably the
-Greater Dublin Area) with widely dispersed rural and remote
-communities---create spatial dynamics that differ substantially from
-those documented in other countries. The use of spatiao-temporal models
-to understand COVID-19 vaccination uptake remains limited. In
-particular, the integration of demographic data, healthcare
-accessibility metrics, and vaccination coverage over time has not been
-fully explored. In response, this thesis undertakes a spatial and
-demographic analysis of COVID-19 vaccination uptake for people 12 years
-and above in Ireland. Using LEAs as the unit of observation, it
-integrates official vaccination data, CSO demographic indicators, and
-engineered measures of healthcare accessibility to examine whether
-spatial inequities exist, identify their key correlates, and inform
-geographically targeted public health strategies. \emph{Introduction}
-The COVID-19 pandemic placed extraordinary demands on global health
-systems and prompted one of the fastest vaccine development and
-distribution efforts in history. As vaccination campaigns scaled up,
-they brought with them a new public health challenge: ensuring that
-vaccines reached populations equitably. Although Ireland's national
-campaign achieved high overall coverage the story beneath the national
-averages reveals more complexity(Health Protection Surveillance Centre
-2021b) . Evidence from Ireland and abroad suggests that uptake has
-varied significantly across regions and population subgroups, shaped by
-underlying social, economic, and geographic inequalities.
+for vaccines outside of scheduled HSE pathways.
 
-Understanding why vaccine uptake differs between communities is
-essential for building more resilient and equitable public health
-systems. Research shows that factors such as deprivation, education, age
-structure, and geographic access influence whether individuals get
-vaccinated---not just personal belief or awareness Chen et al. (2023a).
-Yet much of the current literature on vaccine equity focuses either on
-individual attitudes or national-level trends, with fewer studies
-examining how spatial and structural variables intersect at local levels
-to influence coverage. In Ireland, where official data are published at
-the LEA level, there is a valuable but underused opportunity to explore
-how demographic and geographic conditions shape vaccination outcomes in
-smaller, more granular population units.
+\textbf{Barriers to Vaccination:} Despite Ireland achieving over 90\%
+uptake of at least one COVID-19 vaccine dose among adults by the end of
+2021, as reported by the Health Protection Surveillance Centre (HPSC)
+(Health Protection Surveillance Centre 2021a, 2021b), spatial
+inconsistencies emerged at finer geographic scales. Disaggregated data
+at the LEA level revealed notable disparities, particularly in
+communities marked by higher socio-economic deprivation and limited
+healthcare access. These sub-national variations in vaccine uptake
+disparities remain insufficiently explored in the Irish research
+landscape and have yet to be systematically modelled using integrated
+spatial, demographic, and temporal data sources.
 
-This thesis addresses the under explored intersection of spatial access,
-demographic structure, and vaccination uptake in Ireland. Specifically,
-it investigates how demographic characteristics (e.g., age, education,
-general health outcomes) and spatial accessibility to vaccine services
-shaped COVID-19 vaccine coverage at the LEA level. This study applies
-both exploratory and statistical techniques to examine how structural
-variables---such as education, gendered unemployment, age dependency,
-and proximity to vaccination centres---are associated with local
-coverage rates. By applying a spatial-temporal lens to model vaccine
-uptake, this work contributes to the growing field of place-based public
-health research and offers empirical insights to support more equitable
-immunisation strategies in Ireland and beyond.
+In contrast, spatial epidemiological approaches have proven effective in
+other countries. For instance, de Figueiredo (2021) applied multilevel
+regression and post-stratification techniques to map vaccine hesitancy
+across the UK, identifying clusters of low intent that correlated
+strongly with ethnicity, economic precarity, and urban residency
+(Figueiredo 2022). Similarly, McGowan et al.~(2022) demonstrated that
+even in high-income settings with wide vaccine availability, uptake
+remained uneven---often reflecting underlying inequalities tied to
+deprivation levels (McGowan and Bambra 2022) but such approaches remain
+limited in the Irish context and suggest the need for sub-national,
+spatial-based modelling approaches in Ireland.
+
+\textbf{Introduction}
+
+Although Ireland's national COVID-19 vaccination campaign achieved high
+overall coverage by the end of 2021, substantial variation exists
+beneath these national averages (Health Protection Surveillance Centre
+2021b). Emerging evidence suggests that vaccine uptake has varied
+significantly across regions and population subgroups, shaped by
+underlying social, economic, and geographic inequalities. Understanding
+why uptake differs between communities is essential for designing
+resilient and equitable public health systems.
+
+While global literature often emphasises individual-level attitudes or
+broad national trends, fewer studies examine how spatial and structural
+factors intersect at local levels to shape vaccination outcomes. In
+Ireland, LEA-level data offer a valuable but underutilized opportunity
+to explore these disparities more granularly. Existing reports from the
+CSO and the Health Protection Surveillance Centre (HPSC) provide
+descriptive LEA-level statistics but do not systematically model the
+determinants of uptake using integrated spatial, demographic, and
+temporal data.
+
+This thesis addresses this gap by investigating the underexplored
+intersection of spatial access, demographic structure, and vaccine
+uptake in Ireland. Specifically, it examines how factors such as age
+composition, educational attainment, general health outcomes, gender,
+unemployment, and proximity to vaccination centers are associated with
+local COVID-19 vaccine coverage for individuals aged 12 and older. Using
+both exploratory and statistical techniques---including Bayesian beta
+regression, CAR models, and sigmoidal curve-fitting---this study models
+spatial and temporal variation in vaccine uptake across Ireland's 166
+LEAs.
+
+By adopting a spatial-temporal lens and integrating diverse public data
+sources, this thesis contributes to the growing field of place-based
+public health research. The findings offer empirical insights that can
+inform more geographically targeted, demographically sensitive, and
+equity-driven immunization strategies for future pandemic responses in
+Ireland and comparable settings. .
 
 \section{Methods}\label{methods}
 
@@ -316,28 +306,30 @@ individual level, with the LEA serving as the unit of observation. This
 design enables the investigation of associations between area-level
 characteristics---such as age structure, educational attainment, gender
 distribution, and deprivation levels---and LEA-level vaccination uptake
-rates. Observational designs are appropriate when experimental
-manipulation is neither ethical nor feasible, as is the case with
-vaccine uptake during a pandemic. This study does not aim to infer
-causality but rather to identify statistical associations and spatial
-patterns that may inform future public health strategies. While the
-ecological approach limits the ability to capture individual-level
-behavioural determinants or utilize more granular spatial units, it
-offers valuable insights into structural and contextual influences
-affecting access and uptake at the community scale. Moreover, although
-individual-level or finer-resolution data could allow for deeper
-behavioural inferences, such data were not available for this study.
-Future research incorporating more granular or person-level data could
-complement these findings and help disentangle behavioural mechanisms
-from broader structural trends. Additionally, the study incorporates a
-temporal dimension by analysing vaccination uptake over successive
-months, enabling the identification of evolving patterns and time-based
-disparities in vaccine coverage. This temporally extended approach
-complements the spatial analysis and enhances the explanatory power of
-the models. The combination of spatial and temporal design elements
-positions this research within the growing body of data-driven public
-health studies aimed at understanding complex, dynamic health phenomena
-within real-world settings.
+rates.
+
+Observational designs are appropriate when experimental manipulation is
+neither ethical nor feasible, as is the case with vaccine uptake during
+a pandemic. This study does not aim to infer causality but rather to
+identify statistical associations and spatial patterns that may inform
+future public health strategies. While the ecological approach limits
+the ability to capture individual-level behavioural determinants or
+utilize more granular spatial units, it offers valuable insights into
+structural and contextual influences affecting access and uptake at the
+community scale. Moreover, although individual-level or finer-resolution
+data could allow for deeper behavioural inferences, such data were not
+available for this study. Future research incorporating more granular or
+person-level data could complement these findings and help disentangle
+behavioural mechanisms from broader structural trends.
+
+Additionally, the study incorporates a temporal dimension by analysing
+vaccination uptake over successive months, enabling the identification
+of evolving patterns and time-based disparities in vaccine coverage.
+This temporally extended approach complements the spatial analysis and
+enhances the explanatory power of the models. The combination of spatial
+and temporal design elements positions this research within the growing
+body of data-driven public health studies aimed at understanding
+complex, dynamic health phenomena within real-world settings.
 
 \subsection{Data and Variable
 Preparation}\label{data-and-variable-preparation}
@@ -351,54 +343,36 @@ population characteristics, and geographic boundaries. All data were
 aggregated at the LEA level to enable spatial analysis at a meaningful
 sub-national resolution.
 
-\textbf{Vaccination Infrastructure:} - Data on the locations of mass
+\textbf{Vaccination Infrastructure:} Data on the locations of mass
 vaccination centres (35 in total), GP clinics (1557), and community
 pharmacies (1041 in total) were obtained from the official HSE website.
 These represented the full network of vaccine delivery sites active
-during the 2021 national rollout {``Find a Vaccine Location in
-{Ireland}''} (n.d.). Vaccination Uptake
+during the 2021 national roll out {``Find a Vaccine Location in
+{Ireland}''} (n.d.).
 
-\textbf{Vaccine uptake rates} were sourced from the CSO, specifically
-Table CDC47(n.d.a), which provides the proportion of the population
-vaccinated in the primary vaccine dose, booster 1 and booster 2 at the
-LEA level monthly. This dataset is the most granular, consistent public
-source of COVID-19 vaccine coverage in Ireland.
+\textbf{Vaccine uptake rates} were sourced from the CSO website,
+specifically Table CDC47(n.d.a), which provides the proportion of the
+population vaccinated witn the primary vaccine dose, booster 1 and
+booster 2 at the LEA level every month from 2021 to 2023. This dataset
+is the most granular, consistent public source of COVID-19 vaccine
+coverage in Ireland.
 
 \textbf{Demographic indicators} were obtained from the CSO's 2022 Census
 small-area population statistics and included the following:
 
-\emph{Age Composition:} Extracted from SAP2022T1T1LEA22(n.d.b),
+\emph{Age:} Age data was extracted from SAP2022T1T1LEA22(n.d.b),
 individual-level age data were to be subsequently aggregated into five
 analytically relevant age groups (12--17, 18--54, 55--64, 65--70, and
-71+ years). These groups were not selected arbitrarily, but to reflect
+71+ years).These groups were not selected arbitrarily, but to reflect
 the sequenced eligibility criteria of Ireland's COVID-19 vaccination
-rollout, which was largely structured by age and risk )(Government of
+roll out, which was largely structured by age and risk )(Government of
 Ireland 2020).
-
-12--17 years: This group became eligible for vaccination in August 2021,
-with eligibility requiring parental consent. They were primarily
-vaccinated through schools or dedicated youth clinics.
-
-18--54 years: Representing the largest working-age population, this
-group accessed vaccines through mass vaccination centres, general
-practitioners, and pharmacies.
-
-55--64 years: Considered higher-risk due to age-related vulnerability
-and comorbidities; this group was prioritised earlier in the programme.
-
-65--70 years and 71+ years: These were among the first groups offered
-vaccines, including individuals in congregated residential settings and
-older adults with mobility limitations.
-
-This age categorisation ensures alignment with the actual vaccine
-distribution strategy while allowing for meaningful demographic
-distinctions in modelling.
 
 The national campaign began on 29 December 2020 with the vaccination of
 frontline healthcare workers and residents in long-term residential care
 settings. This was followed by a sequential age-based expansion,
 beginning with adults aged 85 years and over, and progressing in
-five-year increments down to those aged 65 by March 2021. The rollout
+five-year increments down to those aged 65 by March 2021. The roll out
 then extended to adults aged 50--64 by May 2021, and subsequently to
 individuals aged 35--49. The most significant expansion occurred in late
 June 2021, when vaccination was made available to all adults aged 18--34
@@ -410,16 +384,45 @@ National Immunisation Advisory Committee (NIAC)({``Minister for {Health}
 Confirms That {Ireland}'s {COVID}-19 {Vaccination} {Programme} Will Open
 to 12-15 Year Olds''} n.d.). However, children aged under 12 were not
 eligible for vaccination during the study period. Although vaccines were
-later approved for children aged 5--11 in early 2022, rollout began only
-in January of that year and was not accompanied by a comprehensive or
-sustained national campaign. Coverage in this group remained limited and
-inconsistent across LEAs.
+later approved for children aged 5--11 in early 2022, roll out began
+only in January of that year and was not accompanied by a comprehensive
+or sustained national campaign. Coverage in this group remained limited
+and inconsistent across LEAs and was a reason we did not focus on them
+in our study.
+
+The details of the age categories:
+
+\begin{itemize}
+\item
+  12--17 years: This group became eligible for vaccination in August
+  2021, with eligibility requiring parental consent. They were primarily
+  vaccinated through schools or dedicated youth clinics.
+\item
+  18--54 years: Representing the largest working-age population, this
+  group accessed vaccines through mass vaccination centres, general
+  practitioners, and pharmacies.
+\item
+  55--64 years: Considered higher-risk due to age-related vulnerability
+  and comorbidities; this group was prioritised earlier in the
+  programme.
+\item
+  65--70 years and 71+ years: These were among the first groups offered
+  vaccines, including individuals in congregated residential settings
+  and older adults with mobility limitations.
+\end{itemize}
+
+This age categorisation ensures alignment with the actual vaccine
+distribution strategy while allowing for meaningful demographic
+distinctions in modelling.
 
 \textbf{Self-Reported Health Status}: From SAP2022T12T3LEA22(n.d.c),
 respondents classified their general health using a 5-point Likert
 scale: - Very Good - Good - Fair - Bad - Very Bad These categories
 capture perceived physical and mental health, which may influence
-vaccine-seeking behaviour. Educational Attainment: This was drawn from
+vaccine-seeking behaviour. And the proportion of people in each of these
+categories was to be extracted at the LEA level.
+
+\textbf{Educational Attainment:} This data was drawn from
 SAP2022T10T4LEA22(n.d.d), where the thirteen original response
 categories were to be grouped into the six analytically meaningful
 levels: no formal education, primary education, upper secondary,
@@ -603,9 +606,10 @@ data.
 
 The vaccination uptake data with the LEA geometries remained separate
 and were merged with the final analytical dataset based on the research
-question like the vaccination dose of interest that was studies etc. The
-age-related dataset originally included individual-level counts from age
-0 to 19 and grouped intervals thereafter. The recoding involved
+question like the vaccination dose of interest that was studied etc.
+
+The age-related dataset originally included individual-level counts from
+age 0 to 19 and grouped intervals thereafter. The recoding involved
 aggregating the relevant age columns and reshaping the dataset using
 pivot\_wider() and mutate() functions from the tidyverse package.
 
@@ -665,25 +669,32 @@ include compositional health and education metrics, spatial structure,
 deprivation, interaction effects of age and gender, and temporal
 dynamics.
 
-All models were implemented using the brms, a Bayesian regression
-modelling interface to Stan, which supports complex hierarchical,
-spatial, and temporal modelling structures, and leverages Markov Chain
-Monte Carlo (MCMC) sampling for full posterior inference
+All models were implemented using the brms package, a Bayesian
+regression modelling interface to Stan, which supports complex
+hierarchical, spatial, and temporal modelling structures, and leverages
+Markov Chain Monte Carlo (MCMC) sampling for full posterior inference
 {``Parameterization of {Response} {Distributions} in Brms''} (n.d.).
 
-The primary outcome was the final rate of primary COVID-19 vaccination
-(bounded between 0 and 1), with booster dose data available for future
-extensions. The compositional nature of demographic covariates (e.g.,
-age, sex, education, health) required Additive Log-Ratio (ALR)
-transformations to avoid issues of perfect multicollinearity due to
-unit-sum constraints.
+The primary outcome variable was the final rate of primary COVID-19
+vaccination (bounded between 0 and 1), with booster dose data available
+for future extensions. The compositional nature of demographic
+covariates (e.g., age, sex, education, health) required Additive
+Log-Ratio (ALR) transformations to avoid issues of perfect
+multicollinearity due to unit-sum constraints. The baseline chosen for
+the transformation were the following: - Age: 71+ year olds - Education:
+Post Graduate Level - Health Outcome: Very Good - Sex: Female, For the
+joint distribution the baselines were 71+ year old males for the male
+group and 71+ year old females for the female group.
 
-All cross-sectional models used Beta regression with a logit link
-function, which is ideal for modelling proportional data as it ensures
-predictions remain in (0, 1). While the Beta distribution allows for
-heteroskedasticity through its precision parameter (phi), in our models,
-phi was assumed to be constant across all observations and was not
-modelled as a function of predictor variables.
+All cross-sectional models employed Beta regression with a logit link
+function, which is well-suited for modelling proportional outcomes
+constrained within the (0, 1) interval. In this framework, the mean of
+the Beta distribution---representing the expected value of vaccine
+uptake---is modelled as a function of the covariates via the logit link.
+While the Beta distribution allows for heteroskedasticity through its
+precision parameter (phi), in our models, phi was assumed to be constant
+across all observations and was not modelled as a function of predictor
+variables.
 
 Model 1 focussed on basic demographic variables---namely age and
 gender---relate to the final uptake of the primary COVID-19 vaccine dose
@@ -717,25 +728,28 @@ health\_Bad\_logratio + health\_Fair\_logratio + health\_Good\_logratio
 + male\_logratio + Wt\_accessibility\_Initial\_Vacc
 
 Model 3: Morans'I (Moraga n.d.) was calculated to identify if spatial
-autocorrelation existed in the residuals. The presence of significant
+autocorrelation existed in the residuals. Moran's I is a global measure
+of spatial autocorrelation that quantifies the degree to which similar
+values cluster together in geographic space. The presence of significant
 spatial clustering suggested that residuals were not independent across
 LEAs, violating a core assumption of standard regression models. To
-address this, we introduced a spatial modelling approach using
-Conditional Autoregressive (CAR) priors ({``Spatial Conditional
-Autoregressive ({CAR}) Structures --- Car''} n.d.). This model built
-upon the covariates included in Model 2 and incorporated spatially
-structured random effects via an adjacency matrix representing
-geographical contiguity among LEAs. The CAR prior allows neighbouring
-areas to ``borrow strength'' from each other by sharing information,
-thus improving parameter estimation in areas with sparse or noisy data.
-Because spatial models are more complex and prone to convergence issues,
-we extended the MCMC sampling regime to 30,000 iterations per chain with
-10,000 warm-up iterations, resulting in a total of 80,000 post-warmup
-draws. We also increased adapt\_delta to 0.999 and set max\_treedepth to
-20 to stabilize sampling using the No-U-Turn Sampler (NUTS). This
-spatially informed model was crucial for appropriately accounting for
-geographic dependencies in vaccination rates that may arise from shared
-infrastructure, regional policies, or cultural clustering.
+address this, we introduced a spatial modelling approach using CAR
+priors ({``Spatial Conditional Autoregressive ({CAR}) Structures ---
+Car''} n.d.). This model built upon the covariates included in Model 2
+and incorporated spatially structured random effects via an adjacency
+matrix representing geographical contiguity among LEAs. The CAR prior
+allows neighbouring areas to ``borrow strength'' from each other by
+sharing information, thus improving parameter estimation in areas with
+sparse or noisy data. Because spatial models are more complex and prone
+to convergence issues, we extended the MCMC sampling regime by trial and
+error and finally set it to 30,000 iterations per chain with 10,000
+warm-up iterations, resulting in a total of 80,000 post-warmup draws. We
+also increased adapt\_delta to 0.999 and set max\_treedepth to 20 to
+stabilize sampling using the No-U-Turn Sampler (NUTS) in the same
+fashion. This spatially informed model was crucial for appropriately
+accounting for geographic dependencies in vaccination rates that may
+arise from shared infrastructure, regional policies, or cultural
+clustering.
 
 Primary\_Vax\_Rate \textasciitilde{} age\_12to17\_logratio +
 age\_18to54\_logratio + age\_55to64\_logratio + age\_65to70\_logratio +
@@ -804,7 +818,8 @@ assumed to be globally constant due to model identifiability
 constraints. Furthermore, we modeled Asym as a function of
 ALR-transformed covariates (e.g., age and gender composition) to
 understand how basic demographic characteristics shape the final uptake
-level.
+level.The pother parameters can also be modelled as a function of the
+covariates in the future.
 
 Priors for the nonlinear parameters were carefully chosen based on
 empirical inspection of the data. Specifically, we set a normal(0.8,
@@ -813,7 +828,7 @@ coverage would typically plateau around 80\%, with moderate uncertainty.
 This aligns with observed saturation levels in many LEAs. For xmid, we
 used a normal(6, 2) prior, based on the understanding that the
 inflection point---the month with the fastest uptake---was likely to
-occur within the first half-year after vaccine rollout. This prior
+occur within the first half-year after vaccine roll out. This prior
 captures temporal heterogeneity while remaining centered around
 plausible empirical timing. Finally, we applied an exponential(1) prior
 (constrained to be positive via lb = 0) on scal, ensuring strictly
@@ -829,6 +844,13 @@ structural and behavioral determinants of vaccination trajectories.
 
 Primary\_Vax\_Rate \textasciitilde{} base + (Asym - base)/(1 + exp((xmid
 - Month\_num)/scal
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{Figures/sigmoid_curve.png}
+  \caption{Effect of 4-parameter logistic model components (asymptote, base, scale, and midpoint) on vaccination uptake curves over time}
+  \label{fig:sigmoid_curve}
+\end{figure}
 
 Each of the four parameters in the logistic function plays a distinct
 role in shaping the uptake curve. The base parameter determines the
@@ -847,13 +869,6 @@ wide range of realistic vaccine uptake trajectories, from early surges
 to delayed or flattened rollouts. This flexibility is critical for
 understanding the diverse temporal dynamics of vaccine adoption across
 heterogeneous regions.
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{Figures/sigmoid_curve.png}
-  \caption{Effect of 4-parameter logistic model components (asymptote, base, scale, and midpoint) on vaccination uptake curves over time}
-  \label{fig:sigmoid_curve}
-\end{figure}
 
 \section{Results}\label{results}
 
@@ -1385,14 +1400,9 @@ n.d.b. Accessed June 23, 2025.
 ---------. n.d.a. Accessed June 23, 2025.
 \url{https://data.cso.ie/table/CDC47}.
 
-\bibitem[\citeproctext]{ref-bmc_spatial_vax_2023}
-Chen, Huanfa, Yanjia Cao, Lingru Feng, Qunshan Zhao, and José Rafael
-Verduzco Torres. 2023a. {``Understanding the Spatial Heterogeneity of
-COVID-19 Vaccination Uptake in England.''} \emph{BMC Public Health} 23
-(1): 895. \url{https://doi.org/10.1186/s12889-023-15801-w}.
-
 \bibitem[\citeproctext]{ref-chen_understanding_2023}
----------. 2023b. {``Understanding the Spatial Heterogeneity of
+Chen, Huanfa, Yanjia Cao, Lingru Feng, Qunshan Zhao, and José Rafael
+Verduzco Torres. 2023. {``Understanding the Spatial Heterogeneity of
 {COVID}-19 Vaccination Uptake in {England}.''} \emph{BMC Public Health}
 23 (1): 895. \url{https://doi.org/10.1186/s12889-023-15801-w}.
 
