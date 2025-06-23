@@ -79,6 +79,7 @@ These results suggest that **demographic structure**, rather than pure geographi
 - `Thesis_V1.pdf` — Final thesis PDF  
 - `Draft_1.pdf`, `Draft_1.tex`, `Draft_1.log` — Early drafts and LaTeX versions 
 - `arxiv.sty` — Style file for potential preprint submission
+- `Codebook.csv` — Variable definitions and metadata for the final dataset
 
 ### Root Files
  

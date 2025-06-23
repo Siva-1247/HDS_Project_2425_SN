@@ -1,0 +1,141 @@
+Variable,Label,Type,Units,Value_Labels,Missing_Values,Valid_Ranges,Unique_Values,Source,Derived_Raw,Notes
+CSO_LEA,Name of the Local Electoral Area,character,,,0,,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Raw,Standard LEA names of Ireland
+p_age_12to17,Proportion aged 12-17 years,numeric,Proportion,compositional,0,0.051 to 0.15,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Marginal distribution of the population aged 12–17
+p_age_18to54,Proportion aged 18-54 years,numeric,Proportion,compositional,0,0.423 to 0.767,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Marginal distribution of the population aged 18-54
+p_age_55to64,Proportion aged 55-64 years,numeric,Proportion,compositional,0,0.086 to 0.191,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Marginal distribution of the population aged 55-64
+p_age_65to70,Proportion aged 65-70 years,numeric,Proportion,compositional,0,0.05 to 0.178,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Marginal distribution of the population aged 65-70
+p_age_71plus,Proportion aged over 71 years,numeric,Proportion,compositional,0,0.019 to 0.137,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Marginal distribution of the population aged over 71
+p_sex_male,Proportion of males,numeric,Proportion,compositional,0,0.458 to 0.526,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Marginal distribution of the male population in each LEA
+p_sex_female,Proportion of females,numeric,Proportion,compositional,0,0.474 to 0.542,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Marginal distribution of the female population in each LEA
+p_edu_NoFormal,Proportion of people with no formal education,numeric,Proportion,compositional,0,0.008 to 0.089,166,"CSO Census 2022
+SAP2022T10T4LEA22
+
+https://data.cso.ie/table/SAP2022T10T4LEA22",Derived,Marginal distribution of the population with no formal education
+p_edu_Primary,Proportion of people with primary education,numeric,Proportion,compositional,0,0.021 to 0.267,166,"CSO Census 2022
+SAP2022T10T4LEA22
+
+https://data.cso.ie/table/SAP2022T10T4LEA22",Derived,Marginal distribution of the population with primary education
+p_edu_UpperSecondary,Proportion of people with upper secondary education,numeric,Proportion,compositional,0,0.114 to 0.391,166,"CSO Census 2022
+SAP2022T10T4LEA22
+
+https://data.cso.ie/table/SAP2022T10T4LEA22",Derived,Marginal distribution of the population with an upper secondary education
+p_edu_Apprenticeship,Proportion of people with advanced certificate or completed apprenticeship,numeric,Proportion,compositional,0,0.041 to 0.176,166,"CSO Census 2022
+SAP2022T10T4LEA22
+
+https://data.cso.ie/table/SAP2022T10T4LEA22",Derived,Marginal distribution of the population who completed an apprenticeship or hold an advanced certificate
+p_edu_HonoursBachelor,Proportion of people with an honours bachelor degree,numeric,Proportion,compositional,0,0.115 to 0.36,166,"CSO Census 2022
+SAP2022T10T4LEA22
+
+https://data.cso.ie/table/SAP2022T10T4LEA22",Derived,Marginal distribution of the population who have completed an honours bachelor's degree
+p_edu_Postgraduate,Proportion of people with postgraduate education,numeric,Proportion,compositional,0,0.084 to 0.449,166,"CSO Census 2022
+SAP2022T10T4LEA22
+
+https://data.cso.ie/table/SAP2022T10T4LEA22",Derived,Marginal distribution of the population who have completed postgraduate education
+p_health_VeryBad,Proportion of people with very bad self-reported health,numeric,Proportion,compositional,0,0.002 to 0.007,166,"CSO Census 2022
+SAP2022T12T3LEA22
+
+https://data.cso.ie/table/SAP2022T12T3LEA22",Derived,Marginal distribution of the population with very bad health
+p_health_Bad,Proportion of people with bad self-reported health,numeric,Proportion,compositional,0,0.008 to 0.026,166,"CSO Census 2022
+SAP2022T12T3LEA22
+
+https://data.cso.ie/table/SAP2022T12T3LEA22",Derived,Marginal distribution of the population with bad health
+p_health_Fair,Proportion of people with fair self-reported health,numeric,Proportion,compositional,0,0.061 to 0.148,166,"CSO Census 2022
+SAP2022T12T3LEA22
+
+https://data.cso.ie/table/SAP2022T12T3LEA22",Derived,Marginal distribution of the population with fair health
+p_health_Good,Proportion of people with good self-reported health,numeric,Proportion,compositional,0,0.268 to 0.356,166,"CSO Census 2022
+SAP2022T12T3LEA22
+
+https://data.cso.ie/table/SAP2022T12T3LEA22",Derived,Marginal distribution of the population with good health
+p_health_VeryGood,Proportion of people with very good self-reported health,numeric,Proportion,compositional,0,0.478 to 0.662,166,"CSO Census 2022
+SAP2022T12T3LEA22
+
+https://data.cso.ie/table/SAP2022T12T3LEA22",Derived,Marginal distribution of the population with very good health
+Weighted_Access_Initial_Vacc_Center,Weighted accessibility of initial vaccination centers,Continuous,Proportion,,0,0.007 to 5.779,166,Derived from drive-time isochrone analysis around initial mass vaccination center(s).,Derived,"A refined accessibility score measuring the proportion of each LEA (Local Electoral Area) within 10-, 20-, 30-, and 60-minute drive-time isochrones of the initial vaccination center. The overlapping areas are inversely weighted by travel time to reflect decreasing accessibility with increasing distance."
+Access_Pharmacies,Accessibility of Pharmacies within 10-minute drive-time,continuous,Proportion,,0,0.4 to 68.81,166,Derived from 10-minute drive-time isochrone analysis around community pharmacies.,Derived,Proportion of each LEA covered by a 10-minute drive-time catchment from one or more pharmacy locations.
+Access_GPs,Accessibility of GP clinics within 10-minute drive-time,Continuous,Proportion,,0,1.376 to 25.097,166,Derived from 10-minute drive-time isochrone analysis around GP (General Practitioner) clinics.,Derived,Proportion of each LEA within a 10-minute drive-time catchment from GP clinics.
+Index22_rel,Relative deprivation index,numeric,Relative Score Index,,0,-12.575 to 12.393,166,Pobal,Raw,2022 Relative deprivation index from Pobal HP Deprivation Index
+UNEMPM22,Male unemployment rate,numeric,Proportion,,0,4.577 to 15.101,165,Pobal ,Raw,% of economically active males who are unemployed
+UNEMPF22,Female unemployment rate,numeric,Proportion,,0,4.906 to 13.259,166,Pobal,Raw,% of economically active females who are unemployed
+p_age_12to17_sex_females,Proportion Female and aged 12-17 years,numeric,Proportion,compositional,0,0.025 to 0.074,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Joint distribution of the female population aged 12–17
+p_age_12to17_sex_males,Proportion Male and aged 12-17 years,numeric,Proportion,compositional,0,0.027 to 0.077,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Joint distribution of the male population aged 12–17
+p_age_18to54_sex_females,Proportion Female and aged 18-54 years,numeric,Proportion,compositional,0,0.214 to 0.361,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Joint distribution of the female population aged 18-54
+p_age_18to54_sex_males,Proportion Male and aged 18-54 years,numeric,Proportion,compositional,0,0.209 to 0.406,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Joint distribution of the male population aged 18-54
+p_age_55to64_sex_females,Proportion Female and aged 55-64 years,numeric,Proportion,compositional,0,0.042 to 0.097,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Joint distribution of the female population aged 55-64
+p_age_55to64_sex_males,Proportion Male and aged 55-64 years,numeric,Proportion,compositional,0,0.043 to 0.094,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Joint distribution of the male population aged 55-64
+p_age_65to70_sex_females,Proportion Female and aged 65-70 years,numeric,Proportion,compositional,0,0.026 to 0.086,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Joint distribution of the female population aged 65-70
+p_age_65to70_sex_males,Proportion Male and aged 65-70 years,numeric,Proportion,compositional,0,0.023 to 0.093,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Joint distribution of the male population aged 65-70
+p_age_71plus_sex_females,Proportion Female and aged over 71 years,numeric,Proportion,compositional,0,0.011 to 0.076,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Joint distribution of the female population aged over 71
+p_age_71plus_sex_males,Proportion Male and aged over 71 years,numeric,Proportion,compositional,0,0.007 to 0.066,166,"CSO Census 2022
+SAP2022T1T1LEA22
+
+https://data.cso.ie/table/SAP2022T1T1LEA22
+",Derived,Joint distribution of the male population aged over 71
