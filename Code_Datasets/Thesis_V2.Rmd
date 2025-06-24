@@ -528,7 +528,7 @@ Based on the observed vaccination rate data, the increase-then-decline patterns 
 
 - Cross-border vaccination was not taken into consideration in LEAs that are contiguous to Northern Ireland, and our analysis was limited to the Republic of Ireland. This absence might skew data in border regions, especially if people traveled to Northern Ireland to get vaccinated (or vice versa), which could affect local vaccination uptake rates. This is a significant omission that has consequences for international comparability and public health planning due to the interconnection of border towns.
 
-- The ecological design does not allow us to male causal inferences. Although we find significant correlations between vaccination uptake and the covariates considered in our study, we cannot link these patterns to individual-level behavior. Furthermore, unmeasured variables like vaccine hesitancy at the individual level, internet literacy, or government trust may potentially be significant.
+- The ecological design does not allow us to make causal inferences. Although we find significant correlations between vaccination uptake and the covariates considered in our study, we cannot link these patterns to individual-level behavior. Furthermore, unmeasured variables like vaccine hesitancy at the individual level, internet literacy, or government trust may potentially be significant.
 
 # Code and Dashboard Availability
 
