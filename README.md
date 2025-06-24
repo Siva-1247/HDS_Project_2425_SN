@@ -85,4 +85,5 @@ These results suggest that **demographic structure**, rather than pure geographi
  
 - `README.md` — Project overview (this file)  
 
-
+### Note: 
+For the best viewing experience, please download the PDF report. GitHub’s preview may not load properly due to the file size or formatting.
