@@ -6,7 +6,7 @@ authors:
     affiliation: University of Galway
     location: Galway, Ireland, H91 TK33
     email: S.Nedumaran1@universityofgalway.ie
-  - name: Ramya Sri Jayashanker
+  - name: Ramya Sri Jayashanker Chithra
     department: School of Mathematical & Statistical Sciences
     affiliation: University of Galway
     location: Galway, Ireland, H91 TK33
