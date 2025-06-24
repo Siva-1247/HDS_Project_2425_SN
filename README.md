@@ -25,15 +25,15 @@ This project investigates what can be possible **spatial and socio-demographic d
 
 This study adopts an **ecological design** and integrates multiple data sources:
 
-| Data Type                      | Source                                                            |
-|-------------------------------|-------------------------------------------------------------------|
-| Vaccination Rates             | Health Protection Surveillance Centre (HPSC)                     |
-| Demographics 
-        (Age, Education, Health)| Central Statistics Office (CSO), Census 2022                     |
-| Health Service Locations      | HSE vaccine centre registry, GP and pharmacy listings            |
-| LEA Boundaries                | Ordnance Survey Ireland (OSI)                                    |
-| Accessibility Scores          | Engineered using drive-time isochrones with OpenRouteServices    | 
-|Depriviation Index             | Area-level deprivation metrics derived from the Pobal Haase-Pratschke (HP) Deprivation Index |
+| Data Type              | Source                                                                                      |
+|------------------------|---------------------------------------------------------------------------------------------|
+| Vaccination Rates      | Health Protection Surveillance Centre (HPSC)                                               |
+| Demographics           | Central Statistics Office (CSO), Census 2022 – Age, Education, and Health                  |
+| Health Service Locations | HSE vaccine centre registry, GP and pharmacy listings                                      |
+| LEA Boundaries         | Ordnance Survey Ireland (OSI)                                                              |
+| Accessibility Scores   | Calculated using drive-time isochrones with OpenRouteServices                              |
+| Deprivation Index      | Pobal Haase-Pratschke (HP) Deprivation Index – Area-level deprivation metrics              |
+
 
 ### Data Engineering:
 - Demographic variables were ALR-transformed to handle **compositional structure**.
@@ -73,11 +73,11 @@ These results suggest that **demographic structure**, rather than pure geographi
 - `Model_Results/` — Model output files, summaries, and diagnostics  
 - `Modelling/` — Core modeling scripts (beta, CAR, nonlinear sigmoid)  
 - `Poster Codes/` — Code for generating poster graphics and visuals  
-- `Vacc_Rates&Geocoded_Data/` — Cleaned vaccination rate data and geocoded inputs  
+- `Vacc_Rates&Geocoded_Data/` — Cleaned vaccination rate data and geocoded inputs
+- `Thesis_Drafts/` — Early drafts of thesis
 - `rsconnect/shinyapps.io/siva47/` — Deployment files for hosted Shiny app  
-- `Thesis_V1.Rmd` — RMarkdown version of thesis  
-- `Thesis_V1.pdf` — Final thesis PDF  
-- `Draft_1.pdf`, `Draft_1.tex`, `Draft_1.log` — Early drafts and LaTeX versions 
+- `Thesis_V2.Rmd` — RMarkdown version of thesis  
+- `Thesis_V2.pdf` — Final thesis PDF  
 - `arxiv.sty` — Style file for potential preprint submission
 - `Codebook.csv` — Variable definitions and metadata for the final dataset
 
