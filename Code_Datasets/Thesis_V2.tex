@@ -1059,17 +1059,16 @@ vaccination rates compared to the reference category, with particularly
 strong negative effects for the 18-54 year age group and the 12-17 year
 age group. The 55-64 year old variable was a strong positive predictor
 in the model. The credible interval (CI) represents the range within
-which the true value of a parameter lies with a certain
-probability---typically 95\%---based on the posterior distribution in a
-Bayesian model. For example, the CI for the 65--70 year age group
-includes zero, indicating that there is substantial uncertainty around
-the estimated effect; it is plausible that there is no effect at all.
-Similarly, while the proportion of males showed a negative association
-with vaccination rates, the inclusion of zero in its CI also suggests
-that this effect is not statistically robust. To better interpret the
-influence of each predictor, marginal effects plots are used to
-visualize how changes in predictor variables impact the predicted
-vaccination rates.
+which the true value of a parameter lies with a certain probability -
+here 95\%---based on the posterior distribution in a Bayesian model. For
+example, the CI for the 65--70 year age group includes zero, indicating
+that there is substantial uncertainty around the estimated effect; it is
+plausible that there is no effect at all. Similarly, while the
+proportion of males showed a negative association with vaccination
+rates, the inclusion of zero in its CI also suggests that this effect is
+not statistically robust. To better interpret the influence of each
+predictor, marginal effects plots are used to visualize how changes in
+predictor variables impact the predicted vaccination rates.
 
 \begin{figure}[H]
   \centering
@@ -1115,7 +1114,7 @@ attenuated slightly while revealing additional significant associations.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{Figures/Model_2.png}
+  \includegraphics[width=1\textwidth]{Figures/Model_2.png}
   \caption{Model 2 Summary Table}
   \label{fig:Model_2}
 \end{figure}
@@ -1206,13 +1205,15 @@ composite deprivation index showed a negligible association with
 vaccination rates, with the CI including zero, suggesting that
 area-level socioeconomic deprivation does not provide additional
 explanatory power beyond the specific educational attainment variables
-already included in the model. This finding is particularly noteworthy
+already included in the model.This finding is particularly noteworthy
 given the substantial socioeconomic disparities observed across LEAs,
-indicating that educational composition effectively captures the most
-relevant aspects of socioeconomic variation affecting vaccination
-behavior. The results suggest that deprivation effects operate primarily
-through already-measured demographic and educational pathways rather
-than through additional unmeasured mechanisms. The lack of significant
+indicating that educational composition might effectively capture the
+most relevant aspects of socioeconomic variation affecting vaccination
+behavior.
+
+The results suggest that deprivation effects operate primarily through
+already-measured demographic and educational pathways rather than
+through additional unmeasured mechanisms. The lack of significant
 association indicates that while the Pobal index comprehensively
 measures community-level disadvantage across a wide range of conditions,
 individual educational characteristics remain the dominant socioeconomic
@@ -1286,8 +1287,9 @@ vaccination levels.
 The demographic predictors revealed significant positive associations
 between all covariates and final vaccination rate achievement. We found
 that individuals aged 65--70 exhibited the strongest positive effect
-among all age groups, surpassing even those aged 71 and older. It was
-also identified that LEAs with higher male proportions achieved
+among all age groups, surpassing even those aged 71 and older.
+
+It was also identified that LEAs with higher male proportions achieved
 substantially higher maximum vaccination coverage. The lower asymptote
 at -3.44 (95\% CI: -3.49 to -3.39) on the logit scale, represents the
 minimal initial vaccination rates at the program's outset. Our
@@ -1295,14 +1297,14 @@ demographic model maintained temporal stability, with the inflection
 point remaining consistent and the scale parameter showing minimal
 variation.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{Figures/Top_LEA.png}
   \caption{Vaccination Trend for Top 5 LEAs}
   \label{fig:Top_Leas}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{Figures/Bottom_LEA.png}
   \caption{Vaccination Trend for Bottom 5 LEAs}
@@ -1313,25 +1315,28 @@ variation.
 
 The adjusted base model demonstrated superior fit, as evidenced by the
 increased precision parameter (phi = 77.74 vs.~57.18), indicating
-reduced unexplained variance. The persistence of age effects across both
-models underscores the robustness of demographic patterns in vaccination
-behaviour, while the emergence of educational effects highlights the
-importance of socioeconomic factors. The negligible impact of initial
-vaccination center accessibility suggests that supply-side constraints
-were not primary drivers of vaccination disparities in this context,
-pointing instead to demand-side factors related to demographic and
-socioeconomic characteristics.
+reduced unexplained variance.
+
+The persistence of \emph{age effects} across both models underscores the
+robustness of demographic patterns in vaccination behaviour, while the
+emergence of educational effects highlights the importance of
+socioeconomic factors. The negligible impact of initial vaccination
+center accessibility suggests that supply-side constraints were not
+primary drivers of vaccination disparities in this context, pointing
+instead to demand-side factors related to demographic and socioeconomic
+characteristics.
 
 The progressive increase in precision parameters across models (57.18 →
 77.74 → 87.88) demonstrates continued improvement in model fit with the
 addition of socioeconomic variables and spatial structure and the
 spatial model represents the most comprehensive specification,
 accounting for both measured covariates and unmeasured
-spatially-correlated factors. The stability of key demographic and
-educational effects across all model specifications provides strong
-evidence for their robustness, while the significant spatial correlation
-highlights the importance of geographic context in understanding
-vaccination behaviour patterns.
+spatially-correlated factors.
+
+The stability of key demographic and educational effects across all
+model specifications provides strong evidence for their robustness,
+while the significant spatial correlation highlights the importance of
+geographic context in understanding vaccination behaviour patterns.
 
 We acknowledge that holding the precision parameter constant in the
 cross sectional models assumes homogeneous variance across LEAs. This
@@ -1342,27 +1347,31 @@ to socioeconomic or spatial factors.
 
 The longitudinal nonlinear model revealed nuanced demographic dynamics
 in vaccination uptake that differ from patterns observed in
-cross-sectional analyses. Specifically, the Asym was significantly and
-positively associated with the relative proportions of males and all
-working-age and older adult subgroups (ages 18--54, 55--64, and 65--70),
-with the strongest effects observed for the older cohorts. These
-findings suggest that, although younger adults and males may have
-exhibited delayed uptake in earlier phases of the campaign---as
-suggested in prior models---they ultimately reached high levels of
-vaccination over time. The estimated population-level midpoint for
-uptake (xmid aprox 5.61 months) indicates broad temporal alignment
-across LEAs, reflecting a relatively coordinated national rollout.
-However, substantial variation in asymptotic values between LEAs
-(sd(Asym) = 0.81) underscores the importance of local demographic
-composition in shaping final uptake levels. The scalar parameter
-governing growth rate (scal = 1.36) was fixed across areas and
-reinforces the interpretation that differences in eventual
-uptake---rather than uptake speed---were more influenced by population
-structure than by supply-side constraints. Together, these results
-indicate that extended temporal observation is critical for capturing
-the full extent of vaccination behaviour: initial disparities in uptake
-timing do not necessarily translate into persistent inequalities in
-ultimate coverage.
+cross-sectional analyses.
+
+The Asym was significantly and positively associated with the relative
+proportions of males and all working-age and older adult subgroups (ages
+18--54, 55--64, and 65--70), with the strongest effects observed for the
+older cohorts. These findings suggest that, although younger adults and
+males may have exhibited delayed uptake in earlier phases of the
+campaign---as suggested in prior models---they ultimately reached high
+levels of vaccination over time.
+
+The estimated population-level midpoint for uptake (xmid aprox 5.61
+months) indicates broad temporal alignment across LEAs, reflecting a
+relatively coordinated national rollout. However, substantial variation
+in asymptotic values between LEAs (sd(Asym) = 0.81) underscores the
+importance of local demographic composition in shaping final uptake
+levels.
+
+The scalar parameter governing growth rate (scal = 1.36) was fixed
+across areas and reinforces the interpretation that differences in
+eventual uptake---rather than uptake speed---were more influenced by
+population structure than by supply-side constraints. Together, these
+results indicate that extended temporal observation is critical for
+capturing the full extent of vaccination behaviour: initial disparities
+in uptake timing do not necessarily translate into persistent
+inequalities in ultimate coverage.
 
 Based on the observed vaccination rate data, the increase-then-decline
 patterns of vaccination rate identified in LEAs such as South East Inner
@@ -1383,19 +1392,56 @@ percentage-based trends. As such, the observed dips are more likely to
 reflect population re-estimation or mobility rather than genuine
 decreases in vaccine uptake.
 
-Our analysis relied on vaccination data reported only at the LEA level,
-not broken down by demographic subgroups or small area level data which
-was our biggest limitation. Population demographic characteristics were
-based on the 2022 Census and may not reflect the pandemic-period or
-vaccination roll out period scenario. Self-reported health status, used
-as a covariate, may be subject to bias. Our accessibility measure did
-not account for population demand or healthcare services' capacity,
-limiting its interpretive power; while a 2SFCA approach could address
-these spatial limitations, it requires more granular data and
-computational resources beyond this study's scope. Additionally, the
-analysis was restricted to the Republic of Ireland; cross-border
-vaccination---particularly in border regions---could have influenced
-local rates but remains unaccounted for in our models.
+\textbf{Limitations:}
+
+\begin{itemize}
+\item
+  The most significant limitation is that vaccination data were
+  available only at the Local Electoral Area (LEA) level, not broken
+  down by demographic subgroups or small area level. This is only
+  helpful for identifying general geographic trends and without granular
+  analysis within each LEA, we are limited to ecological inference,
+  which carries risks of ecological fallacy---i.e., making assumptions
+  about individuals based on group-level data.
+\item
+  The demographics of the population were taken from the 2022 Census,
+  which does not precisely correspond with the 2020--2022 vaccination
+  rollout schedule. It is possible that denominator estimates for
+  vaccination rates may be biased due to inaccurately recorded changes
+  in population structure during the pandemic, such as student mobility,
+  deaths, emigration, or temporary relocations. This temporal
+  misalignment is particularly troublesome in regions that experience
+  seasonal fluctuations or considerable population turnover.
+\item
+  Self-reported health status is used as a covariate and the subjective
+  nature of these data makes them vulnerable to reporting bias,
+  especially when comparing various age groups, gender or educational
+  attainment. It is challenging to effectively evaluate the predictive
+  ability of these self-assessments and validate them in the absence of
+  clinical or administrative health information.
+\item
+  Our accessibility measure did not account for population demand or
+  healthcare services' capacity, limiting its interpretive power; while
+  a 2SFCA approach or another gravity based approach could address these
+  spatial limitations, it requires more granular data and computational
+  resources beyond this study's scope.
+\item
+  Cross-border vaccination was not taken into consideration in LEAs that
+  are contiguous to Northern Ireland, and our analysis was limited to
+  the Republic of Ireland. This absence might skew data in border
+  regions, especially if people traveled to Northern Ireland to get
+  vaccinated (or vice versa), which could affect local vaccination
+  uptake rates. This is a significant omission that has consequences for
+  international comparability and public health planning due to the
+  interconnection of border towns.
+\item
+  The ecological design does not allow us to male causal inferences.
+  Although we find significant correlations between vaccination uptake
+  and the covariates considered in our study, we cannot link these
+  patterns to individual-level behavior. Furthermore, unmeasured
+  variables like vaccine hesitancy at the individual level, internet
+  literacy, or government trust may potentially be significant.
+\end{itemize}
 
 \section{Code and Dashboard
 Availability}\label{code-and-dashboard-availability}
